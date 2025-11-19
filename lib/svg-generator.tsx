@@ -94,6 +94,16 @@ export function generateSVG(
     `;
   }
 
+  // Gradient for stroke
+  if (state.strokeEnabled && state.strokeMode === "gradient") {
+    defs += `
+      <linearGradient id="grad-stroke" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="${state.stroke}" />
+        <stop offset="100%" stop-color="${state.stroke2}" />
+      </linearGradient>
+    `;
+  }
+
   // Gradient for background
   if (
     !state.bgTransparent && state.bgMode === "gradient" && state.bg && state.bg2
@@ -156,7 +166,16 @@ export function generateSVG(
       ? "url(#grad-fill)"
       : (state.charColors[i] || state.fill1);
 
-    const stroke = state.strokeEnabled ? state.stroke : "none";
+    let stroke = "none";
+    if (state.strokeEnabled) {
+      if (state.strokeMode === "gradient") {
+        stroke = "url(#grad-stroke)";
+      } else if (state.strokeMode === "multi") {
+        stroke = state.strokeCharColors[i] || state.stroke;
+      } else {
+        stroke = state.stroke;
+      }
+    }
     const strokeWidth = state.strokeEnabled ? 2 : 0;
     const filterList = [
       state.useGlow ? "url(#glow)" : "",

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Sidebar } from "@/components/signature-builder/sidebar";
 import { PreviewArea } from "@/components/signature-builder/preview-area";
 import { CodePanel } from "@/components/signature-builder/code-panel";
+import { MobileDrawerSidebar } from "@/components/signature-builder/mobile-drawer-sidebar";
 import { INITIAL_STATE, THEMES } from "@/lib/constants";
 import { FillMode, SignatureState, TextureType } from "@/lib/types";
 import { ChevronDown, Download } from "lucide-react";
@@ -29,6 +30,7 @@ export default function SignatureBuilderPage() {
   const [state, setState] = useState<SignatureState>(INITIAL_STATE);
   const [svgCode, setSvgCode] = useState("");
   const [uploadedFont, setUploadedFont] = useState<ArrayBuffer | null>(null);
+  const [isCodeOverlayOpen, setIsCodeOverlayOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -160,7 +162,7 @@ export default function SignatureBuilderPage() {
 
         <div className="flex items-center gap-2">
           {/* Component Download - Hover Dropdown */}
-          <div className="relative group">
+          <div className="relative group hidden md:block">
             <Button
               variant="default"
               size="sm"
@@ -248,16 +250,36 @@ export default function SignatureBuilderPage() {
             variant="outline"
             size="sm"
             onClick={downloadSVG}
-            className="h-8 text-xs gap-2"
+            className="h-8 text-xs gap-2 hidden md:inline-flex"
           >
             <Download className="w-3.5 h-3.5" />
             SVG
           </Button>
+
+          {/* Mobile Code & Download */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={downloadSVG}
+              className="h-8 text-xs px-3"
+            >
+              <Download className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCodeOverlayOpen(true)}
+              className="h-8 text-xs px-3"
+            >
+              Code
+            </Button>
+          </div>
         </div>
       </header>
 
-      {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Desktop Layout */}
+      <div className="hidden md:flex flex-1 overflow-hidden">
         <Sidebar
           state={state}
           updateState={updateState}
@@ -292,6 +314,45 @@ export default function SignatureBuilderPage() {
           </ResizablePanelGroup>
         </main>
       </div>
+
+      {/* Mobile Layout */}
+      <div className="flex md:hidden flex-1 overflow-hidden">
+        <main className="flex-1 flex flex-col min-w-0 min-h-0 relative bg-background">
+          <div className="flex-1 min-h-0">
+            <PreviewArea
+              state={state}
+              onSvgGenerated={setSvgCode}
+              uploadedFont={uploadedFont}
+            />
+          </div>
+          <MobileDrawerSidebar
+            state={state}
+            updateState={updateState}
+            onFontUpload={handleFontUpload}
+          />
+        </main>
+      </div>
+
+      {isCodeOverlayOpen && (
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex flex-col md:hidden">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
+            <span className="text-xs font-semibold text-[#c9d1d9]">
+              API & Code
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCodeOverlayOpen(false)}
+              className="h-7 text-xs text-[#c9d1d9]"
+            >
+              Close
+            </Button>
+          </div>
+          <div className="flex-1 min-h-0">
+            <CodePanel svgCode={svgCode} state={state} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

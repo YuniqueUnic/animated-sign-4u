@@ -28,6 +28,12 @@ export function StyleColorSection(
         updateState({ charColors: newColors });
     };
 
+    const updateStrokeCharColor = (index: number, color: string) => {
+        const newColors = [...state.strokeCharColors];
+        newColors[index] = color;
+        updateState({ strokeCharColors: newColors });
+    };
+
     return (
         <section className="space-y-4">
             <details open className="group">
@@ -344,14 +350,96 @@ export function StyleColorSection(
                         </div>
                         <div
                             className={cn(
-                                "transition-opacity",
+                                "space-y-2 transition-opacity",
                                 !state.strokeEnabled && "opacity-50",
                             )}
                         >
-                            <ColorPicker
-                                value={state.stroke}
-                                onChange={(c) => updateState({ stroke: c })}
-                            />
+                            <div className="flex bg-muted p-1 rounded-lg text-[11px]">
+                                {(["single", "gradient", "multi"] as const).map(
+                                    (mode) => (
+                                        <button
+                                            key={mode}
+                                            onClick={() =>
+                                                updateState({
+                                                    strokeMode: mode,
+                                                })}
+                                            className={cn(
+                                                "flex-1 py-1 text-[11px] font-medium rounded-md transition-all capitalize",
+                                                state.strokeMode === mode
+                                                    ? "bg-background shadow-sm text-foreground"
+                                                    : "text-muted-foreground hover:text-foreground",
+                                            )}
+                                        >
+                                            {mode}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
+
+                            {state.strokeMode === "single" && (
+                                <ColorPicker
+                                    value={state.stroke}
+                                    onChange={(c) => updateState({ stroke: c })}
+                                />
+                            )}
+
+                            {state.strokeMode === "gradient" && (
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex-1">
+                                        <ColorPicker
+                                            value={state.stroke}
+                                            onChange={(c) =>
+                                                updateState({ stroke: c })}
+                                        />
+                                    </div>
+                                    <span className="text-muted-foreground">
+                                        →
+                                    </span>
+                                    <div className="flex-1">
+                                        <ColorPicker
+                                            value={state.stroke2}
+                                            onChange={(c) =>
+                                                updateState({ stroke2: c })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {state.strokeMode === "multi" && (
+                                <div className="space-y-1">
+                                    <div className="bg-muted/30 border rounded-lg p-2 overflow-x-auto">
+                                        <div className="flex gap-2 min-w-max pb-1">
+                                            {state.text.split("").map((
+                                                char,
+                                                idx,
+                                            ) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex flex-col items-center min-w-6 gap-1"
+                                                >
+                                                    <span className="text-[10px] text-muted-foreground font-mono">
+                                                        {char}
+                                                    </span>
+                                                    <input
+                                                        type="color"
+                                                        value={state
+                                                            .strokeCharColors[
+                                                                idx
+                                                            ] ||
+                                                            state.stroke}
+                                                        onChange={(e) =>
+                                                            updateStrokeCharColor(
+                                                                idx,
+                                                                e.target.value,
+                                                            )}
+                                                        className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

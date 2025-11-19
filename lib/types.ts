@@ -1,4 +1,5 @@
 export type FillMode = "single" | "gradient" | "multi";
+export type StrokeMode = "single" | "gradient" | "multi";
 export type TextureType = "none" | "grid" | "dots" | "lines" | "cross";
 export type BgMode = "solid" | "gradient";
 export type BgSizeMode = "auto" | "custom";
@@ -23,6 +24,9 @@ export interface SignatureState {
   // Stroke
   stroke: string;
   strokeEnabled: boolean;
+  strokeMode: StrokeMode;
+  stroke2: string;
+  strokeCharColors: string[];
 
   // Fill
   fillMode: FillMode;

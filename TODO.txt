@@ -66,6 +66,10 @@ http://localhost:3000/api/sign?text=Signature&font=great-vibes&fill=multi
 7. 整理项目中的文件命名 / 导出风格，做一点小的 API 清理（比如统一 Props 命名、去掉不必要的 React.FC 等），让整体更统一
 8. 需要为整个界面实现 dark/light theme. 并且确保主题切换功能正常.
 9. 需要实现 i18n, 起码包含 英文/中文
+10. 背景的 size 不应该和和 font size 联动,当背景的size小于font 展示的size时,
+font 超出编辑就超出了吧. 也就是 font 和 bg 应该是 z 轴上的关系, font 正好是在 bg 的中间的上面而已.
+11. 加了 colorMode = multi 的解析之后, 现在的 quick theme 的默认主题中 渐变颜色背景或者多种颜色的 theme 在实际 preview 时不正常了, 需要修复
+12. mobile 的底部的 drawer 应该默认弹出, 并且这个 drawer 弹出后的界面也应该和 preview 之间有个 splitter, 类似于normal时 codebox 和 preivew 之间的splitter一样, 可以让用户自己控制大小
 
 
 1. 仔细阅读这个计划/重构/实现文档. 理清楚逻辑, 了解清楚需求, 仔细认真的对比代码. 理解当前的进度.

@@ -148,3 +148,52 @@ describe("generateSVG - fill gradients", () => {
         expect(svg).toContain('fill="url(#grad-fill)"');
     });
 });
+
+describe("generateSVG - stroke modes", () => {
+    const baseViewBox = { x: 0, y: 0, w: 200, h: 100 };
+    const simplePaths: PathData[] = [
+        { d: "M0 0 L10 0", len: 10, index: 0 },
+        { d: "M10 0 L20 0", len: 10, index: 1 },
+    ];
+
+    it("uses solid stroke when strokeMode=single", () => {
+        const state: SignatureState = {
+            ...(INITIAL_STATE as SignatureState),
+            strokeEnabled: true,
+            strokeMode: "single",
+            stroke: "#ff0000",
+        };
+
+        const svg = generateSVG(state, simplePaths, baseViewBox);
+        expect(svg).toContain('stroke="#ff0000"');
+        expect(svg).not.toContain('id="grad-stroke"');
+    });
+
+    it("defines grad-stroke and uses it when strokeMode=gradient", () => {
+        const state: SignatureState = {
+            ...(INITIAL_STATE as SignatureState),
+            strokeEnabled: true,
+            strokeMode: "gradient",
+            stroke: "#00ffff",
+            stroke2: "#ff00ff",
+        };
+
+        const svg = generateSVG(state, simplePaths, baseViewBox);
+        expect(svg).toContain('<linearGradient id="grad-stroke"');
+        expect(svg).toContain('stroke="url(#grad-stroke)"');
+    });
+
+    it("uses per-path stroke colors when strokeMode=multi", () => {
+        const state: SignatureState = {
+            ...(INITIAL_STATE as SignatureState),
+            strokeEnabled: true,
+            strokeMode: "multi",
+            stroke: "#000000",
+            strokeCharColors: ["#ff0000", "#00ff00"],
+        };
+
+        const svg = generateSVG(state, simplePaths, baseViewBox);
+        expect(svg).toContain('stroke="#ff0000"');
+        expect(svg).toContain('stroke="#00ff00"');
+    });
+});
