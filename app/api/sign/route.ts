@@ -6,7 +6,7 @@ import { FONTS, INITIAL_STATE, THEMES } from "@/lib/constants";
 import { FillMode, SignatureState, TextureType } from "@/lib/types";
 import { generateSVG, PathData } from "@/lib/svg-generator";
 
-function buildStateFromQuery(params: URLSearchParams): SignatureState {
+export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     let state: SignatureState = { ...INITIAL_STATE };
 
     const themeKey = params.get("theme");
@@ -54,7 +54,7 @@ function buildStateFromQuery(params: URLSearchParams): SignatureState {
     return state;
 }
 
-async function loadFont(fontId: string): Promise<any> {
+export async function loadFont(fontId: string): Promise<any> {
     const fallbackId = INITIAL_STATE.font;
     const fontEntry = FONTS.find((f) => f.value === fontId) ??
         FONTS.find((f) => f.value === fallbackId);
@@ -72,7 +72,7 @@ async function loadFont(fontId: string): Promise<any> {
     return opentype.parse(buffer);
 }
 
-function buildPaths(font: any, state: SignatureState): {
+export function buildPaths(font: any, state: SignatureState): {
     paths: PathData[];
     viewBox: { x: number; y: number; w: number; h: number };
 } {

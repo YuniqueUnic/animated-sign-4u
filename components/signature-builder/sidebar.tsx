@@ -91,7 +91,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-2 border-border shadow-xl max-h-[300px] overflow-y-auto">
                     <SelectGroup>
-                      <SelectLabel>✨ Script</SelectLabel>
+                      <SelectLabel>Script</SelectLabel>
                       {FONTS.filter((f) => f.category.includes("Script")).map(
                         (f) => (
                           <SelectItem
@@ -105,7 +105,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                       )}
                     </SelectGroup>
                     <SelectGroup>
-                      <SelectLabel>🔥 Brand</SelectLabel>
+                      <SelectLabel>Brand</SelectLabel>
                       {FONTS.filter((f) => f.category.includes("Brand")).map(
                         (f) => (
                           <SelectItem
@@ -119,7 +119,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                       )}
                     </SelectGroup>
                     <SelectGroup>
-                      <SelectLabel>🧧 Local</SelectLabel>
+                      <SelectLabel>Local</SelectLabel>
                       {FONTS.filter((f) => f.category.includes("Local")).map(
                         (f) => (
                           <SelectItem
@@ -133,7 +133,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                       )}
                     </SelectGroup>
                     <SelectGroup>
-                      <SelectLabel>📂 Custom</SelectLabel>
+                      <SelectLabel>Custom</SelectLabel>
                       <SelectItem
                         value="custom"
                         className="bg-popover hover:bg-accent"
@@ -450,26 +450,31 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                 )}
 
                 {state.fillMode === "multi" && (
-                  <div className="bg-muted/30 border rounded-lg p-2 overflow-x-auto">
-                    <div className="flex gap-2 min-w-max pb-1">
-                      {state.text.split("").map((char, idx) => (
-                        <div
-                          key={idx}
-                          className="flex flex-col items-center min-w-6 gap-1"
-                        >
-                          <span className="text-[10px] text-muted-foreground font-mono">
-                            {char}
-                          </span>
-                          <input
-                            type="color"
-                            value={state.charColors[idx] || state.fill1}
-                            onChange={(e) =>
-                              updateCharColor(idx, e.target.value)}
-                            className="w-6 h-6 rounded cursor-pointer border-0 p-0"
-                          />
-                        </div>
-                      ))}
+                  <div className="space-y-1">
+                    <div className="bg-muted/30 border rounded-lg p-2 overflow-x-auto">
+                      <div className="flex gap-2 min-w-max pb-1">
+                        {state.text.split("").map((char, idx) => (
+                          <div
+                            key={idx}
+                            className="flex flex-col items-center min-w-6 gap-1"
+                          >
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {char}
+                            </span>
+                            <input
+                              type="color"
+                              value={state.charColors[idx] || state.fill1}
+                              onChange={(e) =>
+                                updateCharColor(idx, e.target.value)}
+                              className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                    <p className="text-[10px] text-muted-foreground text-right">
+                      Scroll to edit all characters
+                    </p>
                   </div>
                 )}
               </div>
@@ -550,6 +555,13 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                     return `${c} ${pct}%`;
                   }).join(", ");
                   cardBackground = `linear-gradient(90deg, ${stops})`;
+                } else if (
+                  (themeKey === "laser" || themeKey === "cyber") &&
+                  theme.fillMode === "gradient" && theme.fill1 && theme.fill2
+                ) {
+                  // For laser & cyber, emphasize fill gradient colors in preview chip
+                  cardBackground =
+                    `linear-gradient(135deg, ${theme.fill1} 0%, ${theme.fill2} 100%)`;
                 } else if (
                   theme.bgMode === "gradient" && theme.bg && theme.bg2
                 ) {

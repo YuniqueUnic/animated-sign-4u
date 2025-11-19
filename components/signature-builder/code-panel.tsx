@@ -14,6 +14,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("svg");
   const [highlightedCode, setHighlightedCode] = useState("");
+  const [wrapCode, setWrapCode] = useState(false);
 
   const handleCopy = () => {
     const code = getCode(activeTab);
@@ -140,22 +141,35 @@ export { createSignature };`;
           </TabsList>
         </Tabs>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleCopy}
-          className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
-        >
-          {copied
-            ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
-            : <Copy className="w-3 h-3 mr-1.5" />}
-          {copied ? "Copied!" : "Copy"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setWrapCode((w) => !w)}
+            className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
+          >
+            {wrapCode ? "No wrap" : "Wrap"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopy}
+            className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
+          >
+            {copied
+              ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
+              : <Copy className="w-3 h-3 mr-1.5" />}
+            {copied ? "Copied!" : "Copy"}
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 relative overflow-auto">
         <div
-          className="p-4 text-sm font-mono leading-relaxed"
+          className={"p-4 text-sm font-mono leading-relaxed " +
+            (wrapCode
+              ? "[&_pre]:whitespace-pre-wrap [&_code]:whitespace-pre-wrap wrap-break-word"
+              : "overflow-x-auto [&_pre]:whitespace-pre [&_code]:whitespace-pre")}
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
       </div>
