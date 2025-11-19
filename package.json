@@ -1,6 +1,6 @@
 {
   "name": "animated-sign-4u",
-  "version": "0.1.0",
+  "version": "0.2.4",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -58,6 +58,7 @@
     "react-resizable-panels": "^3.0.6",
     "recharts": "3.4.1",
     "shiki": "latest",
+    "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "svg-path-properties": "^2.0.0",
     "tailwind-merge": "^3.4.0",

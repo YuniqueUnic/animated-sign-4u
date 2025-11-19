@@ -1,8 +1,14 @@
 import { NextRequest } from "next/server";
 import opentype from "opentype.js";
 import { svgPathProperties } from "svg-path-properties";
+import sharp from "sharp";
 
-import { FONTS, INITIAL_STATE, THEMES } from "@/lib/constants";
+import {
+    DEFAULT_CHAR_COLORS,
+    FONTS,
+    INITIAL_STATE,
+    THEMES,
+} from "@/lib/constants";
 import { FillMode, SignatureState, TextureType } from "@/lib/types";
 import { generateSVG, PathData } from "@/lib/svg-generator";
 
@@ -29,6 +35,18 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         state.fillMode = fill;
     }
 
+    const colorsParam = params.get("colors");
+    if (colorsParam) {
+        const rawColors = colorsParam.split(/[,-]/);
+        const parsed = rawColors.map((c) => c.trim())
+            .filter(Boolean)
+            .map((c) => c.startsWith("#") ? c : `#${c}`);
+        if (parsed.length > 0) {
+            state.charColors = parsed;
+            state.fillMode = "multi";
+        }
+    }
+
     const bgParam = params.get("bg");
     if (bgParam) {
         if (bgParam === "transparent") {
@@ -49,6 +67,17 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     ];
     if (texture && allowedTextures.includes(texture)) {
         state.texture = texture;
+    }
+
+    if (
+        state.fillMode === "multi" &&
+        (!state.charColors || state.charColors.length === 0)
+    ) {
+        const len = state.text.length;
+        state.charColors = Array.from(
+            { length: len },
+            (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
+        );
     }
 
     return state;
@@ -161,17 +190,20 @@ export async function GET(req: NextRequest): Promise<Response> {
             });
         }
 
+        const svg = generateSVG(state, paths, viewBox);
+
         if (format === "png") {
-            // PNG support will be added later using Sharp or a similar library.
-            return new Response("PNG format is not implemented yet", {
-                status: 501,
+            const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
+            const pngArray = new Uint8Array(pngBuffer);
+
+            return new Response(pngArray, {
+                status: 200,
                 headers: {
-                    "Content-Type": "text/plain; charset=utf-8",
+                    "Content-Type": "image/png",
+                    "Cache-Control": "s-maxage=86400, immutable",
                 },
             });
         }
-
-        const svg = generateSVG(state, paths, viewBox);
 
         return new Response(svg, {
             status: 200,

@@ -74,17 +74,18 @@ describe("GET /api/sign", () => {
         expect(json.viewBox.h).toBeGreaterThan(0);
     });
 
-    it("returns 501 for PNG format stub", async () => {
+    it("returns PNG when format=png", async () => {
         const { GET } = await import("@/app/api/sign/route");
 
         const req = new Request(
             "http://localhost/api/sign?text=PngTest&format=png",
         );
         const res = await GET(req as any);
-        const text = await res.text();
+        const buffer = await res.arrayBuffer();
 
-        expect(res.status).toBe(501);
-        expect(text).toContain("PNG format is not implemented yet");
+        expect(res.status).toBe(200);
+        expect(res.headers.get("Content-Type")).toContain("image/png");
+        expect(buffer.byteLength).toBeGreaterThan(0);
     });
 
     it("handles missing text with theme and format=json", async () => {

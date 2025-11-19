@@ -32,4 +32,29 @@ describe("buildStateFromQuery", () => {
         expect(state.text).toBe(INITIAL_STATE.text);
         expect(state.font).toBe(INITIAL_STATE.font);
     });
+
+    it("populates charColors when fill=multi and no explicit colors", () => {
+        const params = new URLSearchParams({
+            text: "MultiTest",
+            fill: "multi",
+        });
+
+        const state = buildStateFromQuery(params);
+
+        expect(state.fillMode).toBe("multi");
+        expect(state.charColors.length).toBe(state.text.length);
+    });
+
+    it("uses colors param to set charColors and multi fillMode", () => {
+        const params = new URLSearchParams({
+            text: "AB",
+            colors: "ff0000-00ff00",
+        });
+
+        const state = buildStateFromQuery(params);
+
+        expect(state.fillMode).toBe("multi");
+        expect(state.charColors[0]).toBe("#ff0000");
+        expect(state.charColors[1]).toBe("#00ff00");
+    });
 });

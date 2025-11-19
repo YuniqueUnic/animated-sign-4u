@@ -37,9 +37,14 @@
 5. 还需要按照 @design.md 设计好 api , 并且实现
 请你再次仔细的查看原始的 html, 理清楚逻辑和代码实现, 然后修复和完善当前的实现.
 
+http://localhost:3000/api/sign?text=Signature&font=great-vibes&fill=multi
+这个是我直接从 code box 中的 api 处 copy 出来的, 我其实已经配置了很多颜色了, 比如我们的 rainbow 颜色,  但是 生成的 api url 却没有这些颜色...
+当我直接访问http://localhost:3000/api/sign?text=Signature&font=great-vibes&fill=multi时, 得到的是我们的默认颜色, 而不是我为每个字符串单独配置的颜色....需要修复.
+
 
 当前项目进度以及问题:
 1. PNG format is not implemented yet, 需要实现
+   -http://localhost:3000/api/sign?text=Signature&font=great-vibes&format=png 得到的是纯白的背景..没有签名..需要修复
 2. 需要支持用户自定义背景 size (长*宽), 默认的背景size 就是 auto, 也就是当前的逻辑. 
    - 用户的自定义的话, 就按照用户得来.
 3. 需要实现 mobile 布局
@@ -54,9 +59,12 @@
    即用户右划从  content & font 转到 parameters, 再右划则转到 quick themes, 再右划则转到 style & color, 再右划则转到 content & font
    依次循环.
 4. top bar 上的按钮也需要做 mobile 适配, 减少文字, 避免过于拥挤等问题
-5. 整理项目中的文件命名 / 导出风格，做一点小的 API 清理（比如统一 Props 命名、去掉不必要的 React.FC 等），让整体更统一
-6. 需要为整个界面实现 dark/light theme. 并且确保主题切换功能正常.
-7. 需要实现 i18n, 起码包含 英文/中文
+5. stroke color 应该也具有和 fill mode 一样的 single/ gradient / multi 模式, 并且和 fill mode 是独立的, 从而可以自由组合
+6. api 对应 multi 的 color 看起来不支持?? 请你修复:  http://localhost:3000/api/sign?text=Signature&font=lobster&fill=multi&texture=lines&bg=e32934
+7. 整理项目中的文件命名 / 导出风格，做一点小的 API 清理（比如统一 Props 命名、去掉不必要的 React.FC 等），让整体更统一
+8. 需要为整个界面实现 dark/light theme. 并且确保主题切换功能正常.
+9. 需要实现 i18n, 起码包含 英文/中文
+
 
 1. 仔细阅读这个计划/重构/实现文档. 理清楚逻辑, 了解清楚需求, 仔细认真的对比代码. 理解当前的进度.
 2. 然后按照其描述完成任务接下来就请继续进行实现/迁移/重构, 大改也可以的.可以接受大范围的重构。
@@ -64,4 +72,4 @@
 4. 需要不断继续的完成任务, 一般方向的重构/实现/调整等等不需要征求我的意见
 5. 保持 KISS, LISP, DRY, SOLID 等规则, 保持代码函数化, 模块化, 组件化, 保持可组合性, 保持简单. 禁止过于冗余, 并且没有用的代码请你直接删除. 避免导致代码的无效冗余.
 6. 遇到问题，请你上网查询解决办法积极使用各种 MCP 工具来辅助你完成相关任务
-7. 使用 `cargo check`/`pnpm build`/`tsc xxx`等等代码检查工具, 以及代码质量分析工具来确保项目的正确性, 可编译性. 如果出现问题, 请积极修复.
+7. 使用 `cargo check`/`pnpm build`/`tsc xxx`/`vite xxx`等等代码检查工具, 以及代码质量分析工具来确保项目的正确性, 可编译性. 如果出现问题, 请积极修复.

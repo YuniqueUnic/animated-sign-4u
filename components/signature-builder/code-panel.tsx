@@ -42,6 +42,12 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
       else if (state.bg !== "#ffffff") {
         params.set("bg", state.bg.replace("#", ""));
       }
+      if (state.fillMode === "multi" && state.text) {
+        const colors = state.text.split("").map((_, idx) =>
+          (state.charColors[idx] || state.fill1).replace("#", "")
+        );
+        params.set("colors", colors.join("-"));
+      }
       const origin = typeof window !== "undefined"
         ? window.location.origin
         : "https://sign.yunique.cc";
