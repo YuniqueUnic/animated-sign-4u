@@ -1,4 +1,4 @@
-import { SignatureState } from '@/lib/types';
+import { SignatureState } from "@/lib/types";
 
 export interface PathData {
   d: string;
@@ -6,56 +6,89 @@ export interface PathData {
   index: number;
 }
 
-export function getTextureDefs(type: string, color: string, size: number, opacity: number, thickness: number = 1): string {
-  const s = size * 10; // Scale size for better visibility
+export function getTextureDefs(
+  type: string,
+  color: string,
+  size: number,
+  opacity: number,
+  thickness: number = 1,
+): string {
+  // Use "size" directly as the pattern tile size in SVG units so that
+  // slider values map intuitively to visual density (10 = fine, 100 = coarse),
+  // matching the original HTML implementation.
+  const s = size;
   const c = color;
   const o = opacity;
   const t = thickness;
 
-  if (type === 'grid') {
+  if (type === "grid") {
     return `
       <pattern id="texture-grid" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <path d="M ${s} 0 L 0 0 0 ${s}" fill="none" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
       </pattern>
     `;
   }
-  if (type === 'dots') {
+  if (type === "dots") {
     return `
       <pattern id="texture-dots" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
-        <circle cx="${s/2}" cy="${s/2}" r="${t}" fill="${c}" fill-opacity="${o}"/>
+        <circle cx="${s / 2}" cy="${s / 2}" r="${
+      t * 1.5
+    }" fill="${c}" fill-opacity="${o}"/>
       </pattern>
     `;
   }
-  if (type === 'lines') {
+  if (type === "lines") {
     return `
       <pattern id="texture-lines" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
-        <path d="M 0 ${s/2} L ${s} ${s/2}" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
+        <path d="M 0 ${s / 2} L ${s} ${
+      s / 2
+    }" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
       </pattern>
     `;
   }
-  if (type === 'cross') {
+  if (type === "cross") {
     return `
       <pattern id="texture-cross" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
-        <path d="M ${s/4} ${s/4} L ${s*0.75} ${s*0.75} M ${s*0.75} ${s/4} L ${s/4} ${s*0.75}" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
+        <path d="M ${s / 4} ${s / 4} L ${s * 0.75} ${s * 0.75} M ${s * 0.75} ${
+      s / 4
+    } L ${s / 4} ${
+      s * 0.75
+    }" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
       </pattern>
     `;
   }
-  return '';
+  return "";
 }
 
-export function generateSVG(state: SignatureState, paths: PathData[], viewBox: { x: number, y: number, w: number, h: number }): string {
+export function generateSVG(
+  state: SignatureState,
+  paths: PathData[],
+  viewBox: { x: number; y: number; w: number; h: number },
+): string {
   const width = viewBox.w;
   const height = viewBox.h;
-  
+
   // Generate Defs
-  let defs = '';
-  
-  // Gradients
-  if (state.fillMode === 'gradient') {
+  let defs = "";
+
+  // Gradients for fill
+  if (state.fillMode === "gradient") {
     defs += `
       <linearGradient id="grad-fill" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="${state.fill1}" />
         <stop offset="100%" stop-color="${state.fill2}" />
+      </linearGradient>
+    `;
+  }
+
+  // Gradient for background
+  if (
+    !state.bgTransparent && state.bgMode === "gradient" && state.bg && state.bg2
+  ) {
+    defs += `
+      <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="${state.bg}" />
+        <stop offset="100%" stop-color="${state.bg2}" />
       </linearGradient>
     `;
   }
@@ -72,7 +105,7 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
       </filter>
     `;
   }
-  
+
   if (state.useShadow) {
     defs += `
       <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -82,12 +115,18 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
   }
 
   // Textures - use correct pattern ID format
-  if (state.texture && state.texture !== 'none') {
-    defs += getTextureDefs(state.texture, state.texColor, state.texSize, state.texOpacity, state.texThickness);
+  if (state.texture && state.texture !== "none") {
+    defs += getTextureDefs(
+      state.texture,
+      state.texColor,
+      state.texSize,
+      state.texOpacity,
+      state.texThickness,
+    );
   }
 
   // Build Paths with corrected animation
-  let pathElements = '';
+  let pathElements = "";
   let currentDelay = 0;
   const speed = state.speed || 0.5;
 
@@ -96,13 +135,18 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
     const delay = currentDelay;
     currentDelay += duration * 0.7; // Overlap for smooth flow
 
-    const fill = state.fillMode === 'single' ? state.fill1 : 
-                 state.fillMode === 'gradient' ? 'url(#grad-fill)' : 
-                 (state.charColors[i] || state.fill1);
-    
-    const stroke = state.strokeEnabled ? state.stroke : 'none';
+    const fill = state.fillMode === "single"
+      ? state.fill1
+      : state.fillMode === "gradient"
+      ? "url(#grad-fill)"
+      : (state.charColors[i] || state.fill1);
+
+    const stroke = state.strokeEnabled ? state.stroke : "none";
     const strokeWidth = state.strokeEnabled ? 2 : 0;
-    const filterList = [state.useGlow ? 'url(#glow)' : '', state.useShadow ? 'url(#shadow)' : ''].filter(Boolean).join(' ');
+    const filterList = [
+      state.useGlow ? "url(#glow)" : "",
+      state.useShadow ? "url(#shadow)" : "",
+    ].filter(Boolean).join(" ");
 
     pathElements += `
       <path 
@@ -112,7 +156,7 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
         stroke-width="${strokeWidth}" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        ${filterList ? `filter="${filterList}"` : ''}
+        ${filterList ? `filter="${filterList}"` : ""}
         class="sig-path"
         style="
           stroke-dasharray: ${p.len}; 
@@ -126,14 +170,25 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
     `;
   });
 
+  // Background rect (solid or gradient)
+  let backgroundRect = "";
+  if (!state.bgTransparent) {
+    const bgFill = state.bgMode === "gradient" && state.bg2
+      ? "url(#bg-grad)"
+      : state.bg;
+    backgroundRect =
+      `<rect x="${viewBox.x}" y="${viewBox.y}" width="${width}" height="${height}" fill="${bgFill}" />`;
+  }
+
   // Texture Overlay - fix pattern ID reference
-  let textureOverlay = '';
-  if (state.texture && state.texture !== 'none') {
-    textureOverlay = `<rect x="${viewBox.x}" y="${viewBox.y}" width="${width}" height="${height}" fill="url(#texture-${state.texture})" pointer-events="none"/>`;
+  let textureOverlay = "";
+  if (state.texture && state.texture !== "none") {
+    textureOverlay =
+      `<rect x="${viewBox.x}" y="${viewBox.y}" width="${width}" height="${height}" fill="url(#texture-${state.texture})" pointer-events="none"/>`;
   }
 
   // Generate keyframes for each path
-  let keyframes = '';
+  let keyframes = "";
   paths.forEach((p, i) => {
     keyframes += `
       @keyframes draw-${i} { to { stroke-dashoffset: 0; } }
@@ -147,7 +202,7 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
       viewBox="${viewBox.x} ${viewBox.y} ${width} ${height}"
       width="${width}"
       height="${height}"
-      style="background-color: ${state.bgTransparent ? 'transparent' : state.bg}; border-radius: ${state.borderRadius}px;"
+      style="background-color: transparent; border-radius: ${state.borderRadius}px;"
     >
       <defs>
         ${defs}
@@ -158,6 +213,7 @@ export function generateSVG(state: SignatureState, paths: PathData[], viewBox: {
           }
         </style>
       </defs>
+      ${backgroundRect}
       ${textureOverlay}
       <g>${pathElements}</g>
     </svg>

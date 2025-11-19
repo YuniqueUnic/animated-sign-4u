@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar } from "@/components/signature-builder/sidebar";
 import { PreviewArea } from "@/components/signature-builder/preview-area";
 import { CodePanel } from "@/components/signature-builder/code-panel";
-import { INITIAL_STATE } from "@/lib/constants";
-import { SignatureState } from "@/lib/types";
+import { INITIAL_STATE, THEMES } from "@/lib/constants";
+import { FillMode, SignatureState, TextureType } from "@/lib/types";
 import { ChevronDown, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,61 @@ export default function SignatureBuilderPage() {
   const [state, setState] = useState<SignatureState>(INITIAL_STATE);
   const [svgCode, setSvgCode] = useState("");
   const [uploadedFont, setUploadedFont] = useState<ArrayBuffer | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length === 0) return;
+
+    setState((prev) => {
+      let next: SignatureState = { ...prev };
+
+      const themeKey = params.get("theme");
+      if (themeKey && themeKey in THEMES) {
+        next = { ...next, ...THEMES[themeKey] } as SignatureState;
+      }
+
+      const text = params.get("text");
+      if (text) {
+        next.text = text;
+      }
+
+      const font = params.get("font");
+      if (font) {
+        next.font = font;
+      }
+
+      const fill = params.get("fill") as FillMode | null;
+      if (fill === "single" || fill === "gradient" || fill === "multi") {
+        next.fillMode = fill;
+      }
+
+      const bgParam = params.get("bg");
+      if (bgParam) {
+        if (bgParam === "transparent") {
+          next.bgTransparent = true;
+        } else {
+          next.bgTransparent = false;
+          next.bg = bgParam.startsWith("#") ? bgParam : `#${bgParam}`;
+        }
+      }
+
+      const texture = params.get("texture") as TextureType | null;
+      const allowedTextures: TextureType[] = [
+        "none",
+        "grid",
+        "dots",
+        "lines",
+        "cross",
+      ];
+      if (texture && allowedTextures.includes(texture)) {
+        next.texture = texture;
+      }
+
+      return next;
+    });
+  }, []);
 
   const updateState = (updates: Partial<SignatureState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -95,7 +150,7 @@ export default function SignatureBuilderPage() {
       {/* Header */}
       <header className="h-14 border-b bg-card backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg transform -rotate-3">
+          <div className="w-8 h-8 bg-linear-to-br  from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg transform -rotate-3">
             S
           </div>
           <h1 className="text-sm font-bold tracking-tight hidden md:block">
@@ -126,11 +181,27 @@ export default function SignatureBuilderPage() {
                 >
                   <svg
                     className="w-6 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
                   >
-                    <circle cx="10" cy="10" r="2" />
-                    <path d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm0 12a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1zM3 10a1 1 0 011-1h2a1 1 0 110 2H4a1 1 0 01-1-1zm12 0a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" />
+                    <circle cx="12" cy="12" r="2" fill="currentColor" />
+                    <ellipse cx="12" cy="12" rx="9" ry="4" />
+                    <ellipse
+                      cx="12"
+                      cy="12"
+                      rx="9"
+                      ry="4"
+                      transform="rotate(60 12 12)"
+                    />
+                    <ellipse
+                      cx="12"
+                      cy="12"
+                      rx="9"
+                      ry="4"
+                      transform="rotate(-60 12 12)"
+                    />
                   </svg>
                   React Component
                 </button>
@@ -140,10 +211,14 @@ export default function SignatureBuilderPage() {
                 >
                   <svg
                     className="w-6 h-5"
+                    viewBox="0 0 24 24"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
                   >
-                    <path d="M10 2L2 18h16L10 2zm0 3.5L15.5 16h-11L10 5.5z" />
+                    <path d="M3 4h4l5 9 5-9h4L12 21 3 4z" opacity="0.9" />
+                    <path
+                      d="M5 4h3l4 7 4-7h3L12 18 5 4z"
+                      className="text-white"
+                    />
                   </svg>
                   Vue Component
                 </button>
@@ -153,10 +228,14 @@ export default function SignatureBuilderPage() {
                 >
                   <svg
                     className="w-6 h-5"
+                    viewBox="0 0 24 24"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
                   >
-                    <path d="M3 4h14a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1zm2 3v6h2V7H5zm4 0l2 3-2 3h2l1-1.5L13 13h2l-2-3 2-3h-2l-1 1.5L11 7H9z" />
+                    <path d="M4 3h16l-1.5 17L12 23 5.5 20 4 3z" />
+                    <path
+                      d="M9 7h7l-.3 3H11l.2 2.5h4.1L15 17l-3 1-3-1-.2-2h2l.1 1 1.1.3 1.1-.3.1-1.5H9.1L9 7z"
+                      className="text-white"
+                    />
                   </svg>
                   HTML / JS
                 </button>
@@ -185,8 +264,8 @@ export default function SignatureBuilderPage() {
           onFontUpload={handleFontUpload}
         />
 
-        <main className="flex-1 flex flex-col min-w-0 relative bg-[#0d1117]">
-          <ResizablePanelGroup direction="vertical" className="flex-1">
+        <main className="flex-1 flex flex-col min-w-0 min-h-0 relative bg-background">
+          <ResizablePanelGroup direction="vertical" className="flex-1 min-h-0">
             <ResizablePanel defaultSize={60} minSize={30}>
               <PreviewArea
                 state={state}

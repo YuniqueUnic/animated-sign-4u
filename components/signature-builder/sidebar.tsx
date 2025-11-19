@@ -15,7 +15,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { ColorPicker } from "./controls/color-picker";
-import { Palette, PenTool, Settings2, Wand2 } from "lucide-react";
+import { ChevronDown, Palette, PenTool, Settings2, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -50,15 +50,16 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
 
   return (
     <aside className="w-full md:w-80 lg:w-96 bg-card border-r h-full overflow-y-auto flex flex-col z-10 shrink-0 shadow-sm">
-      <div className="p-6 space-y-8 pb-20">
+      <div className="p-4 space-y-6 pb-10">
         {/* Section 1: Content & Font */}
-        <section className="space-y-4">
-          <details open>
+        <section className="space-y-3">
+          <details open className="group">
             <summary className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 cursor-pointer">
               <span className="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center">
                 <PenTool className="w-3 h-3" />
               </span>
               <span>Content & Font</span>
+              <ChevronDown className="ml-auto w-3 h-3 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
             </summary>
 
             <div className="mt-3 space-y-4">
@@ -159,16 +160,17 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
 
         {/* Section 2: Style & Color */}
         <section className="space-y-4">
-          <details open>
+          <details open className="group">
             <summary className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 cursor-pointer">
               <span className="w-6 h-6 rounded bg-pink-100 text-pink-600 flex items-center justify-center">
                 <Palette className="w-3 h-3" />
               </span>
               <span>Style & Color</span>
+              <ChevronDown className="ml-auto w-3 h-3 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
             </summary>
 
             {/* Background Card */}
-            <div className="mt-3 p-3 bg-card border rounded-xl shadow-sm space-y-4">
+            <div className="mt-2 p-3 bg-card border rounded-xl shadow-sm space-y-3">
               <div className="flex justify-between items-center">
                 <Label className="text-xs font-semibold">Card Background</Label>
                 <div className="flex items-center gap-2">
@@ -188,14 +190,56 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
 
               <div
                 className={cn(
-                  "transition-opacity duration-200",
+                  "space-y-2 transition-opacity duration-200",
                   state.bgTransparent && "opacity-50 pointer-events-none",
                 )}
               >
-                <ColorPicker
-                  value={state.bg}
-                  onChange={(c) => updateState({ bg: c })}
-                />
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-muted-foreground">
+                    Background Mode
+                  </Label>
+                  <div className="flex bg-muted p-0.5 rounded-lg text-[11px]">
+                    {(["solid", "gradient"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => updateState({ bgMode: mode })}
+                        className={cn(
+                          "px-2 py-0.5 rounded-md capitalize",
+                          state.bgMode === mode
+                            ? "bg-background shadow-sm text-foreground"
+                            : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        {mode}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {state.bgMode === "solid" && (
+                  <ColorPicker
+                    value={state.bg}
+                    onChange={(c) => updateState({ bg: c })}
+                  />
+                )}
+
+                {state.bgMode === "gradient" && (
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1">
+                      <ColorPicker
+                        value={state.bg}
+                        onChange={(c) => updateState({ bg: c })}
+                      />
+                    </div>
+                    <span className="text-muted-foreground">→</span>
+                    <div className="flex-1">
+                      <ColorPicker
+                        value={state.bg2}
+                        onChange={(c) => updateState({ bg2: c })}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t">
@@ -268,7 +312,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                         max={100}
                         value={[state.texSize]}
                         onValueChange={([v]) => updateState({ texSize: v })}
-                        className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                        className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                       />
                     </div>
                     <div className="space-y-1">
@@ -283,7 +327,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                         value={[state.texThickness]}
                         onValueChange={([v]) =>
                           updateState({ texThickness: v })}
-                        className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                        className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                       />
                     </div>
                     <div className="space-y-1">
@@ -297,7 +341,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                         step={0.1}
                         value={[state.texOpacity]}
                         onValueChange={([v]) => updateState({ texOpacity: v })}
-                        className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                        className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                       />
                     </div>
                   </div>
@@ -316,7 +360,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                   max={40}
                   value={[state.borderRadius]}
                   onValueChange={([v]) => updateState({ borderRadius: v })}
-                  className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                  className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                 />
               </div>
             </div>
@@ -407,7 +451,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                     {state.text.split("").map((char, idx) => (
                       <div
                         key={idx}
-                        className="flex flex-col items-center min-w-[24px] gap-1"
+                        className="flex flex-col items-center min-w-6 gap-1"
                       >
                         <span className="text-[10px] text-muted-foreground font-mono">
                           {char}
@@ -470,14 +514,15 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
 
         {/* Section 3: Themes */}
         <section className="space-y-4">
-          <details open>
+          <details open className="group">
             <summary className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 cursor-pointer">
               <span className="w-6 h-6 rounded bg-amber-100 text-amber-600 flex items-center justify-center">
                 <Wand2 className="w-3 h-3" />
               </span>
               <span>Quick Themes</span>
+              <ChevronDown className="ml-auto w-3 h-3 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
             </summary>
-            <div className="mt-3 grid grid-cols-4 gap-2">
+            <div className="mt-2 grid grid-cols-4 gap-1.5">
               {Object.keys(THEMES).map((themeKey) => {
                 const theme = THEMES[themeKey];
                 const isActive = state.bg === theme.bg &&
@@ -491,14 +536,18 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                   theme.bg === "#f40009";
 
                 let cardBackground: string | undefined = theme.bg;
-                if (
+                if (theme.bgMode === "gradient" && theme.bg && theme.bg2) {
+                  // Prefer background gradient when configured
+                  cardBackground =
+                    `linear-gradient(135deg, ${theme.bg} 0%, ${theme.bg2} 100%)`;
+                } else if (
                   theme.fillMode === "gradient" && theme.fill1 && theme.fill2
                 ) {
-                  // Gradient themes: use fill colors to preview the gradient feeling
+                  // Fallback to fill gradient when no bg gradient
                   cardBackground =
                     `linear-gradient(135deg, ${theme.fill1} 0%, ${theme.fill2} 100%)`;
                 } else if (theme.fill2) {
-                  // Single-fill themes with secondary color (e.g. pepsi): blend bg and accent
+                  // Single-fill themes with secondary color: blend bg and accent
                   cardBackground =
                     `linear-gradient(135deg, ${theme.bg} 0%, ${theme.fill2} 100%)`;
                 }
@@ -572,12 +621,13 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
 
         {/* Section 4: Params */}
         <section className="space-y-4">
-          <details open>
+          <details open className="group">
             <summary className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 cursor-pointer">
               <span className="w-6 h-6 rounded bg-slate-100 text-slate-600 flex items-center justify-center">
                 <Settings2 className="w-3 h-3" />
               </span>
               <span>Parameters</span>
+              <ChevronDown className="ml-auto w-3 h-3 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
             </summary>
             <div className="mt-3 space-y-5">
               <div className="space-y-2">
@@ -592,7 +642,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                   max={200}
                   value={[state.fontSize]}
                   onValueChange={([v]) => updateState({ fontSize: v })}
-                  className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                  className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                 />
               </div>
               <div className="space-y-2">
@@ -608,7 +658,7 @@ export function Sidebar({ state, updateState, onFontUpload }: SidebarProps) {
                   step={0.1}
                   value={[state.speed]}
                   onValueChange={([v]) => updateState({ speed: v })}
-                  className="[&_[data-slot=slider-track]]:bg-slate-200 [&_[data-slot=slider-track]]:h-2 [&_[data-slot=slider-range]]:bg-indigo-500 [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-indigo-500 [&_[data-slot=slider-thumb]]:shadow-lg [&_[data-slot=slider-thumb]]:w-5 [&_[data-slot=slider-thumb]]:h-5"
+                  className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
                 />
               </div>
             </div>
