@@ -19,21 +19,23 @@
 存在以下这些问题:
 1. THEME 现在的主题不好, 我还是更喜欢 card 被对应的主题填充完全, 而不是像现在这样的有一个中心的 圆, 然后依靠圆的填充色来翻译对应的主题色.
 比如 百事主题
-|--|-----------|
-|  |           |
-|  | peisa     |  如果有背景纹理, 那就再渲染上背景纹理
-|  |           |
-|--|-----------|
+
+|---|-----------|
+|   |           |
+|   | peisa     |  如果有背景纹理, 那就再渲染上背景纹理
+|   |           |
+|---|-----------| 
 靛蓝  红色        这就是我喜欢的 style, 比如百事, 是有靛蓝和红色的, 那么背景就该是蓝色和红色
-2. preview 区域并没有内容产生.现在依旧是一片透明.没有 signature 产生, 并且 code box 和 preview 的中间莫名有白色的一大块...
-3. code box 和 preview 区域的 splitter 缺少标志来说明这个位置可以拖动.
-8. Download Component 现在有侧边下拉控件, 应该是用户鼠标移动到 Download Component 上时, 就会自动弹出 items 下拉框. 
+1. preview 区域现在有内容产生.但是 code box 和 preview 的中间莫名有白色的一大块...
+2. code box 和 preview 区域的 splitter 缺少标志来说明这个位置可以拖动.
+3. Download Component 现在有侧边下拉控件, 应该是用户鼠标移动到 Download Component 上时, 就会自动弹出 items 下拉框. 
 内容是
  icon | React
  icon | Vue
  icon | javascript
 这个部分可以参考 /Users/unic/dev/projs/ts/animated-sign/docs/animated-signature-4u.html 的原始实现逻辑
-
+4. 我希望sidebar 的每个 section 都是可以被折叠起来的, 按section折叠即可
+5. 还需要按照 @design.md 设计好 api , 并且实现
 请你再次仔细的查看原始的 html, 理清楚逻辑和代码实现, 然后修复和完善当前的实现.
 
 1. 仔细阅读这个计划/重构/实现文档. 理清楚逻辑, 了解清楚需求, 仔细认真的对比代码. 理解当前的进度.

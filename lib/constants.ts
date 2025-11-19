@@ -1,4 +1,4 @@
-import { ThemeConfig } from "./types";
+import { SignatureState, ThemeConfig } from "./types";
 
 export const FONTS = [
   { label: 'Great Vibes', value: 'great-vibes', url: 'https://cdn.jsdelivr.net/npm/@fontsource/great-vibes@5.0.8/files/great-vibes-latin-400-normal.woff', category: '✨ Script' },
@@ -15,18 +15,19 @@ export const DEFAULT_CHAR_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', 
 
 export const THEMES: Record<string, ThemeConfig> = {
   default: { bg: '#ffffff', bgTransparent: false, stroke: '#333333', strokeEnabled: true, fillMode: 'single', fill1: '#333333', font: 'great-vibes', useGlow: false, useShadow: false, borderRadius: 12, texture: 'none' },
-  school: { bg: '#ffffff', bgTransparent: false, stroke: '#1e3a8a', strokeEnabled: true, fillMode: 'single', fill1: '#1d4ed8', font: 'dancing-script', useGlow: false, useShadow: false, borderRadius: 4, texture: 'lines', texColor: '#e2e8f0', texSize: 25, texThickness: 1 },
+  school: { bg: '#ffffff', bgTransparent: false, stroke: '#1e3a8a', strokeEnabled: true, fillMode: 'single', fill1: '#1e3a8a', font: 'dancing-script', useGlow: false, useShadow: false, borderRadius: 8, texture: 'lines', texColor: '#3b82f6', texOpacity: 0.3, texSize: 8 },
   blueprint: { bg: '#1e3a8a', bgTransparent: false, stroke: '#ffffff', strokeEnabled: true, fillMode: 'single', fill1: '#ffffff', font: 'sacramento', useGlow: false, useShadow: false, borderRadius: 0, texture: 'grid', texColor: '#ffffff', texOpacity: 0.2, texSize: 30 },
   laser: { bg: '#000000', bgTransparent: false, stroke: '#00ffff', strokeEnabled: true, fillMode: 'gradient', fill1: '#00ffff', fill2: '#ff00ff', font: 'sacramento', useGlow: true, useShadow: true, borderRadius: 0, texture: 'grid', texColor: '#333333' },
   coke: { bg: '#f40009', bgTransparent: false, stroke: '#ffffff', strokeEnabled: true, fillMode: 'single', fill1: '#ffffff', font: 'lobster', useGlow: false, useShadow: true, borderRadius: 20, texture: 'none' },
+  pepsi: { bg: '#004b93', bgTransparent: false, stroke: '#ffffff', strokeEnabled: true, fillMode: 'single', fill1: '#ffffff', font: 'lobster', useGlow: false, useShadow: true, borderRadius: 16, texture: 'none', fill2: '#e32934' },
   sprite: { bg: '#008b47', bgTransparent: false, stroke: '#f8cd2b', strokeEnabled: true, fillMode: 'single', fill1: '#f8cd2b', font: 'permanent-marker', useGlow: false, useShadow: true, borderRadius: 8, texture: 'dots', texColor: '#ffffff', texOpacity: 0.2, texSize: 10 },
   cyber: { bg: '#0f172a', bgTransparent: false, stroke: '#facc15', strokeEnabled: true, fillMode: 'gradient', fill1: '#facc15', fill2: '#d946ef', font: 'pacifico', useGlow: true, useShadow: true, borderRadius: 4, texture: 'cross', texColor: '#334155', texSize: 40 },
-  chinese: { bg: '#fff1f2', bgTransparent: false, stroke: '#7f1d1d', strokeEnabled: true, fillMode: 'single', fill1: '#991b1b', font: 'ma-shan-zheng', useGlow: false, useShadow: false, borderRadius: 4, texture: 'none' },
+  chinese: { bg: '#dc2626', bgTransparent: false, stroke: '#fef3c7', strokeEnabled: true, fillMode: 'single', fill1: '#fef3c7', font: 'ma-shan-zheng', useGlow: false, useShadow: false, borderRadius: 4, texture: 'none' },
   rainbow: { bg: '#ffffff', bgTransparent: false, stroke: '#333333', strokeEnabled: true, fillMode: 'multi', fill1: '#333333', font: 'dancing-script', useGlow: false, useShadow: false, borderRadius: 16, isRainbow: true, texture: 'none' }
 };
 
 export const INITIAL_STATE: SignatureState = {
-  text: 'yunique',
+  text: 'Signature',
   font: 'great-vibes',
   fontSize: 120,
   speed: 0.4,

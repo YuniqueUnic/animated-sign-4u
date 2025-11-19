@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from 'lucide-react';
+import { Check, Copy } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SignatureState } from '@/lib/types';
-import { codeToHtml } from 'shiki';
+import { SignatureState } from "@/lib/types";
+import { codeToHtml } from "shiki";
 
 interface CodePanelProps {
   svgCode: string;
@@ -12,8 +12,8 @@ interface CodePanelProps {
 
 export function CodePanel({ svgCode, state }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState('svg');
-  const [highlightedCode, setHighlightedCode] = useState('');
+  const [activeTab, setActiveTab] = useState("svg");
+  const [highlightedCode, setHighlightedCode] = useState("");
 
   const handleCopy = () => {
     const code = getCode(activeTab);
@@ -23,26 +23,34 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
   };
 
   const getCode = (type: string) => {
-    if (!svgCode && type !== 'api') return '';
-    
-    const cleanSvg = svgCode.replace(/<svg([^>]*)style="[^"]*"([^>]*)>/, '<svg$1$2>');
-    const bgVal = state.bgTransparent ? 'transparent' : state.bg;
+    if (!svgCode && type !== "api") return "";
 
-    if (type === 'api') {
+    const cleanSvg = svgCode.replace(
+      /<svg([^>]*)style="[^"]*"([^>]*)>/,
+      "<svg$1$2>",
+    );
+    const bgVal = state.bgTransparent ? "transparent" : state.bg;
+
+    if (type === "api") {
       const params = new URLSearchParams();
-      params.set('text', state.text);
-      params.set('font', state.font);
-      if (state.fillMode !== 'single') params.set('fill', state.fillMode);
-      if (state.texture !== 'none') params.set('texture', state.texture);
-      if (state.bgTransparent) params.set('bg', 'transparent');
-      else if (state.bg !== '#ffffff') params.set('bg', state.bg.replace('#', ''));
-      return `https://sign.yunique.cc/api/sign?${params.toString()}`;
-    } else if (type === 'react') {
+      params.set("text", state.text);
+      params.set("font", state.font);
+      if (state.fillMode !== "single") params.set("fill", state.fillMode);
+      if (state.texture !== "none") params.set("texture", state.texture);
+      if (state.bgTransparent) params.set("bg", "transparent");
+      else if (state.bg !== "#ffffff") {
+        params.set("bg", state.bg.replace("#", ""));
+      }
+      const origin = typeof window !== "undefined"
+        ? window.location.origin
+        : "https://sign.yunique.cc";
+      return `${origin}/api/sign?${params.toString()}`;
+    } else if (type === "react") {
       let jsx = cleanSvg
         .replace(/class="/g, 'className="')
         .replace(/-([a-z])/g, (g) => g[1].toUpperCase())
         .replace(/style="([^"]*)"/g, "style={{$1}}");
-      
+
       return `export default function Signature() {
   return (
     <div style={{
@@ -55,7 +63,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
     </div>
   );
 }`;
-    } else if (type === 'vue') {
+    } else if (type === "vue") {
       return `<template>
   <div class="sig-card">
     ${cleanSvg}
@@ -70,7 +78,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
   border-radius: ${state.borderRadius}px;
 }
 </style>`;
-    } else if (type === 'js') {
+    } else if (type === "js") {
       return `// Native JavaScript Implementation
 const createSignature = () => {
   const container = document.getElementById('signature-container');
@@ -93,19 +101,19 @@ export { createSignature };`;
     const highlight = async () => {
       const code = getCode(activeTab);
       if (!code) {
-        setHighlightedCode('');
+        setHighlightedCode("");
         return;
       }
-      
-      let lang = 'html';
-      if (activeTab === 'react' || activeTab === 'js') lang = 'javascript';
-      if (activeTab === 'vue') lang = 'vue';
-      if (activeTab === 'api') lang = 'text';
+
+      let lang = "html";
+      if (activeTab === "react" || activeTab === "js") lang = "javascript";
+      if (activeTab === "vue") lang = "vue";
+      if (activeTab === "api") lang = "text";
 
       try {
         const html = await codeToHtml(code, {
           lang,
-          theme: 'github-dark'
+          theme: "github-dark",
         });
         setHighlightedCode(html);
       } catch (e) {
@@ -120,10 +128,10 @@ export { createSignature };`;
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#161b22] border-b border-[#30363d] shrink-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
           <TabsList className="h-8 bg-[#21262d] p-0.5 gap-0.5">
-            {['svg', 'react', 'vue', 'js', 'api'].map(tab => (
-              <TabsTrigger 
-                key={tab} 
-                value={tab} 
+            {["svg", "react", "vue", "js", "api"].map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
                 className="text-xs h-full px-3 text-[#c9d1d9] data-[state=active]:bg-indigo-600 data-[state=active]:text-white rounded font-medium uppercase tracking-wide transition-all hover:text-white"
               >
                 {tab}
@@ -131,20 +139,22 @@ export { createSignature };`;
             ))}
           </TabsList>
         </Tabs>
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
+
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleCopy}
           className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
         >
-          {copied ? <Check className="w-3 h-3 mr-1.5 text-green-400" /> : <Copy className="w-3 h-3 mr-1.5" />}
-          {copied ? 'Copied!' : 'Copy'}
+          {copied
+            ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
+            : <Copy className="w-3 h-3 mr-1.5" />}
+          {copied ? "Copied!" : "Copy"}
         </Button>
       </div>
-      
+
       <div className="flex-1 relative overflow-auto">
-        <div 
+        <div
           className="p-4 text-sm font-mono leading-relaxed"
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
