@@ -18,18 +18,25 @@ export function ThemesSection({ state, updateState }: ThemesSectionProps) {
 
         const updates: Partial<SignatureState> = {
             ...theme,
-            // reset per-char colors unless theme explicitly defines them (rainbow)
+            // reset per-char colors; theme-level generators will re-populate
             charColors: [],
             strokeCharColors: [],
             strokeMode: theme.strokeMode ?? "single",
         };
 
-        if (theme.isRainbow) {
-            const len = state.text.length;
-            updates.charColors = Array.from(
-                { length: len },
-                (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
-            );
+        // Use theme-level generators for multi modes when provided.
+        if (theme.charColorsFn && theme.fillMode === "multi") {
+            updates.charColors = theme.charColorsFn(state.text);
+        }
+
+        if (theme.strokeCharColorsFn && theme.strokeMode === "multi") {
+            updates.strokeCharColors = theme.strokeCharColorsFn(state.text);
+        } else if (
+            !theme.strokeCharColorsFn && theme.charColorsFn &&
+            theme.strokeMode === "multi"
+        ) {
+            // If stroke is multi but only a fill pattern is defined, reuse it.
+            updates.strokeCharColors = theme.charColorsFn(state.text);
         }
 
         updateState(updates);

@@ -374,7 +374,11 @@ export default function SignatureBuilderPage() {
               </div>
             </ResizableHandle>
 
-            <ResizablePanel defaultSize={40} minSize={25}>
+            <ResizablePanel
+              defaultSize={40}
+              minSize={25}
+              className="flex flex-col min-h-0"
+            >
               <MobileDrawerSidebar
                 state={state}
                 updateState={updateState}

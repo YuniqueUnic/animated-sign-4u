@@ -16,8 +16,9 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     let state: SignatureState = { ...INITIAL_STATE };
 
     const themeKey = params.get("theme");
-    if (themeKey && themeKey in THEMES) {
-        state = { ...state, ...THEMES[themeKey] };
+    const theme = themeKey && themeKey in THEMES ? THEMES[themeKey] : undefined;
+    if (theme) {
+        state = { ...state, ...theme };
     }
 
     const text = params.get("text");
@@ -94,11 +95,35 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         state.fillMode === "multi" &&
         (!state.charColors || state.charColors.length === 0)
     ) {
-        const len = state.text.length;
-        state.charColors = Array.from(
-            { length: len },
-            (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
-        );
+        if (theme?.charColorsFn) {
+            state.charColors = theme.charColorsFn(state.text);
+        } else {
+            const len = state.text.length;
+            state.charColors = Array.from(
+                { length: len },
+                (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
+            );
+        }
+    }
+
+    if (
+        state.strokeMode === "multi" &&
+        (!state.strokeCharColors || state.strokeCharColors.length === 0)
+    ) {
+        if (theme?.strokeCharColorsFn) {
+            state.strokeCharColors = theme.strokeCharColorsFn(state.text);
+        } else if (theme?.charColorsFn && state.fillMode === "multi") {
+            // Reuse fill pattern when only charColorsFn is defined.
+            state.strokeCharColors = theme.charColorsFn(state.text);
+        } else if (state.charColors && state.charColors.length > 0) {
+            state.strokeCharColors = [...state.charColors];
+        } else {
+            const len = state.text.length;
+            state.strokeCharColors = Array.from(
+                { length: len },
+                (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
+            );
+        }
     }
 
     return state;

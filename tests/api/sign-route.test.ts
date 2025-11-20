@@ -140,4 +140,36 @@ describe("GET /api/sign", () => {
             expect(json.viewBox).toBeDefined();
         }
     });
+
+    it("initializes pepsi theme as multi fill and stroke with black/white pattern", async () => {
+        const { buildStateFromQuery } = await import("@/app/api/sign/route");
+
+        const params = new URLSearchParams("text=Signature&theme=pepsi");
+        const state = buildStateFromQuery(params);
+
+        expect(state.fillMode).toBe("multi");
+        expect(state.strokeMode).toBe("multi");
+
+        expect(state.charColors.length).toBe(state.text.length);
+        expect(state.strokeCharColors.length).toBe(state.text.length);
+
+        const first4 = state.text.length >= 4 ? 4 : state.text.length;
+
+        expect(state.charColors.slice(0, first4).every((c) => c === "#000000"))
+            .toBe(true);
+        expect(
+            state.strokeCharColors.slice(0, first4).every((c) =>
+                c === "#000000"
+            ),
+        )
+            .toBe(true);
+
+        expect(state.charColors.slice(first4).every((c) => c === "#ffffff"))
+            .toBe(
+                true,
+            );
+        expect(
+            state.strokeCharColors.slice(first4).every((c) => c === "#ffffff"),
+        ).toBe(true);
+    });
 });

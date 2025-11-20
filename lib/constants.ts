@@ -85,6 +85,22 @@ export const DEFAULT_CHAR_COLORS = [
   "#d946ef",
 ];
 
+const buildDefaultMultiColors = (text: string): string[] =>
+  Array.from(
+    { length: text.length },
+    (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
+  );
+
+const buildPepsiColors = (text: string): string[] => {
+  const len = text.length;
+  const black = "#000000";
+  const white = "#ffffff";
+  return Array.from(
+    { length: len },
+    (_, i) => (i < 4 ? black : white),
+  );
+};
+
 export const THEMES: Record<string, ThemeConfig> = {
   default: {
     bg: "#ffffff",
@@ -182,9 +198,13 @@ export const THEMES: Record<string, ThemeConfig> = {
     bgTransparent: false,
     stroke: "#000000",
     strokeEnabled: true,
-    fillMode: "single",
+    // Pepsi should default to multi-color fill and stroke
+    fillMode: "multi",
     fill1: "#000000",
     fill2: "#000000",
+    strokeMode: "multi",
+    charColorsFn: buildPepsiColors,
+    strokeCharColorsFn: buildPepsiColors,
     font: "lobster",
     useGlow: false,
     useShadow: false,
@@ -295,6 +315,7 @@ export const THEMES: Record<string, ThemeConfig> = {
     useShadow: false,
     borderRadius: 16,
     isRainbow: true,
+    charColorsFn: buildDefaultMultiColors,
     texture: "none",
   },
 };

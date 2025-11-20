@@ -68,7 +68,6 @@ http://localhost:3000/api/sign?text=Signature&font=great-vibes&fill=multi
 font 超出编辑就超出了吧. 也就是 font 和 bg 应该是 z 轴上的关系, font 正好是在 bg 的中间的上面而已.
 2. font selector 的 section 也需要做i18n
 
-
 当前项目进度以及问题:
 
 11. 加了 colorMode = multi 的解析之后, 现在的 quick theme 的默认主题中 渐变颜色背景或者多种颜色的 theme 在实际 preview 时不正常了, 需要修复
@@ -83,10 +82,25 @@ text=Signature&font=lobster&fill=multi&bg=e32934&colors=000000-000000-000000-000
 3. 在mobile模式下, Pepsi,sprite 等主题配色加载不出来, 而切换为normal 模式就行了,,,,,
 
 
+0. multi colors 的实现, 不能在 sidebar-theme-selection 去做函数中做推断...
+因为这样难以维护. 
+我希望的方式,还是预定义的方式比如
+colors: fn()  一个函数, 这样的话, 就可以实现多色填充逻辑以及和对应主题绑定了.
+1. is_rainbow 等等标识可以删掉了吧, 因为有 colorsFn 了?? 那么这样的标识符就没啥意义了
+保持 KISS, LISP, DRY, SOLID 等规则, 保持代码函数化, 模块化, 组件化, 保持可组合性, 保持简单. 禁止过于冗余, 并且没有用的代码请你直接删除. 避免导致代码的无效冗余.
+3. 需要支持 gif 格式的输出
+4. normal 时 topbar 的下载按钮应该在hover时自动弹出选项 react/vue/javascript/png/gif 等等
+5. mobile 时 topbar 的下载按钮应该让用户点击后弹出选项 react/vue/javascript/png/gif 等等
+6. mobile 界面的 drawer header 也需要支持 i18n
+7. quick theme 中的各个主题名字也应该支持 i18n
+8. style & color 中的每个控件也应该支持 i18n
+9. preview 区域的背景目前确实不会影响 font size 了, 但是bg 无法超出 当前 fontsize 自动算出来的背景size.. 需要修复, 使得 fontsize 和 背景完全独立, font 超出编辑就超出了吧. 也就是 font 和 bg 应该是 z 轴上的关系, font 正好是在 bg 的中间的上面而已.
+
 1. 仔细阅读这个计划/重构/实现文档. 理清楚逻辑, 了解清楚需求, 仔细认真的对比代码. 理解当前的进度.
 2. 然后按照其描述完成任务接下来就请继续进行实现/迁移/重构, 大改也可以的.可以接受大范围的重构。
-3. !!!!这里没有时间限制， 也没有其他限制, 需要你遵守的只有下面的内容：     
-4. 需要不断继续的完成任务, 一般方向的重构/实现/调整等等不需要征求我的意见
-5. 保持 KISS, LISP, DRY, SOLID 等规则, 保持代码函数化, 模块化, 组件化, 保持可组合性, 保持简单. 禁止过于冗余, 并且没有用的代码请你直接删除. 避免导致代码的无效冗余.
-6. 遇到问题，请你上网查询解决办法积极使用各种 MCP 工具来辅助你完成相关任务
-7. 使用 `cargo check`/`pnpm build`/`tsc xxx`/`vite xxx`等等代码检查工具, 以及代码质量分析工具来确保项目的正确性, 可编译性. 如果出现问题, 请积极修复.
+3. 积极使用 @chrome-devtools 等 mcps 工具来辅助你完成任务
+4. !!!!这里没有时间限制， 也没有其他限制, 需要你遵守的只有下面的内容：     
+5. 需要不断继续的完成任务, 一般方向的重构/实现/调整等等不需要征求我的意见
+6. 保持 KISS, LISP, DRY, SOLID 等规则, 保持代码函数化, 模块化, 组件化, 保持可组合性, 保持简单. 禁止过于冗余, 并且没有用的代码请你直接删除. 避免导致代码的无效冗余.
+7. 遇到问题，请你上网查询解决办法积极使用各种 MCP 工具来辅助你完成相关任务
+8. 使用 `cargo check`/`pnpm build`/`tsc xxx`/`vite xxx`等等代码检查工具, 以及代码质量分析工具来确保项目的正确性, 可编译性. 如果出现问题, 请积极修复.
