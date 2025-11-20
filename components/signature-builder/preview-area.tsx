@@ -193,9 +193,17 @@ export function PreviewArea(
             }
           }
 
+          const baseSpacing = state.charSpacing || 0;
+          let spacing = baseSpacing;
+          if (baseSpacing !== 0 && char) {
+            if (isChinese(char)) {
+              spacing = baseSpacing > 0 ? baseSpacing / 5 : baseSpacing * 5;
+            }
+          }
+
           cursorX +=
             glyph.advanceWidth * (state.fontSize / fontObj.unitsPerEm) +
-            (state.charSpacing || 0);
+            spacing;
         }
 
         if (paths.length === 0) {
@@ -299,7 +307,7 @@ export function PreviewArea(
             borderRadius: state.borderRadius,
             boxShadow: state.bgTransparent ? undefined : (() => {
               // 自适应阴影大小
-              // 在custom模式下优先使用背景尺寸，如果未设置则回退到容器尺寸
+              // 在 custom 模式下优先使用背景尺寸，如果未设置则回退到容器尺寸
               let width, height;
               if (state.bgSizeMode === "custom") {
                 width = state.bgWidth || containerSize.width || 200;
@@ -309,7 +317,8 @@ export function PreviewArea(
                 height = containerSize.height || 200;
               }
 
-              const baseSize = Math.max(200, Math.min(width, height));
+              // 让阴影强度直接跟随卡片尺寸变化，而不是固定 200px 起步
+              const baseSize = Math.min(width, height) || 200;
               const shadowY = Math.round(baseSize * 0.05); // 5% of base size
               const shadowBlur = Math.round(baseSize * 0.1); // 10% of base size
               const shadowSpread = Math.round(-baseSize * 0.025); // -2.5% of base size

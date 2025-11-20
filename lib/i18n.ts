@@ -59,7 +59,7 @@ export const messages = {
         themeNameDefault: "Default",
         themeNameSchool: "School",
         themeNameBlueprint: "Blueprint",
-        themeNameChinese: "Chinese Red",
+        themeNameChinese: "Chinese",
         themeNameCyber: "Cyber",
         themeNamePepsi: "Pepsi",
         themeNameCoke: "Coke",
@@ -166,7 +166,7 @@ export const messages = {
         themeNameJade: "翡翠",
         themeNameLaser: "激光",
         themeNameRainbow: "彩虹",
-        themeNamePractice: "练字",
+        themeNamePractice: "摹本",
 
         // Texture options
         textureNoneLabel: "无",

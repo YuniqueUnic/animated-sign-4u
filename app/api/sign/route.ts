@@ -190,7 +190,7 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
                 const hanziData = await fetchHanziData(char);
                 if (hanziData && hanziData.strokes.length > 0) {
                     isHanziPath = true;
-                    
+
                     // Update bounding box for the character
                     const baseline = 150;
                     const x1 = pathX;
@@ -203,11 +203,17 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
                     maxY = Math.max(maxY, y2);
 
                     // Create a separate path for each stroke
-                    for (let strokeIdx = 0; strokeIdx < hanziData.strokes.length; strokeIdx++) {
+                    for (
+                        let strokeIdx = 0;
+                        strokeIdx < hanziData.strokes.length;
+                        strokeIdx++
+                    ) {
                         const strokePath = hanziData.strokes[strokeIdx];
                         const properties = new svgPathProperties(strokePath);
                         const scale = state.fontSize / 1024;
-                        const len = Math.ceil(properties.getTotalLength() * scale);
+                        const len = Math.ceil(
+                            properties.getTotalLength() * scale,
+                        );
 
                         paths.push({
                             d: strokePath,
@@ -222,7 +228,9 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
                     }
                 }
             } catch (e) {
-                console.warn(`Failed to fetch hanzi data for ${char}, falling back to font`);
+                console.warn(
+                    `Failed to fetch hanzi data for ${char}, falling back to font`,
+                );
             }
         }
 
@@ -249,7 +257,16 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
             }
         }
 
-        cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm) + (state.charSpacing || 0);
+        const baseSpacing = state.charSpacing || 0;
+        let spacing = baseSpacing;
+        if (baseSpacing !== 0 && char) {
+            if (isChinese(char)) {
+                spacing = baseSpacing > 0 ? baseSpacing / 5 : baseSpacing * 5;
+            }
+        }
+
+        cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm) +
+            spacing;
     }
 
     if (paths.length === 0) {

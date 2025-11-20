@@ -5,7 +5,7 @@ export const INITIAL_STATE: SignatureState = {
   font: "great-vibes",
   fontSize: 120,
   charSpacing: 0,
-  speed: 2.4,
+  speed: 1,
   bg: "#ffffff",
   bg2: "#ffffff",
   bgMode: "solid",
@@ -34,7 +34,6 @@ export const INITIAL_STATE: SignatureState = {
   useHanziData: false,
 };
 
-
 export const DEFAULT_CHAR_COLORS = [
   "#ef4444",
   "#f97316",
@@ -62,8 +61,6 @@ const buildPepsiColors = (text: string): string[] => {
     (_, i) => (i < 4 ? black : white),
   );
 };
-
-
 
 export const FONTS = [
   {
@@ -139,21 +136,39 @@ export const FONTS = [
 ];
 
 export const THEMES: Record<string, ThemeConfig> = {
-  default: {
-    bg: "#ffffff",
-    bg2: "#ffffff",
+  // default: {
+  //   bg: "#ffffff",
+  //   bg2: "#ffffff",
+  //   bgMode: "solid",
+  //   bgTransparent: false,
+  //   stroke: "#333333",
+  //   strokeEnabled: true,
+  //   fillMode: "single",
+  //   fill1: "#333333",
+  //   font: "great-vibes",
+  //   useGlow: false,
+  //   useShadow: false,
+  //   borderRadius: 12,
+  //   texture: "none",
+  //   charSpacing: 0,
+  // },
+  ink: {
+    bg: "#f5f5f4",
+    bg2: "#e5e7eb",
     bgMode: "solid",
     bgTransparent: false,
-    stroke: "#333333",
+    stroke: "#1f2937",
     strokeEnabled: true,
     fillMode: "single",
-    fill1: "#333333",
-    font: "great-vibes",
+    fill1: "#111827",
+    font: "ma-shan-zheng",
     useGlow: false,
     useShadow: false,
     borderRadius: 12,
-    texture: "none",
-    charSpacing: 0,
+    texture: "lines",
+    texColor: "#d4d4d4",
+    texOpacity: 0.8,
+    texSize: 24,
   },
   school: {
     bg: "#ffffff",
@@ -190,6 +205,26 @@ export const THEMES: Record<string, ThemeConfig> = {
     texColor: "#ffffff",
     texOpacity: 0.2,
     texSize: 30,
+  },
+  practice: {
+    bg: "#f0f0f0",
+    bg2: "#f0f0f0",
+    bgMode: "solid",
+    bgTransparent: false,
+    stroke: "#d9534f",
+    strokeEnabled: true,
+    fillMode: "single",
+    fill1: "#d9534f",
+    font: "ma-shan-zheng",
+    useGlow: false,
+    useShadow: false,
+    borderRadius: 8,
+    texture: "mizige",
+    texColor: "#d24141",
+    texOpacity: 0.4,
+    texSize: 120,
+    texThickness: 1.5,
+    useHanziData: true,
   },
   chinese: {
     bg: "#dc2626",
@@ -283,24 +318,7 @@ export const THEMES: Record<string, ThemeConfig> = {
     texThickness: 2,
     texSize: 21,
   },
-  ink: {
-    bg: "#f5f5f4",
-    bg2: "#e5e7eb",
-    bgMode: "solid",
-    bgTransparent: false,
-    stroke: "#1f2937",
-    strokeEnabled: true,
-    fillMode: "single",
-    fill1: "#111827",
-    font: "ma-shan-zheng",
-    useGlow: false,
-    useShadow: false,
-    borderRadius: 12,
-    texture: "lines",
-    texColor: "#d4d4d4",
-    texOpacity: 0.8,
-    texSize: 24,
-  },
+
   jade: {
     bg: "#d1fae5",
     bg2: "#a7f3d0",
@@ -354,25 +372,5 @@ export const THEMES: Record<string, ThemeConfig> = {
     borderRadius: 16,
     charColorsFn: buildDefaultMultiColors,
     texture: "none",
-  },
-  practice: {
-    bg: "#fef5f5",
-    bg2: "#fef5f5",
-    bgMode: "solid",
-    bgTransparent: false,
-    stroke: "#d9534f",
-    strokeEnabled: true,
-    fillMode: "single",
-    fill1: "#d9534f",
-    font: "ma-shan-zheng",
-    useGlow: false,
-    useShadow: false,
-    borderRadius: 8,
-    texture: "mizige",
-    texColor: "#e6b8b8",
-    texOpacity: 0.6,
-    texSize: 120,
-    texThickness: 1.5,
-    useHanziData: true,
   },
 };

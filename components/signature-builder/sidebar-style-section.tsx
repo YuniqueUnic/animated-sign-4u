@@ -70,7 +70,7 @@ export function StyleColorSection(
                 </summary>
 
                 {/* Background Card */}
-                <div className="mt-2 p-3 bg-card border rounded-xl shadow-sm space-y-3">
+                <div className="mt-2 p-3 bg-card border rounded-lg shadow-xs space-y-3">
                     <div className="flex justify-between items-center">
                         <Label className="text-xs font-semibold">
                             {t("cardBackgroundLabel")}
@@ -230,8 +230,8 @@ export function StyleColorSection(
                                         <span>{state.texSize}</span>
                                     </div>
                                     <Slider
-                                        min={10}
-                                        max={100}
+                                        min={1}
+                                        max={200}
                                         value={[state.texSize]}
                                         onValueChange={([v]) =>
                                             updateState({ texSize: v })}
@@ -285,7 +285,7 @@ export function StyleColorSection(
                         </div>
                         <Slider
                             min={0}
-                            max={40}
+                            max={100}
                             value={[state.borderRadius]}
                             onValueChange={([v]) =>
                                 updateState({ borderRadius: v })}
@@ -364,9 +364,99 @@ export function StyleColorSection(
                 </div>
 
                 {/* Stroke & Fill */}
-                <div className="mt-3 p-3 bg-card border rounded-xl shadow-sm space-y-3">
-                    {/* Stroke */}
+                <div className="mt-3 p-3 bg-card border rounded-lg shadow-xs space-y-3">
+                    {/* Fill */}
                     <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                            {t("fillModeLabel")}
+                        </Label>
+                        <div className="flex bg-muted p-1 rounded-lg">
+                            {(["single", "gradient", "multi"] as const).map(
+                                (mode) => (
+                                    <button
+                                        key={mode}
+                                        onClick={() =>
+                                            updateState({ fillMode: mode })}
+                                        className={cn(
+                                            "flex-1 py-1.5 text-xs font-medium rounded-md transition-all capitalize",
+                                            state.fillMode === mode
+                                                ? "bg-background shadow-sm text-foreground"
+                                                : "text-muted-foreground hover:text-foreground",
+                                        )}
+                                    >
+                                        {fillModeLabels[mode]}
+                                    </button>
+                                ),
+                            )}
+                        </div>
+
+                        {state.fillMode === "single" && (
+                            <ColorPicker
+                                value={state.fill1}
+                                onChange={(c) => updateState({ fill1: c })}
+                            />
+                        )}
+
+                        {state.fillMode === "gradient" && (
+                            <div className="flex gap-2 items-center">
+                                <div className="flex-1">
+                                    <ColorPicker
+                                        value={state.fill1}
+                                        onChange={(c) =>
+                                            updateState({ fill1: c })}
+                                    />
+                                </div>
+                                <span className="text-muted-foreground">→</span>
+                                <div className="flex-1">
+                                    <ColorPicker
+                                        value={state.fill2}
+                                        onChange={(c) =>
+                                            updateState({ fill2: c })}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {state.fillMode === "multi" && (
+                            <div className="space-y-1">
+                                <div className="bg-muted/30 border rounded-lg p-2 overflow-x-auto">
+                                    <div className="flex gap-2 min-w-max pb-1">
+                                        {state.text.split("").map((
+                                            char,
+                                            idx,
+                                        ) => (
+                                            <div
+                                                key={idx}
+                                                className="flex flex-col items-center min-w-6 gap-1"
+                                            >
+                                                <span className="text-[10px] text-muted-foreground font-mono">
+                                                    {char}
+                                                </span>
+                                                <input
+                                                    type="color"
+                                                    value={state
+                                                        .charColors[idx] ||
+                                                        state.fill1}
+                                                    onChange={(e) =>
+                                                        updateCharColor(
+                                                            idx,
+                                                            e.target.value,
+                                                        )}
+                                                    className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground text-right">
+                                    {t("multiScrollHint")}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Stroke */}
+                    <div className="border-t pt-3 space-y-3">
                         <div className="flex justify-between items-center">
                             <Label className="text-xs font-medium text-muted-foreground">
                                 {t("strokeColorLabel")}
@@ -480,103 +570,13 @@ export function StyleColorSection(
                             )}
                         </div>
                     </div>
-
-                    {/* Fill */}
-                    <div className="pt-3 border-t space-y-3">
-                        <Label className="text-xs font-medium text-muted-foreground">
-                            {t("fillModeLabel")}
-                        </Label>
-                        <div className="flex bg-muted p-1 rounded-lg">
-                            {(["single", "gradient", "multi"] as const).map(
-                                (mode) => (
-                                    <button
-                                        key={mode}
-                                        onClick={() =>
-                                            updateState({ fillMode: mode })}
-                                        className={cn(
-                                            "flex-1 py-1.5 text-xs font-medium rounded-md transition-all capitalize",
-                                            state.fillMode === mode
-                                                ? "bg-background shadow-sm text-foreground"
-                                                : "text-muted-foreground hover:text-foreground",
-                                        )}
-                                    >
-                                        {fillModeLabels[mode]}
-                                    </button>
-                                ),
-                            )}
-                        </div>
-
-                        {state.fillMode === "single" && (
-                            <ColorPicker
-                                value={state.fill1}
-                                onChange={(c) => updateState({ fill1: c })}
-                            />
-                        )}
-
-                        {state.fillMode === "gradient" && (
-                            <div className="flex gap-2 items-center">
-                                <div className="flex-1">
-                                    <ColorPicker
-                                        value={state.fill1}
-                                        onChange={(c) =>
-                                            updateState({ fill1: c })}
-                                    />
-                                </div>
-                                <span className="text-muted-foreground">→</span>
-                                <div className="flex-1">
-                                    <ColorPicker
-                                        value={state.fill2}
-                                        onChange={(c) =>
-                                            updateState({ fill2: c })}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {state.fillMode === "multi" && (
-                            <div className="space-y-1">
-                                <div className="bg-muted/30 border rounded-lg p-2 overflow-x-auto">
-                                    <div className="flex gap-2 min-w-max pb-1">
-                                        {state.text.split("").map((
-                                            char,
-                                            idx,
-                                        ) => (
-                                            <div
-                                                key={idx}
-                                                className="flex flex-col items-center min-w-6 gap-1"
-                                            >
-                                                <span className="text-[10px] text-muted-foreground font-mono">
-                                                    {char}
-                                                </span>
-                                                <input
-                                                    type="color"
-                                                    value={state
-                                                        .charColors[idx] ||
-                                                        state.fill1}
-                                                    onChange={(e) =>
-                                                        updateCharColor(
-                                                            idx,
-                                                            e.target.value,
-                                                        )}
-                                                    className="w-6 h-6 rounded cursor-pointer border-0 p-0"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <p className="text-[10px] text-muted-foreground text-right">
-                                    {t("multiScrollHint")}
-                                </p>
-                            </div>
-                        )}
-                    </div>
                 </div>
 
                 {/* Effects */}
                 <div className="grid grid-cols-2 gap-3 mt-3">
                     <div
                         className={cn(
-                            "cursor-pointer border p-3 rounded-xl transition hover:border-indigo-300 hover:shadow-sm",
+                            "cursor-pointer border p-3 rounded-lg transition hover:border-indigo-300 hover:shadow-sm",
                             state.useGlow &&
                                 "border-indigo-500 bg-indigo-50/50",
                         )}
@@ -599,7 +599,7 @@ export function StyleColorSection(
 
                     <div
                         className={cn(
-                            "cursor-pointer border p-3 rounded-xl transition hover:border-indigo-300 hover:shadow-sm",
+                            "cursor-pointer border p-3 rounded-lg transition hover:border-indigo-300 hover:shadow-sm",
                             state.useShadow &&
                                 "border-indigo-500 bg-indigo-50/50",
                         )}

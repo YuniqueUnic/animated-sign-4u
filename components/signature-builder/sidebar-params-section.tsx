@@ -52,7 +52,7 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                             </span>
                         </div>
                         <Slider
-                            min={-20}
+                            min={-100}
                             max={100}
                             value={[state.charSpacing || 0]}
                             onValueChange={([v]) =>
@@ -70,9 +70,9 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                             </span>
                         </div>
                         <Slider
-                            min={0.1}
-                            max={10}
-                            step={0.1}
+                            min={0.01}
+                            max={3.2}
+                            step={0.01}
                             value={[state.speed]}
                             onValueChange={([v]) => updateState({ speed: v })}
                             className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"

@@ -119,6 +119,12 @@ export function generateSVG(
     textOffsetY = (canvasHeight - viewBox.h) / 2 - viewBox.y;
   }
 
+  const hasHanzi = paths.some((p) => p.isHanzi);
+  if (hasHanzi) {
+    const adjustY = canvasHeight * 0.04;
+    textOffsetY -= adjustY;
+  }
+
   const offsetX = textOffsetX;
   const offsetY = textOffsetY;
 
@@ -206,24 +212,55 @@ export function generateSVG(
 
   // Build Paths with corrected animation
   let pathElements = "";
-  let currentDelay = 0;
   const speed = state.speed || 0.5;
+
+  // Precompute timing per character so that each character (by index) takes ~`speed` seconds.
+  const charGroups = new Map<number, PathData[]>();
+  paths.forEach((p) => {
+    const idx = p.index ?? 0;
+    const group = charGroups.get(idx);
+    if (group) {
+      group.push(p);
+    } else {
+      charGroups.set(idx, [p]);
+    }
+  });
+
+  const charIndices = Array.from(charGroups.keys()).sort((a, b) => a - b);
+
+  const timings = new Map<PathData, { duration: number; delay: number }>();
+  let globalCharStart = 0;
+
+  charIndices.forEach((charIndex) => {
+    const group = charGroups.get(charIndex);
+    if (!group || group.length === 0) return;
+
+    const totalLen = group.reduce((sum, p) => sum + (p.len || 0), 0);
+    let localStart = 0;
+
+    if (totalLen <= 0) {
+      const per = group.length > 0 ? speed / group.length : speed;
+      group.forEach((p) => {
+        const d = per;
+        timings.set(p, { duration: d, delay: globalCharStart + localStart });
+        localStart += d;
+      });
+    } else {
+      group.forEach((p) => {
+        const d = (p.len / totalLen) * speed;
+        timings.set(p, { duration: d, delay: globalCharStart + localStart });
+        localStart += d;
+      });
+    }
+
+    globalCharStart += speed;
+  });
 
   // Use paths directly to ensure correct order (generation order is correct)
   paths.forEach((p, i) => {
-    const duration = (p.len / 300) / speed;
-    const delay = currentDelay;
-    if (!staticRender) {
-      // For Chinese characters, add more delay between strokes for clearer animation
-      if (
-        p.isHanzi && i > 0 && paths[i - 1].isHanzi &&
-        paths[i - 1].index === p.index
-      ) {
-        currentDelay += duration * 0.9; // Less overlap for Chinese strokes
-      } else {
-        currentDelay += duration * 0.7; // Normal overlap
-      }
-    }
+    const timing = timings.get(p);
+    const duration = timing?.duration ?? ((p.len / 300) / speed);
+    const delay = timing?.delay ?? 0;
 
     const fill = state.fillMode === "single"
       ? state.fill1
@@ -247,7 +284,7 @@ export function generateSVG(
       state.useShadow ? `url(#${idPrefix}shadow)` : "",
     ].filter(Boolean).join(" ");
 
-    const strokeDashoffset = staticRender ? 0 : p.len;
+    const strokeDashoffset = staticRender ? 0 : (p.isHanzi ? -p.len : p.len);
     const fillOpacity = staticRender ? 1 : 0;
     const animationStyle = staticRender ? "" : `animation: 
             ${idPrefix}draw-${i} ${duration}s ease-out forwards ${delay}s, 
