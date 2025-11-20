@@ -324,6 +324,11 @@ export async function GET(req: NextRequest): Promise<Response> {
             });
         }
 
+        // NOTE: GIF export currently renders a single-frame image of the
+        // final SVG state (no stroke-by-stroke animation timeline yet).
+        // This keeps the API simple and fast; a multi-frame animated GIF
+        // would require sampling the SVG animation over time and composing
+        // many frames, which is planned but not implemented here.
         if (format === "gif") {
             const staticSvg = generateSVG(state, paths, viewBox, {
                 staticRender: true,

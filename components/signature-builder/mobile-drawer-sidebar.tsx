@@ -67,11 +67,22 @@ export function MobileDrawerSidebar(
     const prev = () => setIndex((prev) => (prev - 1 + slideCount) % slideCount);
 
     const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement | null;
+        // If the gesture starts on a slider, don't treat it as a drawer swipe.
+        if (target && target.closest('[data-slot="slider"]')) {
+            setTouchStartX(null);
+            return;
+        }
         setTouchStartX(e.touches[0]?.clientX ?? null);
     };
 
     const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
         if (touchStartX == null) return;
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest('[data-slot="slider"]')) {
+            setTouchStartX(null);
+            return;
+        }
         const endX = e.changedTouches[0]?.clientX ?? touchStartX;
         const dx = endX - touchStartX;
         const threshold = 40;

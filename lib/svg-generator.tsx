@@ -134,6 +134,17 @@ export function generateSVG(
   const svgOriginX = (state.bgSizeMode === "custom") ? 0 : viewBox.x;
   const svgOriginY = (state.bgSizeMode === "custom") ? 0 : viewBox.y;
 
+  // Center texture tiling relative to the overall canvas so that
+  // left/right and top/bottom edges are visually balanced instead of
+  // always starting from the SVG origin (0,0).
+  let patternOffsetX = 0;
+  let patternOffsetY = 0;
+  if (state.texture && state.texture !== "none") {
+    const s = Math.max(1, state.texSize || 1);
+    patternOffsetX = -((canvasWidth % s) / 2);
+    patternOffsetY = -((canvasHeight % s) / 2);
+  }
+
   const padding = Math.max(
     0,
     Math.min(state.cardPadding ?? 0, Math.min(canvasWidth, canvasHeight) / 4),
@@ -196,7 +207,7 @@ export function generateSVG(
   }
 
   // Textures - use correct pattern ID format
-  // Pattern positioning should start from 0 to ensure proper tiling
+  // Pattern positioning is offset so that tiling appears centered
   if (state.texture && state.texture !== "none") {
     defs += getTextureDefs(
       state.texture,
@@ -204,8 +215,8 @@ export function generateSVG(
       state.texSize,
       state.texOpacity,
       state.texThickness,
-      0,
-      0,
+      patternOffsetX,
+      patternOffsetY,
       idPrefix,
     );
   }
