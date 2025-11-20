@@ -36,6 +36,28 @@ export function StyleColorSection(
         updateState({ strokeCharColors: newColors });
     };
 
+    const bgModeLabels: Record<string, string> = {
+        solid: t("bgModeSolidLabel"),
+        gradient: t("bgModeGradientLabel"),
+    };
+
+    const bgSizeModeLabels: Record<string, string> = {
+        auto: t("bgSizeAutoLabel"),
+        custom: t("bgSizeCustomLabel"),
+    };
+
+    const strokeModeLabels: Record<string, string> = {
+        single: t("strokeModeSingleLabel"),
+        gradient: t("strokeModeGradientLabel"),
+        multi: t("strokeModeMultiLabel"),
+    };
+
+    const fillModeLabels: Record<string, string> = {
+        single: t("fillModeSingleLabel"),
+        gradient: t("fillModeGradientLabel"),
+        multi: t("fillModeMultiLabel"),
+    };
+
     return (
         <section className="space-y-4">
             <details open className="group">
@@ -95,7 +117,7 @@ export function StyleColorSection(
                                                 : "text-muted-foreground hover:text-foreground",
                                         )}
                                     >
-                                        {mode}
+                                        {bgModeLabels[mode]}
                                     </button>
                                 ))}
                             </div>
@@ -145,31 +167,31 @@ export function StyleColorSection(
                                     value="none"
                                     className="bg-popover hover:bg-accent"
                                 >
-                                    None
+                                    {t("textureNoneLabel")}
                                 </SelectItem>
                                 <SelectItem
                                     value="grid"
                                     className="bg-popover hover:bg-accent"
                                 >
-                                    Grid
+                                    {t("textureGridLabel")}
                                 </SelectItem>
                                 <SelectItem
                                     value="dots"
                                     className="bg-popover hover:bg-accent"
                                 >
-                                    Dots
+                                    {t("textureDotsLabel")}
                                 </SelectItem>
                                 <SelectItem
                                     value="lines"
                                     className="bg-popover hover:bg-accent"
                                 >
-                                    Lines
+                                    {t("textureLinesLabel")}
                                 </SelectItem>
                                 <SelectItem
                                     value="cross"
                                     className="bg-popover hover:bg-accent"
                                 >
-                                    Cross
+                                    {t("textureCrossLabel")}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -287,7 +309,7 @@ export function StyleColorSection(
                         {state.bgSizeMode === "custom" && (
                             <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
                                 <div className="flex flex-col gap-1">
-                                    <span>Width</span>
+                                    <span>{t("bgWidthLabel")}</span>
                                     <input
                                         type="number"
                                         min={100}
@@ -306,7 +328,7 @@ export function StyleColorSection(
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <span>Height</span>
+                                    <span>{t("bgHeightLabel")}</span>
                                     <input
                                         type="number"
                                         min={100}
@@ -335,7 +357,7 @@ export function StyleColorSection(
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label className="text-xs font-medium text-muted-foreground">
-                                Stroke Color
+                                {t("strokeColorLabel")}
                             </Label>
                             <div className="flex items-center gap-2">
                                 <Switch
@@ -348,7 +370,7 @@ export function StyleColorSection(
                                     htmlFor="stroke-enable"
                                     className="text-[10px] text-muted-foreground"
                                 >
-                                    Enable
+                                    {t("enableLabel")}
                                 </Label>
                             </div>
                         </div>
@@ -374,7 +396,7 @@ export function StyleColorSection(
                                                     : "text-muted-foreground hover:text-foreground",
                                             )}
                                         >
-                                            {mode}
+                                            {strokeModeLabels[mode]}
                                         </button>
                                     ),
                                 )}
@@ -450,7 +472,7 @@ export function StyleColorSection(
                     {/* Fill */}
                     <div className="pt-3 border-t space-y-3">
                         <Label className="text-xs font-medium text-muted-foreground">
-                            Fill Mode
+                            {t("fillModeLabel")}
                         </Label>
                         <div className="flex bg-muted p-1 rounded-lg">
                             {(["single", "gradient", "multi"] as const).map(
@@ -466,7 +488,7 @@ export function StyleColorSection(
                                                 : "text-muted-foreground hover:text-foreground",
                                         )}
                                     >
-                                        {mode}
+                                        {fillModeLabels[mode]}
                                     </button>
                                 ),
                             )}
@@ -531,7 +553,7 @@ export function StyleColorSection(
                                     </div>
                                 </div>
                                 <p className="text-[10px] text-muted-foreground text-right">
-                                    Scroll to edit all characters
+                                    {t("multiScrollHint")}
                                 </p>
                             </div>
                         )}
@@ -549,7 +571,9 @@ export function StyleColorSection(
                         onClick={() => updateState({ useGlow: !state.useGlow })}
                     >
                         <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-bold">Glow</span>
+                            <span className="text-xs font-bold">
+                                {t("glowTitle")}
+                            </span>
                             <Switch
                                 checked={state.useGlow}
                                 onCheckedChange={(c) =>
@@ -557,7 +581,7 @@ export function StyleColorSection(
                             />
                         </div>
                         <p className="text-[10px] text-muted-foreground">
-                            Neon light effect
+                            {t("glowDescription")}
                         </p>
                     </div>
 
@@ -571,7 +595,9 @@ export function StyleColorSection(
                             updateState({ useShadow: !state.useShadow })}
                     >
                         <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-bold">Shadow</span>
+                            <span className="text-xs font-bold">
+                                {t("shadowTitle")}
+                            </span>
                             <Switch
                                 checked={state.useShadow}
                                 onCheckedChange={(c) =>
@@ -579,7 +605,7 @@ export function StyleColorSection(
                             />
                         </div>
                         <p className="text-[10px] text-muted-foreground">
-                            3D drop shadow
+                            {t("shadowDescription")}
                         </p>
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import { ThemesSection } from "./sidebar-themes-section";
 import { StyleColorSection } from "./sidebar-style-section";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/components/i18n-provider";
 
 interface MobileDrawerSidebarProps {
     state: SignatureState;
@@ -14,17 +15,11 @@ interface MobileDrawerSidebarProps {
     onToggleOpen?: (open: boolean) => void;
 }
 
-const SECTION_TITLES = [
-    "Content & Font",
-    "Parameters",
-    "Quick Themes",
-    "Style & Color",
-];
-
 export function MobileDrawerSidebar(
     { state, updateState, onFontUpload, onToggleOpen }:
         MobileDrawerSidebarProps,
 ) {
+    const { t } = useI18n();
     const [open, setOpen] = useState(true);
     const [index, setIndex] = useState(0);
     const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -55,6 +50,18 @@ export function MobileDrawerSidebar(
 
     const slideCount = sections.length;
 
+    const sectionTitleKeys: Array<
+        | "contentFontSectionTitle"
+        | "paramsSectionTitle"
+        | "quickThemesSectionTitle"
+        | "styleColorSectionTitle"
+    > = [
+        "contentFontSectionTitle",
+        "paramsSectionTitle",
+        "quickThemesSectionTitle",
+        "styleColorSectionTitle",
+    ];
+
     const next = () => setIndex((prev) => (prev + 1) % slideCount);
     const prev = () => setIndex((prev) => (prev - 1 + slideCount) % slideCount);
 
@@ -72,7 +79,8 @@ export function MobileDrawerSidebar(
         setTouchStartX(null);
     };
 
-    const activeTitle = SECTION_TITLES[index] ?? SECTION_TITLES[0];
+    const activeTitleKey = sectionTitleKeys[index] ?? sectionTitleKeys[0];
+    const activeTitle = t(activeTitleKey);
 
     const toggleOpen = () => {
         setOpen((prev) => {
@@ -94,10 +102,10 @@ export function MobileDrawerSidebar(
                 className="h-10 flex items-center justify-between px-4 text-xs font-medium text-muted-foreground"
                 onClick={toggleOpen}
             >
-                <span className="truncate">{activeTitle}</span>
+                <span className="truncate">{t(activeTitleKey)}</span>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] uppercase tracking-wide">
-                        {open ? "Collapse" : "Open"}
+                        {open ? t("drawerCollapseLabel") : t("drawerOpenLabel")}
                     </span>
                     <ChevronDown
                         className={cn(

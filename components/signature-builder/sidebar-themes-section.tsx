@@ -12,6 +12,21 @@ interface ThemesSectionProps {
 
 export function ThemesSection({ state, updateState }: ThemesSectionProps) {
     const { t } = useI18n();
+
+    const themeLabelKeyMap: Record<string, string> = {
+        default: "themeNameDefault",
+        school: "themeNameSchool",
+        blueprint: "themeNameBlueprint",
+        chinese: "themeNameChinese",
+        cyber: "themeNameCyber",
+        pepsi: "themeNamePepsi",
+        coke: "themeNameCoke",
+        sprite: "themeNameSprite",
+        ink: "themeNameInk",
+        jade: "themeNameJade",
+        laser: "themeNameLaser",
+        rainbow: "themeNameRainbow",
+    };
     const applyTheme = (themeName: string) => {
         const theme = THEMES[themeName];
         if (!theme) return;
@@ -160,7 +175,10 @@ export function ThemesSection({ state, updateState }: ThemesSectionProps) {
                                             : "rgba(255,255,255,0.7)",
                                     }}
                                 >
-                                    {themeKey}
+                                    {t(
+                                        (themeLabelKeyMap[themeKey] as any) ||
+                                            "themeNameDefault",
+                                    )}
                                 </span>
                             </button>
                         );

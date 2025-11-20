@@ -68,11 +68,23 @@ export function generateSVG(
 ): string {
   const staticRender = options?.staticRender ?? false;
 
-  const width = viewBox.w;
-  const height = viewBox.h;
+  // Canvas dimensions can grow beyond the original glyph viewBox when a
+  // custom background card is larger. This keeps font metrics independent
+  // from the background size while centering text over the card.
+  let canvasWidth = viewBox.w;
+  let canvasHeight = viewBox.h;
+
+  if (state.bgSizeMode === "custom" && state.bgWidth && state.bgHeight) {
+    canvasWidth = Math.max(viewBox.w, state.bgWidth);
+    canvasHeight = Math.max(viewBox.h, state.bgHeight);
+  }
+
+  const offsetX = (canvasWidth - viewBox.w) / 2;
+  const offsetY = (canvasHeight - viewBox.h) / 2;
+
   const padding = Math.max(
     0,
-    Math.min(state.cardPadding ?? 0, Math.min(width, height) / 4),
+    Math.min(state.cardPadding ?? 0, Math.min(canvasWidth, canvasHeight) / 4),
   );
 
   // Generate Defs
@@ -220,17 +232,16 @@ export function generateSVG(
       ? "url(#bg-grad)"
       : state.bg;
 
-    let rectX = viewBox.x;
-    let rectY = viewBox.y;
-    let rectW = width;
-    let rectH = height;
+    let rectW = canvasWidth;
+    let rectH = canvasHeight;
 
     if (state.bgSizeMode === "custom" && state.bgWidth && state.bgHeight) {
-      rectW = Math.min(state.bgWidth, width);
-      rectH = Math.min(state.bgHeight, height);
-      rectX = viewBox.x + (width - rectW) / 2;
-      rectY = viewBox.y + (height - rectH) / 2;
+      rectW = state.bgWidth;
+      rectH = state.bgHeight;
     }
+
+    const rectX = viewBox.x + (canvasWidth - rectW) / 2;
+    const rectY = viewBox.y + (canvasHeight - rectH) / 2;
 
     backgroundRect =
       `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" />`;
@@ -240,8 +251,12 @@ export function generateSVG(
   // Texture Overlay - fix pattern ID reference
   let textureOverlay = "";
   if (state.texture && state.texture !== "none") {
-    const rect = cardRect ??
-      { x: viewBox.x, y: viewBox.y, w: width, h: height };
+    const rect = cardRect ?? {
+      x: viewBox.x + offsetX,
+      y: viewBox.y + offsetY,
+      w: viewBox.w,
+      h: viewBox.h,
+    };
     const innerX = rect.x + padding;
     const innerY = rect.y + padding;
     const innerW = Math.max(0, rect.w - padding * 2);
@@ -265,9 +280,9 @@ export function generateSVG(
   return `
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
-      viewBox="${viewBox.x} ${viewBox.y} ${width} ${height}"
-      width="${width}"
-      height="${height}"
+      viewBox="${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}"
+      width="${canvasWidth}"
+      height="${canvasHeight}"
       style="background-color: transparent; border-radius: ${state.borderRadius}px;"
     >
       <defs>
@@ -281,7 +296,7 @@ export function generateSVG(
       </defs>
       ${backgroundRect}
       ${textureOverlay}
-      <g>${pathElements}</g>
+      <g transform="translate(${offsetX}, ${offsetY})">${pathElements}</g>
     </svg>
   `;
 }

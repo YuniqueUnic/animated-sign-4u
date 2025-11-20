@@ -116,7 +116,7 @@ describe("generateSVG - background and textures", () => {
         expect(svg).toContain('width="180"');
     });
 
-    it("centers custom background size as a card while keeping svg dimensions", () => {
+    it("centers custom background size as a card while keeping svg dimensions when card is smaller than text", () => {
         const state: SignatureState = {
             ...(INITIAL_STATE as SignatureState),
             bgTransparent: false,
@@ -138,6 +138,33 @@ describe("generateSVG - background and textures", () => {
         expect(svg).toContain(
             '<rect x="50" y="30" width="100" height="40" fill="#ff0000"',
         );
+    });
+
+    it("expands canvas when custom background is larger than text bounds", () => {
+        const state: SignatureState = {
+            ...(INITIAL_STATE as SignatureState),
+            bgTransparent: false,
+            bgMode: "solid",
+            bg: "#00ff00",
+            bgSizeMode: "custom",
+            bgWidth: 300,
+            bgHeight: 150,
+        };
+
+        const svg = generateSVG(state, simplePaths, baseViewBox);
+
+        // Canvas grows to fit the larger card
+        expect(svg).toContain('viewBox="0 0 300 150"');
+        expect(svg).toContain('width="300"');
+        expect(svg).toContain('height="150"');
+
+        // Background card fills the canvas
+        expect(svg).toContain(
+            '<rect x="0" y="0" width="300" height="150" fill="#00ff00"',
+        );
+
+        // Paths are translated to keep text centered over the card
+        expect(svg).toContain('<g transform="translate(50, 25)">');
     });
 });
 

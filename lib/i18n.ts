@@ -51,9 +51,50 @@ export const messages = {
         shadowDescription: "3D drop shadow",
         multiScrollHint: "Scroll to edit all characters",
 
+        // Drawer header labels
+        drawerCollapseLabel: "Collapse",
+        drawerOpenLabel: "Open",
+
+        // Theme names
+        themeNameDefault: "Default",
+        themeNameSchool: "School",
+        themeNameBlueprint: "Blueprint",
+        themeNameChinese: "Chinese Red",
+        themeNameCyber: "Cyber",
+        themeNamePepsi: "Pepsi",
+        themeNameCoke: "Coke",
+        themeNameSprite: "Sprite",
+        themeNameInk: "Ink",
+        themeNameJade: "Jade",
+        themeNameLaser: "Laser",
+        themeNameRainbow: "Rainbow",
+
+        // Texture options
+        textureNoneLabel: "None",
+        textureGridLabel: "Grid",
+        textureDotsLabel: "Dots",
+        textureLinesLabel: "Lines",
+        textureCrossLabel: "Cross",
+
+        // Mode labels
+        bgModeSolidLabel: "Solid",
+        bgModeGradientLabel: "Gradient",
+        bgSizeAutoLabel: "Auto",
+        bgSizeCustomLabel: "Custom",
+        strokeModeSingleLabel: "Single",
+        strokeModeGradientLabel: "Gradient",
+        strokeModeMultiLabel: "Multi",
+        fillModeSingleLabel: "Single",
+        fillModeGradientLabel: "Gradient",
+        fillModeMultiLabel: "Multi",
+
         // Mobile topbar labels
         mobileDownloadLabel: "Download",
         mobileCodeLabel: "Code",
+
+        // Download menu labels
+        downloadPngLabel: "PNG Image",
+        downloadGifLabel: "GIF Image",
     },
     zh: {
         appTitle: "动态签名 4u",
@@ -105,9 +146,50 @@ export const messages = {
         shadowDescription: "3D 投影",
         multiScrollHint: "左右滚动编辑全部字符",
 
+        // Drawer header labels
+        drawerCollapseLabel: "收起",
+        drawerOpenLabel: "展开",
+
+        // Theme names
+        themeNameDefault: "默认",
+        themeNameSchool: "校园",
+        themeNameBlueprint: "蓝图",
+        themeNameChinese: "中国红",
+        themeNameCyber: "赛博",
+        themeNamePepsi: "百事",
+        themeNameCoke: "可口可乐",
+        themeNameSprite: "雪碧",
+        themeNameInk: "水墨",
+        themeNameJade: "翡翠",
+        themeNameLaser: "激光",
+        themeNameRainbow: "彩虹",
+
+        // Texture options
+        textureNoneLabel: "无",
+        textureGridLabel: "网格",
+        textureDotsLabel: "圆点",
+        textureLinesLabel: "线条",
+        textureCrossLabel: "十字",
+
+        // Mode labels
+        bgModeSolidLabel: "纯色",
+        bgModeGradientLabel: "渐变",
+        bgSizeAutoLabel: "自动",
+        bgSizeCustomLabel: "自定义",
+        strokeModeSingleLabel: "单色",
+        strokeModeGradientLabel: "渐变",
+        strokeModeMultiLabel: "多色",
+        fillModeSingleLabel: "单色",
+        fillModeGradientLabel: "渐变",
+        fillModeMultiLabel: "多色",
+
         // Mobile topbar labels
         mobileDownloadLabel: "下载",
         mobileCodeLabel: "代码",
+
+        // Download menu labels
+        downloadPngLabel: "PNG 图片",
+        downloadGifLabel: "GIF 图片",
     },
 } as const;
 

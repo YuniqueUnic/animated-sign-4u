@@ -28,6 +28,7 @@ import {
 } from "@/lib/code-generators";
 import { useTheme } from "next-themes";
 import { useI18n } from "@/components/i18n-provider";
+import { buildSignApiUrl } from "@/lib/api-url";
 
 export default function SignatureBuilderPage() {
   const [state, setState] = useState<SignatureState>(INITIAL_STATE);
@@ -130,6 +131,49 @@ export default function SignatureBuilderPage() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadRaster = (format: "png" | "gif") => {
+    const url = buildSignApiUrl(state, { format });
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `signature_${state.text || "sign"}.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const downloadOptions = [
+    {
+      key: "react",
+      label: t("reactComponent"),
+      action: () => downloadComponent("react"),
+    },
+    {
+      key: "vue",
+      label: t("vueComponent"),
+      action: () => downloadComponent("vue"),
+    },
+    {
+      key: "js",
+      label: t("jsComponent"),
+      action: () => downloadComponent("js"),
+    },
+    {
+      key: "svg",
+      label: t("svgButton"),
+      action: () => downloadSVG(),
+    },
+    {
+      key: "png",
+      label: t("downloadPngLabel"),
+      action: () => downloadRaster("png"),
+    },
+    {
+      key: "gif",
+      label: t("downloadGifLabel"),
+      action: () => downloadRaster("gif"),
+    },
+  ];
+
   const downloadComponent = (type: "react" | "vue" | "js") => {
     if (!svgCode) return;
 
@@ -196,114 +240,60 @@ export default function SignatureBuilderPage() {
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
-          {/* Component Download - Hover Dropdown */}
+          {/* Desktop Download - hover dropdown with all formats */}
           <div className="relative group hidden md:block">
             <Button
               variant="default"
               size="sm"
-              onClick={() => downloadComponent("react")}
               className="h-8 text-xs gap-2 bg-gray-900 hover:bg-gray-800 text-white pr-8"
             >
               <Download className="w-3.5 h-3.5" />
-              Export Component
+              {t("mobileDownloadLabel")}
               <ChevronDown className="w-3 h-3 ml-auto absolute right-2 opacity-50" />
             </Button>
-
-            {/* Hover Dropdown */}
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
-              <div className="p-2">
-                <button
-                  onClick={() => downloadComponent("react")}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition flex items-center gap-2"
-                >
-                  <svg
-                    className="w-6 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
+            <div className="absolute right-0 mt-2 w-52 bg-popover rounded-xl shadow-2xl border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+              <div className="p-1">
+                {downloadOptions.map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={opt.action}
+                    className="w-full text-left px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition"
                   >
-                    <circle cx="12" cy="12" r="2" fill="currentColor" />
-                    <ellipse cx="12" cy="12" rx="9" ry="4" />
-                    <ellipse
-                      cx="12"
-                      cy="12"
-                      rx="9"
-                      ry="4"
-                      transform="rotate(60 12 12)"
-                    />
-                    <ellipse
-                      cx="12"
-                      cy="12"
-                      rx="9"
-                      ry="4"
-                      transform="rotate(-60 12 12)"
-                    />
-                  </svg>
-                  React Component
-                </button>
-                <button
-                  onClick={() => downloadComponent("vue")}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition flex items-center gap-2"
-                >
-                  <svg
-                    className="w-6 h-5"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M3 4h4l5 9 5-9h4L12 21 3 4z" opacity="0.9" />
-                    <path
-                      d="M5 4h3l4 7 4-7h3L12 18 5 4z"
-                      className="text-white"
-                    />
-                  </svg>
-                  Vue Component
-                </button>
-                <button
-                  onClick={() => downloadComponent("js")}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-lg transition flex items-center gap-2"
-                >
-                  <svg
-                    className="w-6 h-5"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M4 3h16l-1.5 17L12 23 5.5 20 4 3z" />
-                    <path
-                      d="M9 7h7l-.3 3H11l.2 2.5h4.1L15 17l-3 1-3-1-.2-2h2l.1 1 1.1.3 1.1-.3.1-1.5H9.1L9 7z"
-                      className="text-white"
-                    />
-                  </svg>
-                  HTML / JS
-                </button>
+                    {opt.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* SVG Download - Simple Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={downloadSVG}
-            className="h-8 text-xs gap-2 hidden md:inline-flex"
-          >
-            <Download className="w-3.5 h-3.5" />
-            {t("svgButton")}
-          </Button>
-
           {/* Mobile Code & Download */}
           <div className="flex items-center gap-2 md:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={downloadSVG}
-              className="h-8 text-xs px-3"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span className="ml-1 text-[11px]">
-                {t("mobileDownloadLabel")}
-              </span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs px-3"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="ml-1 text-[11px]">
+                    {t("mobileDownloadLabel")}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {downloadOptions.map((opt) => (
+                  <DropdownMenuItem
+                    key={opt.key}
+                    onClick={opt.action}
+                    className="text-xs"
+                  >
+                    {opt.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="sm"
