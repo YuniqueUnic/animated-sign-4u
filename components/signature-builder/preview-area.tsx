@@ -201,6 +201,23 @@ export function PreviewArea(
           return;
         }
 
+        // Sort paths to ensure correct rendering order:
+        // 1. Group by character index
+        // 2. Within each character, sort hanzi strokes by strokeIndex
+        // 3. Keep non-hanzi paths in original order
+        const sortedPaths = paths.slice().sort((a, b) => {
+          // First sort by character index
+          if (a.index !== b.index) {
+            return a.index - b.index;
+          }
+          // Within same character, if both are hanzi strokes, sort by strokeIndex
+          if (a.isHanzi && b.isHanzi) {
+            return (a.strokeIndex || 0) - (b.strokeIndex || 0);
+          }
+          // Keep original order for non-hanzi or mixed cases
+          return 0;
+        });
+
         const p = 40;
         // Ensure valid bounding box
         if (
@@ -222,7 +239,7 @@ export function PreviewArea(
           h: (maxY - minY) + (p * 2),
         };
 
-        const svg = generateSVG(state, paths, viewBox, { idPrefix });
+        const svg = generateSVG(state, sortedPaths, viewBox, { idPrefix });
 
         // Debug logging for mobile issues
         if (window.innerWidth < 768) {
@@ -280,13 +297,17 @@ export function PreviewArea(
             borderRadius: state.borderRadius,
             boxShadow: state.bgTransparent ? undefined : (() => {
               // 自适应阴影大小，基于容器尺寸
-              const baseSize = Math.min(
-                containerSize.width,
-                containerSize.height,
+              // 使用实际容器尺寸，如果为0则使用默认值200
+              const baseSize = Math.max(
+                200,
+                Math.min(
+                  containerSize.width || 200,
+                  containerSize.height || 200,
+                ),
               );
-              const shadowY = Math.max(10, baseSize * 0.1);
-              const shadowBlur = Math.max(20, baseSize * 0.2);
-              const shadowSpread = Math.max(-5, -baseSize * 0.05);
+              const shadowY = Math.round(baseSize * 0.05); // 5% of base size
+              const shadowBlur = Math.round(baseSize * 0.1); // 10% of base size
+              const shadowSpread = Math.round(-baseSize * 0.025); // -2.5% of base size
               return `0 ${shadowY}px ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 0, 0.25)`;
             })(),
           }}

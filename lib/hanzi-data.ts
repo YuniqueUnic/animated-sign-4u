@@ -32,7 +32,7 @@ export async function fetchHanziData(char: string): Promise<HanziStrokeData | nu
 
   try {
     const res = await fetch(
-      `https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/data/${char}.json`,
+      `https://cdn.jsdelivr.net/npm/hanzi-writer-data@latest/${char}.json`,
     );
 
     if (!res.ok) {

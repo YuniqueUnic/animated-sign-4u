@@ -2,6 +2,7 @@ import React from "react";
 import { SignatureState } from "@/lib/types";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { ChevronDown, Settings2 } from "lucide-react";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -57,6 +58,21 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                             value={[state.speed]}
                             onValueChange={([v]) => updateState({ speed: v })}
                             className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <Label className="text-xs text-muted-foreground">
+                                汉字笔画模式
+                            </Label>
+                            <p className="text-[10px] text-muted-foreground/70">
+                                按笔画顺序绘制中文字符
+                            </p>
+                        </div>
+                        <Switch
+                            checked={state.useHanziData ?? false}
+                            onCheckedChange={(checked) =>
+                                updateState({ useHanziData: checked })}
                         />
                     </div>
                 </div>

@@ -30,6 +30,7 @@ export const INITIAL_STATE: SignatureState = {
   texOpacity: 0.5,
   useGlow: false,
   useShadow: false,
+  useHanziData: false,
 };
 
 

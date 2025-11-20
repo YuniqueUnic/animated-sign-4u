@@ -100,19 +100,26 @@ export function generateSVG(
   const staticRender = options?.staticRender ?? false;
   const idPrefix = options?.idPrefix ?? "";
 
-  // Canvas dimensions can grow beyond the original glyph viewBox when a
-  // custom background card is larger. This keeps font metrics independent
-  // from the background size while centering text over the card.
+  // Decouple text and background layers:
+  // - Text layer: uses original viewBox dimensions (text bounding box)
+  // - Background layer: can be independently sized, text can overflow it
+  // - When bgSizeMode is 'custom', canvas is based on background size, not text
   let canvasWidth = viewBox.w;
   let canvasHeight = viewBox.h;
+  let textOffsetX = 0;
+  let textOffsetY = 0;
 
   if (state.bgSizeMode === "custom" && state.bgWidth && state.bgHeight) {
-    canvasWidth = Math.max(viewBox.w, state.bgWidth);
-    canvasHeight = Math.max(viewBox.h, state.bgHeight);
+    // Use background size as canvas, text is positioned independently
+    canvasWidth = state.bgWidth;
+    canvasHeight = state.bgHeight;
+    // Center text over background (but text can still overflow)
+    textOffsetX = (canvasWidth - viewBox.w) / 2;
+    textOffsetY = (canvasHeight - viewBox.h) / 2;
   }
 
-  const offsetX = (canvasWidth - viewBox.w) / 2;
-  const offsetY = (canvasHeight - viewBox.h) / 2;
+  const offsetX = textOffsetX;
+  const offsetY = textOffsetY;
 
   const padding = Math.max(
     0,
@@ -246,10 +253,12 @@ export function generateSVG(
     if (p.isHanzi && p.x !== undefined && p.fontSize !== undefined) {
       const scale = p.fontSize / 1024;
       const baseline = 150;
-      // Transform: translate to position, move up by fontSize, then scale from 1024 to fontSize
+      // hanzi-writer-data: (0,0) is top-left, (1024, 1024) is bottom-right
+      // But strokes are drawn mirrored, need Y-axis flip at center: translate(0, 1024) scale(1, -1)
+      // Combined: translate to position, scale with Y-flip, then adjust for flip offset
       transformAttr = `transform="translate(${p.x}, ${
         baseline - p.fontSize
-      }) scale(${scale})"`;
+      }) scale(${scale}, ${-scale}) translate(0, 1024)"`;
     }
 
     pathElements += `
@@ -274,6 +283,7 @@ export function generateSVG(
   });
 
   // Background rect (solid or gradient)
+  // Background is now independent - it doesn't need to contain text
   let backgroundRect = "";
   let cardRect: { x: number; y: number; w: number; h: number } | null = null;
   if (!state.bgTransparent) {
@@ -289,9 +299,10 @@ export function generateSVG(
       rectH = state.bgHeight;
     }
 
-    // Background should always fill from the viewBox origin, centered if custom size
-    const rectX = viewBox.x + (canvasWidth - rectW) / 2;
-    const rectY = viewBox.y + (canvasHeight - rectH) / 2;
+    // Background fills the canvas from origin
+    // In custom mode, canvas IS the background, so no offset needed
+    const rectX = viewBox.x;
+    const rectY = viewBox.y;
 
     backgroundRect =
       `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" rx="${state.borderRadius}" />`;
@@ -351,7 +362,7 @@ export function generateSVG(
     });
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}" width="${canvasWidth}" height="${canvasHeight}" style="display: block; max-width: 100%; height: auto;">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}" width="${canvasWidth}" height="${canvasHeight}" style="display: block; max-width: 100%; height: auto; overflow: visible;">
       <defs>
         ${defs}
         <style>
@@ -361,7 +372,7 @@ export function generateSVG(
       </defs>
       ${backgroundRect}
       ${textureOverlay}
-      <g transform="translate(0, 0)">
+      <g transform="translate(${textOffsetX}, ${textOffsetY})">
       ${pathElements}
       </g>
     </svg>`;
