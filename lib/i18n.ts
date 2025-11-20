@@ -41,6 +41,8 @@ export const messages = {
         textureSizeLabel: "Size",
         textureThicknessLabel: "Thickness",
         textureOpacityLabel: "Opacity",
+
+        linkFillStrokeLabel: "Link fill & stroke",
         cornerRadiusLabel: "Corner Radius",
         backgroundSizeLabel: "Background Size",
         bgWidthLabel: "Width",
@@ -94,9 +96,10 @@ export const messages = {
         fillModeGradientLabel: "Gradient",
         fillModeMultiLabel: "Multi",
 
-        // Mobile topbar labels
+        // Mobile/topbar labels
         mobileDownloadLabel: "Download",
         mobileCodeLabel: "Code",
+        githubRepoLabel: "View project on GitHub",
 
         // Download menu labels
         downloadPngLabel: "PNG Image",
@@ -142,6 +145,8 @@ export const messages = {
         textureSizeLabel: "纹理尺寸",
         textureThicknessLabel: "线条粗细",
         textureOpacityLabel: "不透明度",
+
+        linkFillStrokeLabel: "填充/描边联动",
         cornerRadiusLabel: "圆角",
         backgroundSizeLabel: "背景尺寸",
         bgWidthLabel: "宽度",
@@ -195,9 +200,10 @@ export const messages = {
         fillModeGradientLabel: "渐变",
         fillModeMultiLabel: "多色",
 
-        // Mobile topbar labels
+        // Mobile/topbar labels
         mobileDownloadLabel: "下载",
         mobileCodeLabel: "代码",
+        githubRepoLabel: "查看 GitHub 仓库",
 
         // Download menu labels
         downloadPngLabel: "PNG 图片",

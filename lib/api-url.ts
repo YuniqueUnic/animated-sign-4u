@@ -82,6 +82,10 @@ export function buildSignApiUrl(
         params.set("useHanziData", "true");
     }
 
+    if (state.linkFillStroke) {
+        params.set("linkFillStroke", "1");
+    }
+
     if (options.format) {
         params.set("format", options.format);
     }

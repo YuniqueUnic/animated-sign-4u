@@ -27,7 +27,15 @@ export function StyleColorSection(
     const updateCharColor = (index: number, color: string) => {
         const newColors = [...state.charColors];
         newColors[index] = color;
-        updateState({ charColors: newColors });
+        const patch: Partial<SignatureState> = { charColors: newColors };
+
+        if (state.linkFillStroke) {
+            const strokeColors = [...state.strokeCharColors];
+            strokeColors[index] = color;
+            patch.strokeCharColors = strokeColors;
+        }
+
+        updateState(patch);
     };
 
     const updateStrokeCharColor = (index: number, color: string) => {
@@ -56,6 +64,38 @@ export function StyleColorSection(
         single: t("fillModeSingleLabel"),
         gradient: t("fillModeGradientLabel"),
         multi: t("fillModeMultiLabel"),
+    };
+
+    const withLinkedStroke = (
+        patch: Partial<SignatureState>,
+    ): Partial<SignatureState> => {
+        if (!state.linkFillStroke) return patch;
+
+        const next = { ...state, ...patch };
+        const strokePatch: Partial<SignatureState> = {
+            strokeEnabled: true,
+        };
+
+        if (next.fillMode === "single") {
+            strokePatch.strokeMode = "single";
+            strokePatch.stroke = next.fill1;
+            strokePatch.stroke2 = next.fill1;
+            strokePatch.strokeCharColors = [];
+        } else if (next.fillMode === "gradient") {
+            strokePatch.strokeMode = "gradient";
+            strokePatch.stroke = next.fill1;
+            strokePatch.stroke2 = next.fill2 || next.fill1;
+            strokePatch.strokeCharColors = [];
+        } else if (next.fillMode === "multi") {
+            strokePatch.strokeMode = "multi";
+            strokePatch.stroke = next.fill1;
+            strokePatch.stroke2 = next.fill2 || next.fill1;
+            if (next.charColors && next.charColors.length > 0) {
+                strokePatch.strokeCharColors = [...next.charColors];
+            }
+        }
+
+        return { ...patch, ...strokePatch };
     };
 
     return (
@@ -376,7 +416,11 @@ export function StyleColorSection(
                                     <button
                                         key={mode}
                                         onClick={() =>
-                                            updateState({ fillMode: mode })}
+                                            updateState(
+                                                withLinkedStroke({
+                                                    fillMode: mode,
+                                                }),
+                                            )}
                                         className={cn(
                                             "flex-1 py-1.5 text-xs font-medium rounded-md transition-all capitalize",
                                             state.fillMode === mode
@@ -393,7 +437,10 @@ export function StyleColorSection(
                         {state.fillMode === "single" && (
                             <ColorPicker
                                 value={state.fill1}
-                                onChange={(c) => updateState({ fill1: c })}
+                                onChange={(c) =>
+                                    updateState(
+                                        withLinkedStroke({ fill1: c }),
+                                    )}
                             />
                         )}
 
@@ -403,7 +450,9 @@ export function StyleColorSection(
                                     <ColorPicker
                                         value={state.fill1}
                                         onChange={(c) =>
-                                            updateState({ fill1: c })}
+                                            updateState(
+                                                withLinkedStroke({ fill1: c }),
+                                            )}
                                     />
                                 </div>
                                 <span className="text-muted-foreground">→</span>
@@ -411,7 +460,9 @@ export function StyleColorSection(
                                     <ColorPicker
                                         value={state.fill2}
                                         onChange={(c) =>
-                                            updateState({ fill2: c })}
+                                            updateState(
+                                                withLinkedStroke({ fill2: c }),
+                                            )}
                                     />
                                 </div>
                             </div>
@@ -461,25 +512,54 @@ export function StyleColorSection(
                             <Label className="text-xs font-medium text-muted-foreground">
                                 {t("strokeColorLabel")}
                             </Label>
-                            <div className="flex items-center gap-2">
-                                <Switch
-                                    checked={state.strokeEnabled}
-                                    onCheckedChange={(c) =>
-                                        updateState({ strokeEnabled: c })}
-                                    id="stroke-enable"
-                                />
-                                <Label
-                                    htmlFor="stroke-enable"
-                                    className="text-[10px] text-muted-foreground"
-                                >
-                                    {t("enableLabel")}
-                                </Label>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        checked={state.strokeEnabled}
+                                        onCheckedChange={(c) =>
+                                            updateState({ strokeEnabled: c })}
+                                        id="stroke-enable"
+                                    />
+                                    <Label
+                                        htmlFor="stroke-enable"
+                                        className="text-[10px] text-muted-foreground"
+                                    >
+                                        {t("enableLabel")}
+                                    </Label>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Switch
+                                        checked={state.linkFillStroke}
+                                        onCheckedChange={(linked) => {
+                                            if (linked) {
+                                                updateState(
+                                                    withLinkedStroke({
+                                                        linkFillStroke: true,
+                                                    }),
+                                                );
+                                            } else {
+                                                updateState({
+                                                    linkFillStroke: false,
+                                                });
+                                            }
+                                        }}
+                                        id="link-fill-stroke"
+                                    />
+                                    <Label
+                                        htmlFor="link-fill-stroke"
+                                        className="text-[10px] text-muted-foreground"
+                                    >
+                                        {t("linkFillStrokeLabel")}
+                                    </Label>
+                                </div>
                             </div>
                         </div>
                         <div
                             className={cn(
                                 "space-y-2 transition-opacity",
                                 !state.strokeEnabled && "opacity-50",
+                                state.linkFillStroke &&
+                                    "opacity-60 pointer-events-none",
                             )}
                         >
                             <div className="flex bg-muted p-1 rounded-lg text-[11px]">

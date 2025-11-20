@@ -305,3 +305,32 @@ previwerArea 的这个自适应阴影强度变化,,, 没必要,, 我只是想要
   const [zoom, setZoom] = useState(1);
 在 previewArea 中已经添加 zoom 功能了, 但是我们刚刚调整的shadow
 却没有跟着同步更新缩放, 导致缩放后阴影的尺寸仍然不变, 而实际的背景尺寸却是变化了.. 需要保持同步一下
+
+---
+
+1. 请你再为
+fill mode 和 stroke mode 实现一个联动模式
+如果开启了, 那么 fill mode 是什么 模式, 是什么颜色, stroke 就会是什么,
+
+2. 同时AAnimatedSpeed 的逻辑从现在的越小越快,改成越大越快.. 同时将 scale 也同步更新了
+
+
+----
+
+请你在 topbar 合适的位置添加我的这个项目的 github 仓库的 github icon, 然后链接如下
+https://github.com/YuniqueUnic/animated-sign-4u
+记得有 desktop 布局和 mobile 布局呢, 还有 i18n 呢
+
+接着
+
+并且再请你仔细多次的阅读本项目, 然后写好本项目的 README.md
+
+请你给出一个详细的说明书，不需要保留旧版设计，避免代码过于冗余。
+输出的文档需要正确的引用当前代码的关键代码片段，文件等等内容。
+输出的文档还需要严格描述代码当前的功能/代码逻辑，包括但不限于伪代码，代码变更说明等等。
+必要时还需使用 ascii 流程图来辅助描述问题/方向, 数据流转等流程图。
+积极使用 windsurf 原生的 web search， shell 执行， fact context search，ide diagnose 等等功能来辅助你理解问题， 解决问题，和寻找更多资料从而能够更好的完成任务。
+请你积极调用合适的 MCP 工具执行任务.
+当你需要执行批量/重复性任务时，可以采用 python 脚本的方式来更好的完成相关任务, 相比于 shell script 更加现代化和易于管理。 普通任务时，仍旧可以使用 shell script/cmd 来完成快速的任务。
+
+最终，将文档输出到文件中

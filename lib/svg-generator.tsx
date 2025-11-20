@@ -212,9 +212,13 @@ export function generateSVG(
 
   // Build Paths with corrected animation
   let pathElements = "";
-  const speed = state.speed || 0.5;
+  // Treat `speed` as a speed factor: larger values make the animation faster.
+  // Base duration per character is ~1s at speed=1, then scaled as 1 / speed.
+  const speedFactor = state.speed || 1;
+  const charDuration = 1 / Math.max(0.01, speedFactor);
 
-  // Precompute timing per character so that each character (by index) takes ~`speed` seconds.
+  // Precompute timing per character so that each character (by index) takes
+  // roughly `charDuration` seconds; higher speedFactor => smaller charDuration.
   const charGroups = new Map<number, PathData[]>();
   paths.forEach((p) => {
     const idx = p.index ?? 0;
@@ -239,7 +243,7 @@ export function generateSVG(
     let localStart = 0;
 
     if (totalLen <= 0) {
-      const per = group.length > 0 ? speed / group.length : speed;
+      const per = group.length > 0 ? charDuration / group.length : charDuration;
       group.forEach((p) => {
         const d = per;
         timings.set(p, { duration: d, delay: globalCharStart + localStart });
@@ -247,19 +251,18 @@ export function generateSVG(
       });
     } else {
       group.forEach((p) => {
-        const d = (p.len / totalLen) * speed;
+        const d = (p.len / totalLen) * charDuration;
         timings.set(p, { duration: d, delay: globalCharStart + localStart });
         localStart += d;
       });
     }
-
-    globalCharStart += speed;
+    globalCharStart += charDuration;
   });
 
   // Use paths directly to ensure correct order (generation order is correct)
   paths.forEach((p, i) => {
     const timing = timings.get(p);
-    const duration = timing?.duration ?? ((p.len / 300) / speed);
+    const duration = timing?.duration ?? ((p.len / 300) * charDuration);
     const delay = timing?.delay ?? 0;
 
     const fill = state.fillMode === "single"

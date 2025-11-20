@@ -14,6 +14,7 @@ import {
   FileCode2,
   FileImage,
   Film,
+  Github,
   Moon,
   Sun,
   Triangle,
@@ -270,12 +271,29 @@ export default function SignatureBuilderPage() {
           {/* Theme toggle */}
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-sm"
             onClick={toggleTheme}
             className="h-8 w-8 text-xs inline-flex"
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
+
+          {/* GitHub repo link */}
+          <Button
+            asChild
+            variant="ghost"
+            size="icon-sm"
+            className="h-8 w-8 text-xs inline-flex"
+          >
+            <a
+              href="https://github.com/YuniqueUnic/animated-sign-4u"
+              target="_blank"
+              rel="noreferrer"
+              aria-label={t("githubRepoLabel")}
+            >
+              <Github className="h-4 w-4" />
+            </a>
           </Button>
           {/* Desktop Download - hover dropdown with all formats */}
           <div className="relative group hidden md:block">

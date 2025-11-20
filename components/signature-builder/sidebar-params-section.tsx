@@ -66,13 +66,13 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                                 {t("animationSpeedLabel")}
                             </span>
                             <span className="text-indigo-600 font-mono">
-                                {state.speed}s/char
+                                {state.speed.toFixed(2)}x
                             </span>
                         </div>
                         <Slider
-                            min={0.01}
-                            max={3.2}
-                            step={0.01}
+                            min={0.1}
+                            max={24}
+                            step={0.1}
                             value={[state.speed]}
                             onValueChange={([v]) => updateState({ speed: v })}
                             className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"

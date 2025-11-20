@@ -1,6 +1,13 @@
 export type FillMode = "single" | "gradient" | "multi";
 export type StrokeMode = "single" | "gradient" | "multi";
-export type TextureType = "none" | "grid" | "dots" | "lines" | "cross" | "tianzige" | "mizige";
+export type TextureType =
+  | "none"
+  | "grid"
+  | "dots"
+  | "lines"
+  | "cross"
+  | "tianzige"
+  | "mizige";
 export type BgMode = "solid" | "gradient";
 export type BgSizeMode = "auto" | "custom";
 
@@ -46,6 +53,9 @@ export interface SignatureState {
   // Effects
   useGlow: boolean;
   useShadow: boolean;
+
+  // When true, stroke mode/colors follow fill mode/colors (linked mode)
+  linkFillStroke: boolean;
 
   // Chinese Stroke Mode
   useHanziData?: boolean;

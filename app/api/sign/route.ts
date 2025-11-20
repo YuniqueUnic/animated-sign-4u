@@ -239,6 +239,15 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         state.useShadow = false;
     }
 
+    const linkFillStrokeParam = params.get("linkFillStroke");
+    if (linkFillStrokeParam === "true" || linkFillStrokeParam === "1") {
+        state.linkFillStroke = true;
+    } else if (
+        linkFillStrokeParam === "false" || linkFillStrokeParam === "0"
+    ) {
+        state.linkFillStroke = false;
+    }
+
     const useHanziData = params.get("useHanziData");
     if (useHanziData === "true" || useHanziData === "1") {
         state.useHanziData = true;
