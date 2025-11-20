@@ -93,12 +93,24 @@ export function MobileDrawerSidebar(
 
     const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
         if (e.pointerType === "mouse" || e.pointerType === "pen") {
+            const target = e.target as HTMLElement | null;
+            // Ignore pointer gestures that originate on sliders so dragging
+            // slider thumbs with a mouse/trackpad does not swipe sections.
+            if (target && target.closest('[data-slot="slider"]')) {
+                setPointerStartX(null);
+                return;
+            }
             setPointerStartX(e.clientX);
         }
     };
 
     const handlePointerUp = (e: PointerEvent<HTMLDivElement>) => {
         if (pointerStartX == null) return;
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest('[data-slot="slider"]')) {
+            setPointerStartX(null);
+            return;
+        }
         const dx = e.clientX - pointerStartX;
         const threshold = 40;
         if (dx < -threshold) next();

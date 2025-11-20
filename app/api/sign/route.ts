@@ -32,6 +32,22 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         state.font = font;
     }
 
+    const fontSizeParam = params.get("fontSize");
+    if (fontSizeParam) {
+        const v = Number(fontSizeParam);
+        if (Number.isFinite(v) && v > 0) {
+            state.fontSize = v;
+        }
+    }
+
+    const speedParam = params.get("speed");
+    if (speedParam) {
+        const v = Number(speedParam);
+        if (Number.isFinite(v) && v > 0) {
+            state.speed = v;
+        }
+    }
+
     const fill = params.get("fill") as FillMode | null;
     if (fill === "single" || fill === "gradient" || fill === "multi") {
         state.fillMode = fill;
@@ -49,6 +65,56 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         }
     }
 
+    const fill1Param = params.get("fill1");
+    if (fill1Param) {
+        state.fill1 = fill1Param.startsWith("#")
+            ? fill1Param
+            : `#${fill1Param}`;
+    }
+
+    const fill2Param = params.get("fill2");
+    if (fill2Param) {
+        state.fill2 = fill2Param.startsWith("#")
+            ? fill2Param
+            : `#${fill2Param}`;
+    }
+
+    const strokeParam = params.get("stroke");
+    if (strokeParam) {
+        state.stroke = strokeParam.startsWith("#")
+            ? strokeParam
+            : `#${strokeParam}`;
+    }
+
+    const stroke2Param = params.get("stroke2");
+    if (stroke2Param) {
+        state.stroke2 = stroke2Param.startsWith("#")
+            ? stroke2Param
+            : `#${stroke2Param}`;
+    }
+
+    const strokeModeParam = params.get("strokeMode") as
+        | "single"
+        | "gradient"
+        | "multi"
+        | null;
+    if (
+        strokeModeParam === "single" ||
+        strokeModeParam === "gradient" ||
+        strokeModeParam === "multi"
+    ) {
+        state.strokeMode = strokeModeParam;
+    }
+
+    const strokeEnabledParam = params.get("strokeEnabled");
+    if (strokeEnabledParam === "0" || strokeEnabledParam === "false") {
+        state.strokeEnabled = false;
+    } else if (
+        strokeEnabledParam === "1" || strokeEnabledParam === "true"
+    ) {
+        state.strokeEnabled = true;
+    }
+
     const bgSizeMode = params.get("bgSizeMode");
     if (bgSizeMode === "auto" || bgSizeMode === "custom") {
         state.bgSizeMode = bgSizeMode as any;
@@ -59,6 +125,22 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         const v = Number(charSpacing);
         if (Number.isFinite(v)) {
             state.charSpacing = v;
+        }
+    }
+
+    const borderRadiusParam = params.get("borderRadius");
+    if (borderRadiusParam) {
+        const v = Number(borderRadiusParam);
+        if (Number.isFinite(v) && v >= 0) {
+            state.borderRadius = v;
+        }
+    }
+
+    const cardPaddingParam = params.get("cardPadding");
+    if (cardPaddingParam) {
+        const v = Number(cardPaddingParam);
+        if (Number.isFinite(v) && v >= 0) {
+            state.cardPadding = v;
         }
     }
 
@@ -88,6 +170,16 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         }
     }
 
+    const bgModeParam = params.get("bgMode");
+    if (bgModeParam === "solid" || bgModeParam === "gradient") {
+        state.bgMode = bgModeParam as any;
+    }
+
+    const bg2Param = params.get("bg2");
+    if (bg2Param) {
+        state.bg2 = bg2Param.startsWith("#") ? bg2Param : `#${bg2Param}`;
+    }
+
     const texture = params.get("texture") as TextureType | null;
     const allowedTextures: TextureType[] = [
         "none",
@@ -100,6 +192,51 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     ];
     if (texture && allowedTextures.includes(texture)) {
         state.texture = texture;
+    }
+
+    const texColorParam = params.get("texColor");
+    if (texColorParam) {
+        state.texColor = texColorParam.startsWith("#")
+            ? texColorParam
+            : `#${texColorParam}`;
+    }
+
+    const texSizeParam = params.get("texSize");
+    if (texSizeParam) {
+        const v = Number(texSizeParam);
+        if (Number.isFinite(v) && v > 0) {
+            state.texSize = v;
+        }
+    }
+
+    const texThicknessParam = params.get("texThickness");
+    if (texThicknessParam) {
+        const v = Number(texThicknessParam);
+        if (Number.isFinite(v) && v > 0) {
+            state.texThickness = v;
+        }
+    }
+
+    const texOpacityParam = params.get("texOpacity");
+    if (texOpacityParam) {
+        const v = Number(texOpacityParam);
+        if (Number.isFinite(v) && v >= 0 && v <= 1) {
+            state.texOpacity = v;
+        }
+    }
+
+    const useGlowParam = params.get("useGlow");
+    if (useGlowParam === "true" || useGlowParam === "1") {
+        state.useGlow = true;
+    } else if (useGlowParam === "false" || useGlowParam === "0") {
+        state.useGlow = false;
+    }
+
+    const useShadowParam = params.get("useShadow");
+    if (useShadowParam === "true" || useShadowParam === "1") {
+        state.useShadow = true;
+    } else if (useShadowParam === "false" || useShadowParam === "0") {
+        state.useShadow = false;
     }
 
     const useHanziData = params.get("useHanziData");

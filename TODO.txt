@@ -236,7 +236,67 @@ gif 功能先放着吧,但是请你在对应的位置写上简单的说明报告
 4. drawer 中的 header 和 section 的 header 重复了, 希望将 drawer 的 header 做成动态的
     - 将 section 的 header 作为 drawer 的 header 可以吗?
     - 如果不行, 那么就把 drawer 的 header 保留吧. 就不改变了. 这个问题也就不需要修复了
+    - [被保留了]
 
 此外我还希望 preview 区域的所有内容都应该以中心的起点..
 就目前来说, 其实 texture 的起点我看出来是从左上角来为基点进行缩放的..
 导致了左边总是完整的, 而右边则是可能不完整的..
+
+----
+
+
+在 slider 上滑动，只会改变数值，不会触发 drawer 的 section 左右切换。
+在其他区域滑动，仍然保持原来的“横向切 drawer section”的手势体验
+
+这个并没有修复好, 现在还是会出现互动slider后, 也将section变换了的问题,
+
+此外,现在的 api 功能有点问题, 主要是色彩解析方面
+明明预览的时候是有颜色的, 但是codebox 中copy‘ 出来就没有颜色. 
+http://localhost:3000/api/sign?text=fsad&font=sacramento&texture=grid&bg=1e3a8a
+
+并且最近新加了不少新的 api, 也需要确保api功能都是正常的,
+生成正常, 解析正常.等等.
+
+
+----
+
+这个 http://localhost:3000/api/sign?text=fsad&font=sacramento&texture=grid&bg=1e3a8a&bgSizeMode=custom&bgWidth=100&bgHeight=100
+和预览时看到的不一样
+1. 预览时的看到的是圆底背景, 并且, 字体已经超出了背景了
+2. api 拿到的是圆角正方形底,然后超出了的字的部分被背景的边缘裁掉了
+
+----
+/Users/unic/dev/projs/ts/animated-sign/components/signature-builder/preview-area.tsx
+
+previwerArea 的这个自适应阴影强度变化,,, 没必要,, 我只是想要这个阴影背景的内容大小尺寸随容器大小而变化
+而不是阴影的强度变化,阴影强度保持 0.12 就可以了
+
+   <div
+          ref={containerRef}
+          className={cn(
+            "relative transition-all duration-300 group cursor-pointer select-none flex items-center justify-center min-w-[200px] min-h-[100px]",
+            state.bgTransparent ? "hover:shadow-xl" : "hover:scale-[1.02]",
+          )}
+          onClick={replay}
+          style={{
+            borderRadius: state.borderRadius,
+            boxShadow: state.bgTransparent ? undefined : (() => {
+              // 自适应阴影大小
+              // 在 custom 模式下优先使用背景尺寸，如果未设置则回退到容器尺寸
+              let width, height;
+              if (state.bgSizeMode === "custom") {
+                width = state.bgWidth || containerSize.width || 200;
+                height = state.bgHeight || containerSize.height || 200;
+              } else {
+                width = containerSize.width || 200;
+                height = containerSize.height || 200;
+              }
+
+              // 让阴影强度直接跟随卡片尺寸变化，而不是固定 200px 起步
+              const baseSize = Math.min(width, height) || 200;
+              const shadowY = Math.round(baseSize * 0.05); // 5% of base size
+              const shadowBlur = Math.round(baseSize * 0.1); // 10% of base size
+              const shadowSpread = Math.round(-baseSize * 0.025); // -2.5% of base size
+              return `0 ${shadowY}px ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 0, 0.12)`;
+            })(),
+          }}

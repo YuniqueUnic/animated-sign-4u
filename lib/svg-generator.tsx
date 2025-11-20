@@ -101,23 +101,13 @@ export function generateSVG(
   const idPrefix = options?.idPrefix ?? "";
 
   // Decouple text and background layers:
-  // - Text layer: uses original viewBox dimensions (text bounding box)
-  // - Background layer: can be independently sized, text can overflow it
-  // - When bgSizeMode is 'custom', canvas is based on background size, not text
+  // - Text layer: always uses the original viewBox (text bounding box)
+  // - Background card can be smaller/larger and is centered inside this
+  //   canvas so that text is never clipped and can overflow the card edges.
   let canvasWidth = viewBox.w;
   let canvasHeight = viewBox.h;
   let textOffsetX = 0;
   let textOffsetY = 0;
-
-  if (state.bgSizeMode === "custom") {
-    // Use background size as canvas, text is positioned independently
-    canvasWidth = state.bgWidth || viewBox.w;
-    canvasHeight = state.bgHeight || viewBox.h;
-    // Center text over background (but text can still overflow)
-    // Must account for viewBox.x and viewBox.y offset
-    textOffsetX = (canvasWidth - viewBox.w) / 2 - viewBox.x;
-    textOffsetY = (canvasHeight - viewBox.h) / 2 - viewBox.y;
-  }
 
   const hasHanzi = paths.some((p) => p.isHanzi);
   if (hasHanzi) {
@@ -128,11 +118,10 @@ export function generateSVG(
   const offsetX = textOffsetX;
   const offsetY = textOffsetY;
 
-  // Determine SVG ViewBox origin
-  // In custom mode, we normalize the coordinate system to (0,0)
-  // In auto mode, we stick to the text's viewBox origin
-  const svgOriginX = (state.bgSizeMode === "custom") ? 0 : viewBox.x;
-  const svgOriginY = (state.bgSizeMode === "custom") ? 0 : viewBox.y;
+  // SVG viewBox always matches the text bounding box so that glyphs are
+  // never clipped by a smaller custom background card.
+  const svgOriginX = viewBox.x;
+  const svgOriginY = viewBox.y;
 
   // Center texture tiling relative to the overall canvas so that
   // left/right and top/bottom edges are visually balanced instead of
@@ -290,10 +279,15 @@ export function generateSVG(
       }
     }
     const strokeWidth = state.strokeEnabled ? 2 : 0;
-    const filterList = [
-      state.useGlow ? `url(#${idPrefix}glow)` : "",
-      state.useShadow ? `url(#${idPrefix}shadow)` : "",
-    ].filter(Boolean).join(" ");
+    let filterRef = "";
+    if (state.useGlow && state.useShadow) {
+      // Prefer shadow when both are enabled to avoid invalid multiple filter urls.
+      filterRef = `url(#${idPrefix}shadow)`;
+    } else if (state.useGlow) {
+      filterRef = `url(#${idPrefix}glow)`;
+    } else if (state.useShadow) {
+      filterRef = `url(#${idPrefix}shadow)`;
+    }
 
     const strokeDashoffset = staticRender ? 0 : (p.isHanzi ? -p.len : p.len);
     const fillOpacity = staticRender ? 1 : 0;
@@ -324,7 +318,7 @@ export function generateSVG(
         stroke-width="${strokeWidth}" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        ${filterList ? `filter="${filterList}"` : ""}
+        ${filterRef ? `filter="${filterRef}"` : ""}
         ${transformAttr}
         class="sig-path"
         style="
@@ -338,7 +332,8 @@ export function generateSVG(
   });
 
   // Background rect (solid or gradient)
-  // Background is now independent - it doesn't need to contain text
+  // Background is independent from text bounds and can be smaller than
+  // the canvas. It is centered so that text can overflow around it.
   let backgroundRect = "";
   let cardRect: { x: number; y: number; w: number; h: number } | null = null;
   if (!state.bgTransparent) {
@@ -354,10 +349,10 @@ export function generateSVG(
       rectH = state.bgHeight || canvasHeight;
     }
 
-    // Background fills the canvas from origin
-    // In custom mode, canvas IS the background and starts at 0,0
-    const rectX = (state.bgSizeMode === "custom") ? 0 : viewBox.x;
-    const rectY = (state.bgSizeMode === "custom") ? 0 : viewBox.y;
+    // Center the background card within the overall canvas so that
+    // text can extend beyond the card without being clipped.
+    const rectX = viewBox.x + (canvasWidth - rectW) / 2;
+    const rectY = viewBox.y + (canvasHeight - rectH) / 2;
 
     backgroundRect =
       `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" rx="${state.borderRadius}" />`;
