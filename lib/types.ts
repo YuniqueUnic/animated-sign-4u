@@ -10,6 +10,8 @@ export interface SignatureState {
   fontSize: number;
   speed: number;
 
+  charSpacing: number;
+
   // Background
   bg: string;
   bg2: string;

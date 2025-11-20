@@ -193,7 +193,9 @@ export function PreviewArea(
             }
           }
 
-          cursorX += glyph.advanceWidth * (state.fontSize / fontObj.unitsPerEm);
+          cursorX +=
+            glyph.advanceWidth * (state.fontSize / fontObj.unitsPerEm) +
+            (state.charSpacing || 0);
         }
 
         if (paths.length === 0) {
@@ -296,15 +298,18 @@ export function PreviewArea(
           style={{
             borderRadius: state.borderRadius,
             boxShadow: state.bgTransparent ? undefined : (() => {
-              // 自适应阴影大小，基于容器尺寸
-              // 使用实际容器尺寸，如果为0则使用默认值200
-              const baseSize = Math.max(
-                200,
-                Math.min(
-                  containerSize.width || 200,
-                  containerSize.height || 200,
-                ),
-              );
+              // 自适应阴影大小
+              // 在custom模式下优先使用背景尺寸，如果未设置则回退到容器尺寸
+              let width, height;
+              if (state.bgSizeMode === "custom") {
+                width = state.bgWidth || containerSize.width || 200;
+                height = state.bgHeight || containerSize.height || 200;
+              } else {
+                width = containerSize.width || 200;
+                height = containerSize.height || 200;
+              }
+
+              const baseSize = Math.max(200, Math.min(width, height));
               const shadowY = Math.round(baseSize * 0.05); // 5% of base size
               const shadowBlur = Math.round(baseSize * 0.1); // 10% of base size
               const shadowSpread = Math.round(-baseSize * 0.025); // -2.5% of base size

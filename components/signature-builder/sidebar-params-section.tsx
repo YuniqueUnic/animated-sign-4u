@@ -45,6 +45,24 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                     <div className="space-y-2">
                         <div className="flex justify-between text-xs font-medium">
                             <span className="text-muted-foreground">
+                                字符间距
+                            </span>
+                            <span className="text-indigo-600 font-mono">
+                                {state.charSpacing}px
+                            </span>
+                        </div>
+                        <Slider
+                            min={-20}
+                            max={100}
+                            value={[state.charSpacing || 0]}
+                            onValueChange={([v]) =>
+                                updateState({ charSpacing: v })}
+                            className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-medium">
+                            <span className="text-muted-foreground">
                                 {t("animationSpeedLabel")}
                             </span>
                             <span className="text-indigo-600 font-mono">

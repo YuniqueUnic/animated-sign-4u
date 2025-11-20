@@ -54,6 +54,14 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
         state.bgSizeMode = bgSizeMode as any;
     }
 
+    const charSpacing = params.get("charSpacing");
+    if (charSpacing) {
+        const v = Number(charSpacing);
+        if (Number.isFinite(v)) {
+            state.charSpacing = v;
+        }
+    }
+
     const bgWidthParam = params.get("bgWidth");
     if (bgWidthParam) {
         const v = Number(bgWidthParam);
@@ -241,7 +249,7 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
             }
         }
 
-        cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm);
+        cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm) + (state.charSpacing || 0);
     }
 
     if (paths.length === 0) {

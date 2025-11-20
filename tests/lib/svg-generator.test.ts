@@ -129,14 +129,14 @@ describe("generateSVG - background and textures", () => {
 
         const svg = generateSVG(state, simplePaths, baseViewBox);
 
-        // SVG still uses the full viewBox dimensions
-        expect(svg).toContain('viewBox="0 0 200 100"');
-        expect(svg).toContain('width="200"');
-        expect(svg).toContain('height="100"');
+        // SVG now uses the custom dimensions
+        expect(svg).toContain('viewBox="0 0 100 40"');
+        expect(svg).toContain('width="100"');
+        expect(svg).toContain('height="40"');
 
-        // Background rect is a centered card of 100x40 within 200x100 viewBox
+        // Background rect starts at 0,0 filling the custom size
         expect(svg).toContain(
-            '<rect x="50" y="30" width="100" height="40" fill="#ff0000"',
+            '<rect x="0" y="0" width="100" height="40" fill="#ff0000"',
         );
     });
 

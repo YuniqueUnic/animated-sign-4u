@@ -109,17 +109,24 @@ export function generateSVG(
   let textOffsetX = 0;
   let textOffsetY = 0;
 
-  if (state.bgSizeMode === "custom" && state.bgWidth && state.bgHeight) {
+  if (state.bgSizeMode === "custom") {
     // Use background size as canvas, text is positioned independently
-    canvasWidth = state.bgWidth;
-    canvasHeight = state.bgHeight;
+    canvasWidth = state.bgWidth || viewBox.w;
+    canvasHeight = state.bgHeight || viewBox.h;
     // Center text over background (but text can still overflow)
-    textOffsetX = (canvasWidth - viewBox.w) / 2;
-    textOffsetY = (canvasHeight - viewBox.h) / 2;
+    // Must account for viewBox.x and viewBox.y offset
+    textOffsetX = (canvasWidth - viewBox.w) / 2 - viewBox.x;
+    textOffsetY = (canvasHeight - viewBox.h) / 2 - viewBox.y;
   }
 
   const offsetX = textOffsetX;
   const offsetY = textOffsetY;
+
+  // Determine SVG ViewBox origin
+  // In custom mode, we normalize the coordinate system to (0,0)
+  // In auto mode, we stick to the text's viewBox origin
+  const svgOriginX = (state.bgSizeMode === "custom") ? 0 : viewBox.x;
+  const svgOriginY = (state.bgSizeMode === "custom") ? 0 : viewBox.y;
 
   const padding = Math.max(
     0,
@@ -254,11 +261,11 @@ export function generateSVG(
       const scale = p.fontSize / 1024;
       const baseline = 150;
       // hanzi-writer-data: (0,0) is top-left, (1024, 1024) is bottom-right
-      // But strokes are drawn mirrored, need Y-axis flip at center: translate(0, 1024) scale(1, -1)
+      // But strokes are drawn mirrored, need Y-axis flip at center: translate(0, -1024) scale(1, -1)
       // Combined: translate to position, scale with Y-flip, then adjust for flip offset
       transformAttr = `transform="translate(${p.x}, ${
         baseline - p.fontSize
-      }) scale(${scale}, ${-scale}) translate(0, 1024)"`;
+      }) scale(${scale}, ${-scale}) translate(0, -1024)"`;
     }
 
     pathElements += `
@@ -294,15 +301,15 @@ export function generateSVG(
     let rectW = canvasWidth;
     let rectH = canvasHeight;
 
-    if (state.bgSizeMode === "custom" && state.bgWidth && state.bgHeight) {
-      rectW = state.bgWidth;
-      rectH = state.bgHeight;
+    if (state.bgSizeMode === "custom") {
+      rectW = state.bgWidth || canvasWidth;
+      rectH = state.bgHeight || canvasHeight;
     }
 
     // Background fills the canvas from origin
-    // In custom mode, canvas IS the background, so no offset needed
-    const rectX = viewBox.x;
-    const rectY = viewBox.y;
+    // In custom mode, canvas IS the background and starts at 0,0
+    const rectX = (state.bgSizeMode === "custom") ? 0 : viewBox.x;
+    const rectY = (state.bgSizeMode === "custom") ? 0 : viewBox.y;
 
     backgroundRect =
       `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" rx="${state.borderRadius}" />`;
@@ -362,7 +369,7 @@ export function generateSVG(
     });
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}" width="${canvasWidth}" height="${canvasHeight}" style="display: block; max-width: 100%; height: auto; overflow: visible;">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${svgOriginX} ${svgOriginY} ${canvasWidth} ${canvasHeight}" width="${canvasWidth}" height="${canvasHeight}" style="display: block; max-width: 100%; height: auto; overflow: visible;">
       <defs>
         ${defs}
         <style>

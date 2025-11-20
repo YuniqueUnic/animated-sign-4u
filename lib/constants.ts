@@ -4,6 +4,7 @@ export const INITIAL_STATE: SignatureState = {
   text: "Signature",
   font: "great-vibes",
   fontSize: 120,
+  charSpacing: 0,
   speed: 2.4,
   bg: "#ffffff",
   bg2: "#ffffff",
@@ -152,6 +153,7 @@ export const THEMES: Record<string, ThemeConfig> = {
     useShadow: false,
     borderRadius: 12,
     texture: "none",
+    charSpacing: 0,
   },
   school: {
     bg: "#ffffff",
