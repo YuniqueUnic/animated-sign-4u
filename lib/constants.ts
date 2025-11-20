@@ -1,5 +1,68 @@
 import { SignatureState, ThemeConfig } from "./types";
 
+export const INITIAL_STATE: SignatureState = {
+  text: "Signature",
+  font: "great-vibes",
+  fontSize: 120,
+  speed: 2.4,
+  bg: "#ffffff",
+  bg2: "#ffffff",
+  bgMode: "solid",
+  bgTransparent: false,
+  borderRadius: 12,
+  cardPadding: 24,
+  bgSizeMode: "auto",
+  bgWidth: null,
+  bgHeight: null,
+  stroke: "#333333",
+  strokeEnabled: true,
+  strokeMode: "single",
+  stroke2: "#333333",
+  strokeCharColors: [],
+  fillMode: "single",
+  fill1: "#333333",
+  fill2: "#ec4899",
+  charColors: [],
+  texture: "none",
+  texColor: "#cbd5e1",
+  texSize: 20,
+  texThickness: 1,
+  texOpacity: 0.5,
+  useGlow: false,
+  useShadow: false,
+};
+
+
+export const DEFAULT_CHAR_COLORS = [
+  "#ef4444",
+  "#f97316",
+  "#f59e0b",
+  "#84cc16",
+  "#10b981",
+  "#06b6d4",
+  "#3b82f6",
+  "#8b5cf6",
+  "#d946ef",
+];
+
+const buildDefaultMultiColors = (text: string): string[] =>
+  Array.from(
+    { length: text.length },
+    (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
+  );
+
+const buildPepsiColors = (text: string): string[] => {
+  const len = text.length;
+  const black = "#000000";
+  const white = "#ffffff";
+  return Array.from(
+    { length: len },
+    (_, i) => (i < 4 ? black : white),
+  );
+};
+
+
+
 export const FONTS = [
   {
     label: "Great Vibes",
@@ -72,34 +135,6 @@ export const FONTS = [
     category: "Script",
   },
 ];
-
-export const DEFAULT_CHAR_COLORS = [
-  "#ef4444",
-  "#f97316",
-  "#f59e0b",
-  "#84cc16",
-  "#10b981",
-  "#06b6d4",
-  "#3b82f6",
-  "#8b5cf6",
-  "#d946ef",
-];
-
-const buildDefaultMultiColors = (text: string): string[] =>
-  Array.from(
-    { length: text.length },
-    (_, i) => DEFAULT_CHAR_COLORS[i % DEFAULT_CHAR_COLORS.length],
-  );
-
-const buildPepsiColors = (text: string): string[] => {
-  const len = text.length;
-  const black = "#000000";
-  const white = "#ffffff";
-  return Array.from(
-    { length: len },
-    (_, i) => (i < 4 ? black : white),
-  );
-};
 
 export const THEMES: Record<string, ThemeConfig> = {
   default: {
@@ -337,36 +372,4 @@ export const THEMES: Record<string, ThemeConfig> = {
     texThickness: 1.5,
     useHanziData: true,
   },
-};
-
-export const INITIAL_STATE: SignatureState = {
-  text: "Signature",
-  font: "great-vibes",
-  fontSize: 120,
-  speed: 1.2,
-  bg: "#ffffff",
-  bg2: "#ffffff",
-  bgMode: "solid",
-  bgTransparent: false,
-  borderRadius: 12,
-  cardPadding: 24,
-  bgSizeMode: "auto",
-  bgWidth: null,
-  bgHeight: null,
-  stroke: "#333333",
-  strokeEnabled: true,
-  strokeMode: "single",
-  stroke2: "#333333",
-  strokeCharColors: [],
-  fillMode: "single",
-  fill1: "#333333",
-  fill2: "#ec4899",
-  charColors: [],
-  texture: "none",
-  texColor: "#cbd5e1",
-  texSize: 20,
-  texThickness: 1,
-  texOpacity: 0.5,
-  useGlow: false,
-  useShadow: false,
 };

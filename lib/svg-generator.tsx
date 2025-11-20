@@ -17,6 +17,8 @@ export function getTextureDefs(
   size: number,
   opacity: number,
   thickness: number = 1,
+  patternX: number = 0,
+  patternY: number = 0,
 ): string {
   // Use "size" directly as the pattern tile size in SVG units so that
   // slider values map intuitively to visual density (10 = fine, 100 = coarse),
@@ -25,17 +27,19 @@ export function getTextureDefs(
   const c = color;
   const o = opacity;
   const t = thickness;
+  const px = patternX;
+  const py = patternY;
 
   if (type === "grid") {
     return `
-      <pattern id="texture-grid" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-grid" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <path d="M ${s} 0 L 0 0 0 ${s}" fill="none" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
       </pattern>
     `;
   }
   if (type === "dots") {
     return `
-      <pattern id="texture-dots" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-dots" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <circle cx="${s / 2}" cy="${s / 2}" r="${
       t * 1.5
     }" fill="${c}" fill-opacity="${o}"/>
@@ -44,7 +48,7 @@ export function getTextureDefs(
   }
   if (type === "lines") {
     return `
-      <pattern id="texture-lines" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-lines" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <path d="M 0 ${s / 2} L ${s} ${
       s / 2
     }" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
@@ -53,7 +57,7 @@ export function getTextureDefs(
   }
   if (type === "cross") {
     return `
-      <pattern id="texture-cross" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-cross" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <path d="M ${s / 4} ${s / 4} L ${s * 0.75} ${s * 0.75} M ${s * 0.75} ${
       s / 4
     } L ${s / 4} ${
@@ -66,7 +70,7 @@ export function getTextureDefs(
     // 田字格: outer box + center cross lines
     const half = s / 2;
     return `
-      <pattern id="texture-tianzige" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-tianzige" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <rect width="${s}" height="${s}" fill="none" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
         <path d="M${half} 0 L${half} ${s} M0 ${half} L${s} ${half}" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}" stroke-dasharray="3,3"/>
       </pattern>
@@ -76,7 +80,7 @@ export function getTextureDefs(
     // 米字格: tianzige + diagonal lines
     const half = s / 2;
     return `
-      <pattern id="texture-mizige" x="0" y="0" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <pattern id="texture-mizige" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
         <rect width="${s}" height="${s}" fill="none" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}"/>
         <path d="M0 0 L${s} ${s} M${s} 0 L0 ${s} M${half} 0 L${half} ${s} M0 ${half} L${s} ${half}" stroke="${c}" stroke-width="${t}" stroke-opacity="${o}" stroke-dasharray="3,3"/>
       </pattern>
@@ -179,6 +183,7 @@ export function generateSVG(
   }
 
   // Textures - use correct pattern ID format
+  // Pattern positioning should start from 0 to ensure proper tiling
   if (state.texture && state.texture !== "none") {
     defs += getTextureDefs(
       state.texture,
@@ -186,6 +191,8 @@ export function generateSVG(
       state.texSize,
       state.texOpacity,
       state.texThickness,
+      0,
+      0,
     );
   }
 
@@ -277,11 +284,12 @@ export function generateSVG(
       rectH = state.bgHeight;
     }
 
+    // Background should always fill from the viewBox origin, centered if custom size
     const rectX = viewBox.x + (canvasWidth - rectW) / 2;
     const rectY = viewBox.y + (canvasHeight - rectH) / 2;
 
     backgroundRect =
-      `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" />`;
+      `<rect x="${rectX}" y="${rectY}" width="${rectW}" height="${rectH}" fill="${bgFill}" rx="${state.borderRadius}" />`;
     cardRect = { x: rectX, y: rectY, w: rectW, h: rectH };
   }
 
@@ -314,13 +322,26 @@ export function generateSVG(
     });
   }
 
+  // Debug logging for mobile issues
+  if (typeof window !== "undefined" && window.innerWidth < 768) {
+    console.log("[SVG Generator - Mobile]", {
+      viewBox: `${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}`,
+      bgTransparent: state.bgTransparent,
+      hasBackgroundRect: backgroundRect.length > 0,
+      hasTextureOverlay: textureOverlay.length > 0,
+      texture: state.texture,
+      patternX: viewBox.x,
+      patternY: viewBox.y,
+    });
+  }
+
   return `
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="${viewBox.x} ${viewBox.y} ${canvasWidth} ${canvasHeight}"
       width="${canvasWidth}"
       height="${canvasHeight}"
-      style="background-color: transparent; border-radius: ${state.borderRadius}px;"
+      style="display: block; max-width: 100%; height: auto;"
     >
       <defs>
         ${defs}

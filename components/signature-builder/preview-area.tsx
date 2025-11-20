@@ -184,6 +184,8 @@ export function PreviewArea(
           maxY = 100;
         }
 
+        // Normalize viewBox to start from (0, 0) to avoid negative coordinates
+        // The offset will be compensated in the transform attribute of the path group
         const viewBox = {
           x: minX - p,
           y: minY - p,
@@ -192,6 +194,19 @@ export function PreviewArea(
         };
 
         const svg = generateSVG(state, paths, viewBox);
+
+        // Debug logging for mobile issues
+        if (window.innerWidth < 768) {
+          console.log("[PreviewArea - Mobile SVG]", {
+            textLength: state.text?.length,
+            pathsCount: paths.length,
+            svgLength: svg.length,
+            hasBackgroundRect: svg.includes("<rect") && svg.includes("fill="),
+            hasPattern: svg.includes("<pattern"),
+            viewBoxMatch: svg.match(/viewBox="([^"]+)"/)?.[1],
+          });
+        }
+
         setSvgContent(svg);
         onSvgGenerated(svg);
       } catch (err) {
@@ -229,12 +244,15 @@ export function PreviewArea(
           ref={containerRef}
           className={cn(
             "relative transition-all duration-300 group cursor-pointer select-none flex items-center justify-center min-w-[200px] min-h-[100px]",
-            state.bgTransparent
-              ? "hover:shadow-xl"
-              : "shadow-2xl hover:shadow-2xl hover:scale-[1.02]",
+            state.bgTransparent ? "hover:shadow-xl" : "hover:scale-[1.02]",
           )}
           onClick={replay}
-          style={{ borderRadius: state.borderRadius }}
+          style={{
+            borderRadius: state.borderRadius,
+            boxShadow: state.bgTransparent
+              ? undefined
+              : "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          }}
         >
           {loading
             ? (
