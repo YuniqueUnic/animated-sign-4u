@@ -17,6 +17,7 @@ import {
   Film,
   Github,
   Moon,
+  Share2,
   Sun,
   Triangle,
 } from "lucide-react";
@@ -40,7 +41,7 @@ import {
 } from "@/lib/code-generators";
 import { useTheme } from "next-themes";
 import { useI18n } from "@/components/i18n-provider";
-import { buildSignApiUrl } from "@/lib/api-url";
+import { buildShareUrl, buildSignApiUrl } from "@/lib/api-url";
 
 export default function SignatureBuilderPage() {
   const [state, setState] = useState<SignatureState>(INITIAL_STATE);
@@ -195,6 +196,42 @@ export default function SignatureBuilderPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleShare = async () => {
+    try {
+      const url = buildShareUrl(state);
+
+      if (typeof navigator !== "undefined" && navigator.share) {
+        try {
+          await navigator.share({
+            title: t("appTitle"),
+            url,
+          });
+          return;
+        } catch {
+          // Fall through to clipboard/prompt on user cancellation or error
+        }
+      }
+
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(url);
+          // eslint-disable-next-line no-alert
+          alert(t("shareCopiedMessage"));
+          return;
+        } catch {
+          // Fall through to prompt
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line no-alert
+        window.prompt(t("sharePromptLabel"), url);
+      }
+    } catch {
+      // no-op – sharing should never break the main UI
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background font-sans">
       {/* Header */}
@@ -294,6 +331,17 @@ export default function SignatureBuilderPage() {
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
+
+          {/* Share current configuration */}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleShare}
+            className="h-8 w-8 text-xs inline-flex"
+            aria-label={t("shareButtonLabel")}
+          >
+            <Share2 className="h-4 w-4" />
           </Button>
 
           {/* GitHub repo link */}

@@ -582,7 +582,7 @@ Key details:
   const origin = options.origin ??
     (typeof window !== "undefined"
       ? window.location.origin
-      : "https://sign.yunique.cc");
+      : "https://sign.yunique.top");
   ```
 
 - Tests in `tests/api/api-url-roundtrip.test.ts` verify that:

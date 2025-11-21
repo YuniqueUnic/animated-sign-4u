@@ -5,13 +5,22 @@ export interface BuildSignApiUrlOptions {
     origin?: string;
 }
 
-export function buildSignApiUrl(
+interface BuildUrlParamsOptions {
+    includeText?: boolean;
+    includeFormat?: boolean;
+    format?: string;
+}
+
+function buildParamsFromState(
     state: SignatureState,
-    options: BuildSignApiUrlOptions = {},
-): string {
+    options: BuildUrlParamsOptions = {},
+): URLSearchParams {
     const params = new URLSearchParams();
 
-    params.set("text", state.text);
+    if (options.includeText !== false) {
+        params.set("text", state.text);
+    }
+
     params.set("font", state.font);
 
     // Core layout
@@ -86,14 +95,52 @@ export function buildSignApiUrl(
         params.set("linkFillStroke", "1");
     }
 
-    if (options.format) {
+    if (options.includeFormat !== false && options.format) {
         params.set("format", options.format);
     }
+
+    return params;
+}
+
+export function buildSignApiUrl(
+    state: SignatureState,
+    options: BuildSignApiUrlOptions = {},
+): string {
+    const params = buildParamsFromState(state, {
+        includeText: true,
+        includeFormat: true,
+        format: options.format,
+    });
 
     const origin = options.origin ??
         (typeof window !== "undefined"
             ? window.location.origin
-            : "https://sign.yunique.cc");
+            : "https://sign.yunique.top");
 
     return `${origin}/api/sign?${params.toString()}`;
+}
+
+export interface BuildShareUrlOptions {
+    origin?: string;
+}
+
+export function buildShareUrl(
+    state: SignatureState,
+    options: BuildShareUrlOptions = {},
+): string {
+    const params = buildParamsFromState(state, {
+        includeText: false,
+        includeFormat: false,
+    });
+
+    const origin = options.origin ??
+        (typeof window !== "undefined"
+            ? window.location.origin
+            : "https://sign.yunique.top");
+
+    const rawText = (state.text || "").trim();
+    const path = rawText ? `/${encodeURIComponent(rawText)}` : "/";
+    const query = params.toString();
+
+    return query ? `${origin}${path}?${query}` : `${origin}${path}`;
 }

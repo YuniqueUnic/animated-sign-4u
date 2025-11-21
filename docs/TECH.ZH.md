@@ -580,7 +580,7 @@ switch (formatParam) {
   const origin = options.origin ??
     (typeof window !== "undefined"
       ? window.location.origin
-      : "https://sign.yunique.cc ");
+      : "https://sign.yunique.top");
   ```
 
 - 测试文件 `tests/api/api-url-roundtrip.test.ts` 验证：

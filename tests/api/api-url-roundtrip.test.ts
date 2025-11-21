@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildStateFromQuery } from "@/lib/state-from-query";
-import { buildSignApiUrl } from "@/lib/api-url";
+import { buildShareUrl, buildSignApiUrl } from "@/lib/api-url";
 import { INITIAL_STATE } from "@/lib/constants";
 
 // Helper to build a SignatureState matching the example URL the user provided
@@ -139,5 +139,36 @@ describe("/api/sign URL and state roundtrip", () => {
         expect(state.font).toBe("sacramento");
         expect(state.fontSize).toBe(100);
         expect(state.charSpacing).toBe(20);
+    });
+
+    it("builds a short share URL with text in the path and no text/format in query", () => {
+        const example = buildExampleState();
+
+        const url = buildShareUrl(example, {
+            origin: "http://localhost:3000",
+        });
+        const parsedUrl = new URL(url);
+        const params = parsedUrl.searchParams;
+
+        // Path should contain the text
+        expect(parsedUrl.pathname).toBe("/Signature");
+
+        // Query should not redundantly contain `text` or `format`
+        expect(params.has("text")).toBe(false);
+        expect(params.has("format")).toBe(false);
+
+        // When text from the path is merged back in (as in /[text] route),
+        // the resulting params should reconstruct the same state.
+        const merged = new URLSearchParams(params.toString());
+        merged.set("text", example.text);
+        const roundtripped = buildStateFromQuery(merged);
+
+        expect(roundtripped.text).toBe(example.text);
+        expect(roundtripped.font).toBe(example.font);
+        expect(roundtripped.fontSize).toBe(example.fontSize);
+        expect(roundtripped.speed).toBe(example.speed);
+        expect(roundtripped.charSpacing).toBe(example.charSpacing);
+        expect(roundtripped.borderRadius).toBe(example.borderRadius);
+        expect(roundtripped.cardPadding).toBe(example.cardPadding);
     });
 });

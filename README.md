@@ -9,6 +9,7 @@ You can:
 - Use per-character colors or gradients
 - Enable Hanzi stroke-by-stroke animation
 - Export SVG / PNG / GIF or copy an API URL
+- Share the current configuration as a short URL for the builder UI
 
 ---
 
@@ -46,7 +47,7 @@ lib/
   svg-generator.tsx  – pure SVG generator from state + paths
   hanzi-data.ts      – Hanzi stroke data helpers
   state-from-query.ts – parse URLSearchParams into `SignatureState` (shared by API + UI)
-  api-url.ts         – build `/api/sign` URLs from state
+  api-url.ts         – build `/api/sign` and short share URLs from state
   code-generators.tsx– React/Vue/JS component generators
 ```
 
@@ -199,6 +200,8 @@ Below is a compact list of the most important parameters. All are optional; unsp
 
   This URL redirects to `/` and initializes the interactive builder with the same
   configuration. Use the `/api/sign` form above when you need a pure HTTP API response.
+  Inside the app, the top-right **Share** button generates and copies exactly this
+  kind of short URL for the current configuration.
 
 - **JSON (paths and viewBox)**
 

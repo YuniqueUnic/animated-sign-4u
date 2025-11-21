@@ -9,6 +9,7 @@ Animated Sign 4u 是一款用于生成**动画签名 SVG**和**静态 PNG/GIF**�
 - 使用逐字符颜色或渐变效果
 - 启用汉字逐笔动画
 - 导出 SVG / PNG / GIF 或复制 API 链接
+- 通过顶部栏的分享按钮生成当前配置的短分享链接
 
 ---
 
@@ -46,7 +47,7 @@ lib/
   svg-generator.tsx  – 根据状态与路径生成纯 SVG
   hanzi-data.ts      – 汉字笔画数据辅助函数
   state-from-query.ts – 将 URLSearchParams 解析为 `SignatureState`（API 与 UI 共用）
-  api-url.ts         – 从状态构建 `/api/sign` 链接
+  api-url.ts         – 从状态构建 `/api/sign` 与短分享链接
   code-generators.tsx– React/Vue/JS 组件生成器
 ```
 
@@ -197,7 +198,8 @@ HTTP API 通过单一端点对外提供服务：
   ```
 
   该链接会重定向到 `/`，并用相同的配置初始化交互式构建器。若只需要纯 HTTP API
-  响应，请使用上面的 `/api/sign` 形式。
+  响应，请使用上面的 `/api/sign` 形式。在应用内，右上角的 **分享** 按钮会为当前
+  配置生成并复制这类短分享链接。
 
 - **JSON（路径与 viewBox）**
 

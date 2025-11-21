@@ -100,6 +100,9 @@ export const messages = {
         mobileDownloadLabel: "Download",
         mobileCodeLabel: "Code",
         githubRepoLabel: "View project on GitHub",
+        shareButtonLabel: "Share",
+        shareCopiedMessage: "Share URL copied to clipboard.",
+        sharePromptLabel: "Copy this URL to share:",
 
         // Download menu labels
         downloadPngLabel: "PNG Image",
@@ -204,6 +207,9 @@ export const messages = {
         mobileDownloadLabel: "下载",
         mobileCodeLabel: "代码",
         githubRepoLabel: "查看 GitHub 仓库",
+        shareButtonLabel: "分享",
+        shareCopiedMessage: "分享链接已复制到剪贴板。",
+        sharePromptLabel: "复制此链接进行分享：",
 
         // Download menu labels
         downloadPngLabel: "PNG 图片",
