@@ -8,7 +8,12 @@
     "lint": "eslint .",
     "start": "next start",
     "test": "vitest",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest run",
+    "check": "pnpm lint && pnpm test:ci && pnpm build",
+    "release:patch": "pnpm version patch --message \"chore: release v%s\"",
+    "release:minor": "pnpm version minor --message \"chore: release v%s\"",
+    "release:major": "pnpm version major --message \"chore: release v%s\""
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",
@@ -73,11 +78,13 @@
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.0.10",
     "@vitest/ui": "^4.0.10",
+    "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
     "tw-animate-css": "1.3.3",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^7.0.0",
     "vitest": "^4.0.10"
   }
 }

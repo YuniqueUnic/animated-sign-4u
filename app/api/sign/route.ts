@@ -12,6 +12,8 @@ import { generateSVG, PathData } from "@/lib/svg-generator";
 import { fetchHanziData, isChinese, mergeHanziStrokes } from "@/lib/hanzi-data";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 
+export const runtime = "nodejs";
+
 export async function loadFont(fontId: string): Promise<any> {
     const fallbackId = INITIAL_STATE.font;
     const fontEntry = FONTS.find((f) => f.value === fontId) ??

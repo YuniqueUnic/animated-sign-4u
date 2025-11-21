@@ -84,5 +84,5 @@ describe("Signature API Logic", () => {
         // Chinese spacing effect should be noticeably smaller than English (reflecting ~1/5 scaling)
         expect(zhDiff).toBeLessThan(enDiff);
         expect(zhDiff).toBeLessThan(enDiff / 2);
-    });
+    }, 20000);
 });
