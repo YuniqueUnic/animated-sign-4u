@@ -118,4 +118,26 @@ describe("/api/sign URL and state roundtrip", () => {
         expect(parsed.useGlow).toBe(example.useGlow);
         expect(parsed.useShadow).toBe(example.useShadow);
     });
+
+    it("supports path parameter format for text (alternative API format)", () => {
+        // Simulate the path parameter format: /api/sign/MyText?font=sacramento
+        // In this format, text is extracted from the path and merged with query params
+        const textFromPath = "CustomSignature";
+        const queryParams = new URLSearchParams({
+            font: "sacramento",
+            fontSize: "100",
+            charSpacing: "20",
+        });
+
+        // Merge path parameter with query parameters (path takes precedence)
+        const mergedParams = new URLSearchParams(queryParams);
+        mergedParams.set("text", textFromPath);
+
+        const state = buildStateFromQuery(mergedParams);
+
+        expect(state.text).toBe("CustomSignature");
+        expect(state.font).toBe("sacramento");
+        expect(state.fontSize).toBe(100);
+        expect(state.charSpacing).toBe(20);
+    });
 });

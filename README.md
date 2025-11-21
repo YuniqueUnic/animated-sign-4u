@@ -130,11 +130,20 @@ switch (format) {
 
 ## 4. HTTP API
 
-### 4.1 Endpoint
+### 4.1 Endpoints
+
+The API supports two URL formats for maximum flexibility:
 
 | Method | Path           | Description                      |
 |--------|----------------|----------------------------------|
-| GET    | `/api/sign`    | Generate SVG / PNG / GIF / JSON |
+| GET    | `/api/sign`    | Generate signature with `text` as query parameter |
+| GET    | `/{text}`      | Generate signature with `text` as path parameter (cleaner URL) |
+
+**Examples:**
+- Traditional format: `http://domain.com/api/sign?text=Signature&font=sacramento`
+- New cleaner format: `http://domain.com/Signature?font=sacramento`
+
+Both formats support identical parameters and output formats.
 
 ### 4.2 Core Query Parameters
 
@@ -176,23 +185,35 @@ Below is a compact list of the most important parameters. All are optional; unsp
 
 ### 4.3 Example Requests
 
-- **Simple SVG**
+- **Simple SVG (traditional format)**
 
   ```text
   /api/sign?text=Alice&font=great-vibes
+  ```
+
+- **Simple SVG (cleaner format)**
+
+  ```text
+  /Alice?font=great-vibes
   ```
 
 - **JSON (paths and viewBox)**
 
   ```text
   /api/sign?text=Alice&theme=laser&format=json
+  # Or: /Alice?theme=laser&format=json
   ```
 
 - **Custom background size and texture**
 
   ```text
-  /api/sign?text=Demo&bgSizeMode=custom&bgWidth=800&bgHeight=400
-    &texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
+  /Demo?bgSizeMode=custom&bgWidth=800&bgHeight=400&texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
+  ```
+
+- **Chinese characters with Hanzi stroke mode**
+
+  ```text
+  /你好世界?font=ma-shan-zheng&useHanziData=1&fontSize=150
   ```
 
 ---
