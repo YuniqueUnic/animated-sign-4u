@@ -17,7 +17,7 @@ vi.mock("@/lib/hanzi-data", () => {
 const fakeFont = {
     unitsPerEm: 1000,
     stringToGlyphs(text: string) {
-        return Array.from(text).map((_, index) => ({
+        return Array.from(text).map(() => ({
             advanceWidth: 500,
             getPath(x: number, y: number, fontSize: number) {
                 const left = x;

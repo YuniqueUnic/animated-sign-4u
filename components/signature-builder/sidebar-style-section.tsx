@@ -352,7 +352,7 @@ export function StyleColorSection(
                                                 : "text-muted-foreground hover:text-foreground",
                                         )}
                                     >
-                                        {mode}
+                                        {bgSizeModeLabels[mode]}
                                     </button>
                                 ))}
                             </div>

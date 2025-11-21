@@ -6,7 +6,7 @@ import { PreviewArea } from "@/components/signature-builder/preview-area";
 import { CodePanel } from "@/components/signature-builder/code-panel";
 import { MobileDrawerSidebar } from "@/components/signature-builder/mobile-drawer-sidebar";
 import { INITIAL_STATE, THEMES } from "@/lib/constants";
-import { FillMode, SignatureState, TextureType } from "@/lib/types";
+import { SignatureState } from "@/lib/types";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import {
   Check,
@@ -228,7 +228,7 @@ export default function SignatureBuilderPage() {
     if (typeof window !== "undefined") {
       setShareCopyStatus("error");
       setTimeout(() => setShareCopyStatus("idle"), 2000);
-       
+
       window.prompt(t("sharePromptLabel"), url);
     }
   };

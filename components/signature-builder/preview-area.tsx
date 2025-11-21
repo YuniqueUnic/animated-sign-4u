@@ -5,7 +5,7 @@ import { FONTS } from "@/lib/constants";
 import opentype from "opentype.js";
 import { Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fetchHanziData, isChinese, mergeHanziStrokes } from "@/lib/hanzi-data";
+import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
 
 interface PreviewAreaProps {
@@ -22,7 +22,7 @@ export function PreviewArea(
   const [svgContent, setSvgContent] = useState("");
   const [fontObj, setFontObj] = useState<any | null>(null);
   const [zoom, setZoom] = useState(1);
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [, setContainerSize] = useState({ width: 0, height: 0 });
   const measureRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -173,7 +173,7 @@ export function PreviewArea(
                   });
                 }
               }
-            } catch (e) {
+            } catch {
               console.warn(
                 `Failed to fetch hanzi data for ${char}, falling back to font`,
               );
@@ -280,8 +280,8 @@ export function PreviewArea(
 
         setSvgContent(svg);
         onSvgGenerated(svg);
-      } catch (err) {
-        console.error("SVG Generation Error:", err);
+      } catch {
+        console.error("SVG Generation Error:");
       }
     };
 

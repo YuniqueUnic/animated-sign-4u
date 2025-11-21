@@ -9,7 +9,7 @@ import {
 } from "@/lib/constants";
 import { SignatureState } from "@/lib/types";
 import { generateSVG, PathData } from "@/lib/svg-generator";
-import { fetchHanziData, isChinese, mergeHanziStrokes } from "@/lib/hanzi-data";
+import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 
 export const runtime = "nodejs";
@@ -96,7 +96,7 @@ export async function buildPaths(font: any, state: SignatureState): Promise<{
                         });
                     }
                 }
-            } catch (e) {
+            } catch {
                 console.warn(
                     `Failed to fetch hanzi data for ${char}, falling back to font`,
                 );

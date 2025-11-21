@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { I18nProvider } from "@/components/i18n-provider";
@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Animated Sign 4u App",
@@ -39,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("font-sans antialiased")}>
+      <body className={cn(_geist.className, "antialiased")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

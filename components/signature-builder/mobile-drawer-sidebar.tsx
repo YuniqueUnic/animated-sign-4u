@@ -119,7 +119,6 @@ export function MobileDrawerSidebar(
     };
 
     const activeTitleKey = sectionTitleKeys[index] ?? sectionTitleKeys[0];
-    const activeTitle = t(activeTitleKey);
 
     const toggleOpen = () => {
         setOpen((prev) => {

@@ -106,7 +106,7 @@ export { createSignature };`;
           theme: "github-dark",
         });
         setHighlightedCode(html);
-      } catch (e) {
+      } catch {
         setHighlightedCode(`<pre><code>${code}</code></pre>`);
       }
     };

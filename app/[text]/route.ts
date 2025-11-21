@@ -15,7 +15,6 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(
     req: NextRequest,
-    _context: { params: { text: string } | Promise<{ text: string }> },
 ): Promise<Response> {
     try {
         const url = new URL(req.url);
