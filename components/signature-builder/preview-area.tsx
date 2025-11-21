@@ -6,6 +6,7 @@ import opentype from "opentype.js";
 import { Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fetchHanziData, isChinese, mergeHanziStrokes } from "@/lib/hanzi-data";
+import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
 
 interface PreviewAreaProps {
   state: SignatureState;
@@ -24,6 +25,19 @@ export function PreviewArea(
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const measureRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Debounced preview state to avoid regenerating SVG on every tiny change
+  const [previewState, setPreviewState] = useState<SignatureState>(state);
+  const debouncedUpdatePreviewState = useDebouncedCallback(
+    (next: SignatureState) => {
+      setPreviewState(next);
+    },
+    200,
+  );
+
+  useEffect(() => {
+    debouncedUpdatePreviewState(state);
+  }, [state, debouncedUpdatePreviewState]);
 
   // Update container size using ResizeObserver
   useEffect(() => {
@@ -80,9 +94,11 @@ export function PreviewArea(
   useEffect(() => {
     if (!fontObj || !measureRef.current) return;
 
+    const s = previewState;
+
     const generate = async () => {
       try {
-        const glyphs = fontObj.stringToGlyphs(state.text || "Demo");
+        const glyphs = fontObj.stringToGlyphs(s.text || "Demo");
         let paths: PathData[] = [];
         let cursorX = 10;
         let minX = Infinity,
@@ -98,24 +114,24 @@ export function PreviewArea(
         // Process each glyph and check if we should use hanzi stroke data
         for (let idx = 0; idx < glyphs.length; idx++) {
           const glyph = glyphs[idx];
-          const char = state.text[idx];
+          const char = s.text[idx];
           let d = "";
           let isHanziPath = false;
           let pathX = cursorX;
 
           // Check if we should use hanzi-writer-data for this character
-          if (state.useHanziData && char && isChinese(char)) {
+          if (s.useHanziData && char && isChinese(char)) {
             try {
               const hanziData = await fetchHanziData(char);
               if (hanziData && hanziData.strokes.length > 0) {
                 isHanziPath = true;
 
                 // Update bounding box for the character
-                const scale = state.fontSize / 1024;
+                const scale = s.fontSize / 1024;
                 const baseline = 150;
                 const x1 = pathX;
-                const y1 = baseline - state.fontSize;
-                const x2 = x1 + state.fontSize;
+                const y1 = baseline - s.fontSize;
+                const x2 = x1 + s.fontSize;
                 const y2 = baseline;
                 minX = Math.min(minX, x1);
                 minY = Math.min(minY, y1);
@@ -139,7 +155,7 @@ export function PreviewArea(
                   el.setAttribute(
                     "transform",
                     `translate(${pathX}, ${
-                      baseline - state.fontSize
+                      baseline - s.fontSize
                     }) scale(${scale})`,
                   );
                   measureRef.current?.appendChild(el);
@@ -151,7 +167,7 @@ export function PreviewArea(
                     index: idx,
                     isHanzi: true,
                     x: pathX,
-                    fontSize: state.fontSize,
+                    fontSize: s.fontSize,
                     strokeIndex: strokeIdx,
                     totalStrokes: hanziData.strokes.length,
                   });
@@ -166,7 +182,7 @@ export function PreviewArea(
 
           // Fallback to regular font path if not using hanzi data
           if (!isHanziPath) {
-            const path = glyph.getPath(cursorX, 150, state.fontSize);
+            const path = glyph.getPath(cursorX, 150, s.fontSize);
             d = path.toPathData(2);
 
             if (d) {
@@ -193,7 +209,7 @@ export function PreviewArea(
             }
           }
 
-          const baseSpacing = state.charSpacing || 0;
+          const baseSpacing = s.charSpacing || 0;
           let spacing = baseSpacing;
           if (baseSpacing !== 0 && char) {
             if (isChinese(char)) {
@@ -201,8 +217,7 @@ export function PreviewArea(
             }
           }
 
-          cursorX +=
-            glyph.advanceWidth * (state.fontSize / fontObj.unitsPerEm) +
+          cursorX += glyph.advanceWidth * (s.fontSize / fontObj.unitsPerEm) +
             spacing;
         }
 
@@ -249,12 +264,12 @@ export function PreviewArea(
           h: (maxY - minY) + (p * 2),
         };
 
-        const svg = generateSVG(state, sortedPaths, viewBox, { idPrefix });
+        const svg = generateSVG(s, sortedPaths, viewBox, { idPrefix });
 
         // Debug logging for mobile issues
         if (window.innerWidth < 768) {
           console.log("[PreviewArea - Mobile SVG]", {
-            textLength: state.text?.length,
+            textLength: s.text?.length,
             pathsCount: paths.length,
             svgLength: svg.length,
             hasBackgroundRect: svg.includes("<rect") && svg.includes("fill="),
@@ -270,9 +285,8 @@ export function PreviewArea(
       }
     };
 
-    const timer = setTimeout(generate, 50);
-    return () => clearTimeout(timer);
-  }, [state, fontObj]);
+    void generate();
+  }, [previewState, fontObj]);
 
   const replay = () => {
     const current = svgContent;

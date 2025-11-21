@@ -45,6 +45,7 @@ lib/
   constants.ts       – `INITIAL_STATE`, themes, fonts
   svg-generator.tsx  – pure SVG generator from state + paths
   hanzi-data.ts      – Hanzi stroke data helpers
+  state-from-query.ts – parse URLSearchParams into `SignatureState` (shared by API + UI)
   api-url.ts         – build `/api/sign` URLs from state
   code-generators.tsx– React/Vue/JS component generators
 ```
@@ -132,18 +133,17 @@ switch (format) {
 
 ### 4.1 Endpoints
 
-The API supports two URL formats for maximum flexibility:
+The HTTP API is exposed via a single endpoint:
 
-| Method | Path           | Description                      |
-|--------|----------------|----------------------------------|
-| GET    | `/api/sign`    | Generate signature with `text` as query parameter |
-| GET    | `/{text}`      | Generate signature with `text` as path parameter (cleaner URL) |
+| Method | Path         | Description                                                |
+|--------|--------------|------------------------------------------------------------|
+| GET    | `/api/sign`  | Generate signature (SVG / PNG / GIF / JSON) via query parameters |
 
-**Examples:**
-- Traditional format: `http://domain.com/api/sign?text=Signature&font=sacramento`
-- New cleaner format: `http://domain.com/Signature?font=sacramento`
-
-Both formats support identical parameters and output formats.
+In addition, the app supports short **share URLs** of the form `/{text}` (for example,
+`http://domain.com/Signature?font=sacramento`). These always redirect to the main
+builder page `/`, using the same query parameters to initialize the UI state. They are
+ideal for sharing configurations with other people, but they are not HTTP API endpoints
+themselves.
 
 ### 4.2 Core Query Parameters
 
@@ -181,39 +181,41 @@ Below is a compact list of the most important parameters. All are optional; unsp
 | `useHanziData` | `0`/`1`/`false`/`true`                 | Use Hanzi stroke data for Chinese characters     |
 | `linkFillStroke` | `0`/`1`/`false`/`true`               | Make stroke follow fill mode/colors              |
 
-> For full, up-to-date defaults, see `buildStateFromQuery` in `app/api/sign/route.ts`.
+> For full, up-to-date defaults, see `buildStateFromQuery` in `lib/state-from-query.ts`.
 
 ### 4.3 Example Requests
 
-- **Simple SVG (traditional format)**
+- **Simple SVG (HTTP API)**
 
   ```text
   /api/sign?text=Alice&font=great-vibes
   ```
 
-- **Simple SVG (cleaner format)**
+- **Short share URL (opens the web builder)**
 
   ```text
   /Alice?font=great-vibes
   ```
 
+  This URL redirects to `/` and initializes the interactive builder with the same
+  configuration. Use the `/api/sign` form above when you need a pure HTTP API response.
+
 - **JSON (paths and viewBox)**
 
   ```text
   /api/sign?text=Alice&theme=laser&format=json
-  # Or: /Alice?theme=laser&format=json
   ```
 
-- **Custom background size and texture**
+- **Custom background size and texture (HTTP API)**
 
   ```text
-  /Demo?bgSizeMode=custom&bgWidth=800&bgHeight=400&texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
+  /api/sign?text=Demo&bgSizeMode=custom&bgWidth=800&bgHeight=400&texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
   ```
 
-- **Chinese characters with Hanzi stroke mode**
+- **Chinese characters with Hanzi stroke mode (HTTP API)**
 
   ```text
-  /你好世界?font=ma-shan-zheng&useHanziData=1&fontSize=150
+  /api/sign?text=你好世界&font=ma-shan-zheng&useHanziData=1&fontSize=150
   ```
 
 ---

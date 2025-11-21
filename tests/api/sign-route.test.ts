@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { buildStateFromQuery } from "@/lib/state-from-query";
 
 // Mock Hanzi data utilities so /api/sign can be tested without network.
 vi.mock("@/lib/hanzi-data", () => {
@@ -201,8 +202,6 @@ describe("GET /api/sign", () => {
     });
 
     it("initializes pepsi theme as multi fill and stroke with black/white pattern", async () => {
-        const { buildStateFromQuery } = await import("@/app/api/sign/route");
-
         const params = new URLSearchParams("text=Signature&theme=pepsi");
         const state = buildStateFromQuery(params);
 

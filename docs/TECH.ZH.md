@@ -43,6 +43,7 @@ Animated Sign 4u 是一款交互式网页应用与 HTTP API，用于生成**动�
 app/
   layout.tsx         – 根布局（主题 + i18n 提供器）
   page.tsx           – 主签名构建页面（桌面 + 移动端）
+  [text]/route.ts    – 根级短分享链接路由，重定向到构建器 UI
   api/sign/route.ts  – 签名生成 API（SVG / PNG / GIF / JSON）
 
 components/
@@ -64,6 +65,7 @@ lib/
   i18n.ts            – 翻译消息与 `translate()`
   svg-generator.tsx  – 生成 SVG 标记的纯函数
   hanzi-data.ts      – 获取并缓存汉字笔画数据
+  state-from-query.ts – 将 URLSearchParams 解析为 `SignatureState`（API 与 UI 共用）
   api-url.ts         – 从 `SignatureState` 构建 `/api/sign` URL
   code-generators.tsx– 从 SVG 生成 React/Vue/JS 组件
 
@@ -119,6 +121,11 @@ HTTP 客户端：
     - 动画 SVG 标记
     - 静态 PNG 或静态 GIF（最后一帧快照）
     - 调试 JSON，包含 `paths` + `viewBox`
+
+- **短分享链接（`app/[text]/route.ts`）**
+  - 处理 `/Signature` 或 `/Signature?font=...` 这类更友好的路径。
+  - 发出 308 重定向到 `/`，保留所有查询参数，并将路径段写入 `text` 查询参数。
+  - 这样保持 `/api/sign` 作为唯一 HTTP API 端点，同时为 UI 提供可分享的短链接。
 
 - **API URL 辅助函数（`lib/api-url.ts`）**
   - 将当前 `SignatureState` 序列化为 `/api/sign` URL。
@@ -463,7 +470,7 @@ return <svg ...>{defs}{background}{texture}{groupOfPaths}</svg>;
 
 ### 5.1 `buildStateFromQuery`
 
-`buildStateFromQuery(params)` 负责：
+定义于 `lib/state-from-query.ts` 的 `buildStateFromQuery(params)` 负责：
 
 1. 从 `INITIAL_STATE` 开始。
 2. 可选地应用主题（`theme` 查询参数，从 `THEMES[...]` 合并）。

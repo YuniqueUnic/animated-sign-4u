@@ -45,6 +45,7 @@ lib/
   constants.ts       – `INITIAL_STATE`、主题、字体
   svg-generator.tsx  – 根据状态与路径生成纯 SVG
   hanzi-data.ts      – 汉字笔画数据辅助函数
+  state-from-query.ts – 将 URLSearchParams 解析为 `SignatureState`（API 与 UI 共用）
   api-url.ts         – 从状态构建 `/api/sign` 链接
   code-generators.tsx– React/Vue/JS 组件生成器
 ```
@@ -132,9 +133,16 @@ switch (format) {
 
 ### 4.1 端点
 
-| 方法 | 路径           | 描述                      |
-|--------|----------------|-------------------------|
-| GET    | `/api/sign`    | 生成 SVG / PNG / GIF / JSON |
+HTTP API 通过单一端点对外提供服务：
+
+| 方法 | 路径         | 描述                                                      |
+|--------|--------------|---------------------------------------------------------|
+| GET    | `/api/sign`  | 通过查询参数生成签名（SVG / PNG / GIF / JSON） |
+
+此外，应用还支持形如 `/{text}` 的短**分享链接**（例如
+`http://domain.com/Signature?font=sacramento`）。这些链接始终重定向到前端构建器
+页面 `/`，并使用相同的查询参数初始化 UI 状态，适合在浏览器中分享配置。但它们
+本身不再作为 HTTP API 端点使用。
 
 ### 4.2 核心查询参数
 
@@ -172,15 +180,24 @@ switch (format) {
 | `useHanziData` | `0`/`1`/`false`/`true`                 | 对汉字使用笔画数据                        |
 | `linkFillStroke` | `0`/`1`/`false`/`true`               | 使描边跟随填充模式/颜色                   |
 
-> 关于完整的最新默认值，请参见 `app/api/sign/route.ts` 中的 `buildStateFromQuery`。
+> 关于完整的最新默认值，请参见 `lib/state-from-query.ts` 中的 `buildStateFromQuery`。
 
 ### 4.3 请求示例
 
-- **简单 SVG**
+- **简单 SVG（HTTP API）**
 
   ```text
   /api/sign?text=Alice&font=great-vibes
   ```
+
+- **短分享链接（打开 Web 构建器）**
+
+  ```text
+  /Alice?font=great-vibes
+  ```
+
+  该链接会重定向到 `/`，并用相同的配置初始化交互式构建器。若只需要纯 HTTP API
+  响应，请使用上面的 `/api/sign` 形式。
 
 - **JSON（路径与 viewBox）**
 
@@ -188,11 +205,16 @@ switch (format) {
   /api/sign?text=Alice&theme=laser&format=json
   ```
 
-- **自定义背景尺寸与纹理**
+- **自定义背景尺寸与纹理（HTTP API）**
 
   ```text
-  /api/sign?text=Demo&bgSizeMode=custom&bgWidth=800&bgHeight=400
-    &texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
+  /api/sign?text=Demo&bgSizeMode=custom&bgWidth=800&bgHeight=400&texture=grid&texColor=ffffff&texSize=40&texOpacity=0.4
+  ```
+
+- **中文字符与汉字笔画模式（HTTP API）**
+
+  ```text
+  /api/sign?text=你好世界&font=ma-shan-zheng&useHanziData=1&fontSize=150
   ```
 
 ---

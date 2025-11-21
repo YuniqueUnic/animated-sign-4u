@@ -7,6 +7,7 @@ import { CodePanel } from "@/components/signature-builder/code-panel";
 import { MobileDrawerSidebar } from "@/components/signature-builder/mobile-drawer-sidebar";
 import { INITIAL_STATE, THEMES } from "@/lib/constants";
 import { FillMode, SignatureState, TextureType } from "@/lib/types";
+import { buildStateFromQuery } from "@/lib/state-from-query";
 import {
   ChevronDown,
   Code2,
@@ -55,63 +56,13 @@ export default function SignatureBuilderPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const params = new URLSearchParams(window.location.search);
+    const search = window.location.search;
+    if (!search || search === "?") return;
+
+    const params = new URLSearchParams(search);
     if ([...params.keys()].length === 0) return;
 
-    setState((prev) => {
-      let next: SignatureState = { ...prev };
-
-      const themeKey = params.get("theme");
-      if (themeKey && themeKey in THEMES) {
-        next = { ...next, ...THEMES[themeKey] } as SignatureState;
-      }
-
-      const text = params.get("text");
-      if (text) {
-        next.text = text;
-      }
-
-      const font = params.get("font");
-      if (font) {
-        next.font = font;
-      }
-
-      const fill = params.get("fill") as FillMode | null;
-      if (fill === "single" || fill === "gradient" || fill === "multi") {
-        next.fillMode = fill;
-      }
-
-      const bgParam = params.get("bg");
-      if (bgParam) {
-        if (bgParam === "transparent") {
-          next.bgTransparent = true;
-        } else {
-          next.bgTransparent = false;
-          next.bg = bgParam.startsWith("#") ? bgParam : `#${bgParam}`;
-        }
-      }
-
-      const texture = params.get("texture") as TextureType | null;
-      const allowedTextures: TextureType[] = [
-        "none",
-        "grid",
-        "dots",
-        "lines",
-        "cross",
-        "tianzige",
-        "mizige",
-      ];
-      if (texture && allowedTextures.includes(texture)) {
-        next.texture = texture;
-      }
-
-      const useHanziData = params.get("useHanziData");
-      if (useHanziData === "true" || useHanziData === "1") {
-        next.useHanziData = true;
-      }
-
-      return next;
-    });
+    setState(() => buildStateFromQuery(params));
   }, []);
 
   const updateState = (updates: Partial<SignatureState>) => {

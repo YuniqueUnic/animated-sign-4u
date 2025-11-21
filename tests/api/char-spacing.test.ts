@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-    buildPaths,
-    buildStateFromQuery,
-    loadFont,
-} from "@/app/api/sign/route";
+import { buildPaths, loadFont } from "@/app/api/sign/route";
+import { buildStateFromQuery } from "@/lib/state-from-query";
 import { INITIAL_STATE } from "@/lib/constants";
 
 describe("Signature API Logic", () => {

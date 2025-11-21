@@ -43,6 +43,7 @@ This document describes the **current implementation** as of version `0.2.4`, ba
 app/
   layout.tsx         – Root layout (theme + i18n providers)
   page.tsx           – Main signature builder page (desktop + mobile)
+  [text]/route.ts    – Root-level short share URL redirect to builder UI
   api/sign/route.ts  – Signature generation API (SVG / PNG / GIF / JSON)
 
 components/
@@ -64,6 +65,7 @@ lib/
   i18n.ts            – Translation messages and `translate()`
   svg-generator.tsx  – Pure function to generate SVG markup
   hanzi-data.ts      – Fetch and cache Hanzi stroke data
+  state-from-query.ts – Parse URLSearchParams into `SignatureState` (shared by API + UI)
   api-url.ts         – Build `/api/sign` URLs from a `SignatureState`
   code-generators.tsx– Generate React/Vue/JS components from the SVG
 
@@ -119,6 +121,13 @@ HTTP clients:
     - Animated SVG markup
     - Static PNG or static GIF (last frame snapshot)
     - Debug JSON with `paths` + `viewBox`
+
+- **Short share URLs (`app/[text]/route.ts`)**
+  - Handle human-friendly paths like `/Signature` or `/Signature?font=...`.
+  - Issue a 308 redirect to `/` while preserving all query parameters and
+    setting the `text` query value from the path segment.
+  - This keeps `/api/sign` as the single HTTP API endpoint while providing
+    shareable URLs for the interactive builder UI.
 
 - **API URL helper (`lib/api-url.ts`)**
   - Serializes the current `SignatureState` into a `/api/sign` URL.
@@ -463,7 +472,7 @@ The route is a Next.js App Router handler that exposes a single `GET` endpoint.
 
 ### 5.1 `buildStateFromQuery`
 
-`buildStateFromQuery(params)` is responsible for:
+Defined in `lib/state-from-query.ts`, `buildStateFromQuery(params)` is responsible for:
 
 1. Starting from `INITIAL_STATE`.
 2. Optionally applying a theme (`theme` query param, merged from `THEMES[...]`).
