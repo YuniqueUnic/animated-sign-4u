@@ -1,12 +1,29 @@
 # Animated Sign 4u
 
+<div style="display: flex; justify-content: center;">
+  <a href="./README.md">English</a>
+    <a style="margin-left: 8px; margin-right: 8px;">|</a>
+  <a href="./README.ZH.md">中文介绍</a>
+</div>
+
+<a href="https://signature4u.vercel.app/%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D?font=dancing-script&fontSize=120&speed=1.4&charSpacing=100&borderRadius=8&cardPadding=24&fill=multi&fill1=e56666&fill2=ec4899&stroke=e56666&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=e5e7eb&texture=lines&texColor=3b82f6&texSize=35&texThickness=3&texOpacity=0.2&colors=614c4c-e56666-462525-e56666&useHanziData=true&linkFillStroke=1">
+  <img src="https://sign.yunique.top/api/sign?text=%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D&font=dancing-script&fontSize=120&speed=1.4&charSpacing=100&borderRadius=8&cardPadding=24&fill=multi&fill1=e56666&fill2=ec4899&stroke=e56666&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=e5e7eb&texture=lines&texColor=3b82f6&texSize=35&texThickness=3&texOpacity=0.2&colors=614c4c-e56666-462525-e56666&useHanziData=true&linkFillStroke=1" align="right" width="320" alt="Animated Sign ZH" />
+</a>
+
+> [!NOTE]
 > website: [Animated Sign 4u](https://signature4u.vercel.app/)
+>
+> 你看到的动态签名正是本项目提供的!!!
 
 Animated Sign 4u 是一款用于生成**动画签名 SVG**和**静态 PNG/GIF**图像的小型 Next.js 应用与 HTTP API。
 
 你可以：
 
 - 输入姓名/签名并选择手写字体/品牌字体
+<a href="https://signature4u.vercel.app/Signature?font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true">
+  <img src="https://sign.yunique.top/api/sign?text=Signature&font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true" align="right" width="320" alt="Animated Sign EN" />
+</a>
+
 - 应用主题（背景、纹理、发光/阴影）
 - 使用逐字符颜色或渐变效果
 - 启用汉字逐笔动画
@@ -138,9 +155,9 @@ switch (format) {
 
 HTTP API 通过单一端点对外提供服务：
 
-| 方法 | 路径         | 描述                                                      |
-|--------|--------------|---------------------------------------------------------|
-| GET    | `/api/sign`  | 通过查询参数生成签名（SVG / PNG / GIF / JSON） |
+| 方法 | 路径        | 描述                                           |
+| ---- | ----------- | ---------------------------------------------- |
+| GET  | `/api/sign` | 通过查询参数生成签名（SVG / PNG / GIF / JSON） |
 
 此外，应用还支持形如 `/{text}` 的短**分享链接**（例如
 `http://domain.com/Signature?font=sacramento`）。这些链接始终重定向到前端构建器
@@ -151,37 +168,37 @@ HTTP API 通过单一端点对外提供服务：
 
 以下是重要参数的精简列表。所有参数均为可选；未指定的字段回退到 `INITIAL_STATE` 或主题默认值。
 
-| 参数          | 类型/值                                | 描述                                      |
-|----------------|----------------------------------------|-----------------------------------------|
-| `text`         | 字符串                                 | 签名文本                                  |
-| `font`         | 字符串（字体 id）                      | 来自 `lib/constants.ts` 中 `FONTS` 的字体键 |
-| `theme`        | 字符串                                 | 来自 `THEMES` 的主题键                    |
-| `format`       | `svg`（默认）\|`png`\|`gif`\|`json` | 输出格式                                  |
-| `fontSize`     | 大于 0 的数字                          | 字体大小                                  |
-| `speed`        | 大于 0 的数字                          | 动画速度**系数**（值越大 = 越快）         |
-| `charSpacing`  | 数字                                   | 基础字符间距（语言感知缩放）              |
-| `fill`         | `single`\|`gradient`\|`multi`         | 填充模式                                  |
-| `fill1` / `fill2` | 颜色（如 `ff0000` 或 `#ff0000`）   | 主/次填充颜色                             |
-| `colors`       | `c1-c2-...`                            | 逐字符填充颜色（启用多色模式）            |
-| `stroke` / `stroke2` | 颜色                              | 描边颜色                                  |
-| `strokeMode`   | `single`\|`gradient`\|`multi`         | 描边模式                                  |
-| `strokeEnabled`| `0`/`1`/`false`/`true`                 | 开关描边                                  |
-| `bg`           | `transparent` 或颜色                   | 背景颜色/透明度                           |
-| `bgMode`       | `solid`\|`gradient`                   | 背景模式                                  |
-| `bg2`          | 颜色                                   | 渐变副色                                  |
-| `bgSizeMode`   | `auto`\|`custom`                      | 自动卡片尺寸或固定卡片尺寸                |
-| `bgWidth` / `bgHeight` | 大于 0 的数字                  | 自定义卡片尺寸（居中）                    |
-| `borderRadius` | 大于等于 0 的数字                      | 卡片圆角半径                              |
-| `cardPadding`  | 大于等于 0 的数字                      | 纹理叠加使用的内边距                      |
-| `texture`      | `none`\|`grid`\|`dots`\|`lines`\|`cross`\|`tianzige`\|`mizige` | 纹理叠加类型 |
-| `texColor`     | 颜色                                   | 纹理颜色                                  |
-| `texSize`      | 大于 0 的数字                          | 纹理缩放                                  |
-| `texThickness` | 大于 0 的数字                          | 纹理线宽                                  |
-| `texOpacity`   | 0 到 1                                 | 纹理透明度                                |
-| `useGlow`      | `0`/`1`/`false`/`true`                 | 启用发光效果                              |
-| `useShadow`    | `0`/`1`/`false`/`true`                 | 启用阴影效果                              |
-| `useHanziData` | `0`/`1`/`false`/`true`                 | 对汉字使用笔画数据                        |
-| `linkFillStroke` | `0`/`1`/`false`/`true`               | 使描边跟随填充模式/颜色                   |
+| 参数                   | 类型/值                                                        | 描述                                        |
+| ---------------------- | -------------------------------------------------------------- | ------------------------------------------- |
+| `text`                 | 字符串                                                         | 签名文本                                    |
+| `font`                 | 字符串（字体 id）                                              | 来自 `lib/constants.ts` 中 `FONTS` 的字体键 |
+| `theme`                | 字符串                                                         | 来自 `THEMES` 的主题键                      |
+| `format`               | `svg`（默认）\|`png`\|`gif`\|`json`                            | 输出格式                                    |
+| `fontSize`             | 大于 0 的数字                                                  | 字体大小                                    |
+| `speed`                | 大于 0 的数字                                                  | 动画速度**系数**（值越大 = 越快）           |
+| `charSpacing`          | 数字                                                           | 基础字符间距（语言感知缩放）                |
+| `fill`                 | `single`\|`gradient`\|`multi`                                  | 填充模式                                    |
+| `fill1` / `fill2`      | 颜色（如 `ff0000` 或 `#ff0000`）                               | 主/次填充颜色                               |
+| `colors`               | `c1-c2-...`                                                    | 逐字符填充颜色（启用多色模式）              |
+| `stroke` / `stroke2`   | 颜色                                                           | 描边颜色                                    |
+| `strokeMode`           | `single`\|`gradient`\|`multi`                                  | 描边模式                                    |
+| `strokeEnabled`        | `0`/`1`/`false`/`true`                                         | 开关描边                                    |
+| `bg`                   | `transparent` 或颜色                                           | 背景颜色/透明度                             |
+| `bgMode`               | `solid`\|`gradient`                                            | 背景模式                                    |
+| `bg2`                  | 颜色                                                           | 渐变副色                                    |
+| `bgSizeMode`           | `auto`\|`custom`                                               | 自动卡片尺寸或固定卡片尺寸                  |
+| `bgWidth` / `bgHeight` | 大于 0 的数字                                                  | 自定义卡片尺寸（居中）                      |
+| `borderRadius`         | 大于等于 0 的数字                                              | 卡片圆角半径                                |
+| `cardPadding`          | 大于等于 0 的数字                                              | 纹理叠加使用的内边距                        |
+| `texture`              | `none`\|`grid`\|`dots`\|`lines`\|`cross`\|`tianzige`\|`mizige` | 纹理叠加类型                                |
+| `texColor`             | 颜色                                                           | 纹理颜色                                    |
+| `texSize`              | 大于 0 的数字                                                  | 纹理缩放                                    |
+| `texThickness`         | 大于 0 的数字                                                  | 纹理线宽                                    |
+| `texOpacity`           | 0 到 1                                                         | 纹理透明度                                  |
+| `useGlow`              | `0`/`1`/`false`/`true`                                         | 启用发光效果                                |
+| `useShadow`            | `0`/`1`/`false`/`true`                                         | 启用阴影效果                                |
+| `useHanziData`         | `0`/`1`/`false`/`true`                                         | 对汉字使用笔画数据                          |
+| `linkFillStroke`       | `0`/`1`/`false`/`true`                                         | 使描边跟随填充模式/颜色                     |
 
 > 关于完整的最新默认值，请参见 `lib/state-from-query.ts` 中的 `buildStateFromQuery`。
 
