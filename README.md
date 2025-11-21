@@ -1,9 +1,12 @@
-# Animated Sign 4u
-
-<div style="display: flex; justify-content: center;">
-  <a href="./README.md">English</a>
-    <a style="margin-left: 8px; margin-right: 8px;">|</a>
-  <a href="./README.ZH.md">中文介绍</a>
+<div align="center"> 
+  <img src="https://sign.yunique.top/api/sign?text=Animated+Signature+4u&font=pacifico&fontSize=101&speed=7.6&charSpacing=0&borderRadius=4&cardPadding=24&fill=gradient&fill1=facc15&fill2=d946ef&stroke=facc15&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=gradient&bg2=1e293b&texture=cross&texColor=050910&texSize=38&texThickness=1&texOpacity=0.2&useGlow=1" align="center"  alt="Animated Sign 4u" />
+  </br>
+  <div style="display: flex; justify-content: center;">
+    <a href="./README.md">English</a>
+      <a style="margin-left: 8px; margin-right: 8px;">|</a>
+    <a href="./README.ZH.md">中文介绍</a>
+  </div>
+  </br>
 </div>
 
 <a href="https://signature4u.vercel.app/Signature?font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true">
@@ -20,8 +23,8 @@ Animated Sign 4u is a small Next.js app and HTTP API for generating **animated s
 You can:
 
 - Type a name/signature and pick a script/brand font
-<a href="https://signature4u.vercel.app/%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D?font=dancing-script&fontSize=120&speed=1.4&charSpacing=100&borderRadius=8&cardPadding=24&fill=multi&fill1=e56666&fill2=ec4899&stroke=e56666&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=e5e7eb&texture=lines&texColor=3b82f6&texSize=35&texThickness=3&texOpacity=0.2&colors=614c4c-e56666-462525-e56666&useHanziData=true&linkFillStroke=1">
-  <img src="https://sign.yunique.top/api/sign?text=%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D&font=dancing-script&fontSize=120&speed=1.4&charSpacing=100&borderRadius=8&cardPadding=24&fill=multi&fill1=e56666&fill2=ec4899&stroke=e56666&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=e5e7eb&texture=lines&texColor=3b82f6&texSize=35&texThickness=3&texOpacity=0.2&colors=614c4c-e56666-462525-e56666&useHanziData=true&linkFillStroke=1" align="right" width="320" alt="Animated Sign ZH" />
+<a href="https://signature4u.vercel.app/%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D?font=ma-shan-zheng&fontSize=120&speed=0.6&charSpacing=-2&borderRadius=8&cardPadding=24&fill=multi&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=lines&texColor=d24141&texSize=35&texThickness=1.5&texOpacity=0.4&colors=3e3737-d9534f-403a3a-d9534f&useHanziData=true&linkFillStroke=1">
+  <img src="https://signature4u.vercel.app/api/sign?text=%E4%B8%BA%E4%BD%A0%E7%AD%BE%E5%90%8D&font=ma-shan-zheng&fontSize=120&speed=0.6&charSpacing=-2&borderRadius=8&cardPadding=24&fill=multi&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=ec4899&strokeMode=multi&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=lines&texColor=d24141&texSize=35&texThickness=1.5&texOpacity=0.4&colors=3e3737-d9534f-403a3a-d9534f&useHanziData=true&linkFillStroke=1" align="right" width="320" alt="Animated Sign ZH" />
 </a>
 
 - Apply themes (backgrounds, textures, glow/shadow)
