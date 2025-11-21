@@ -228,7 +228,7 @@ export default function SignatureBuilderPage() {
     if (typeof window !== "undefined") {
       setShareCopyStatus("error");
       setTimeout(() => setShareCopyStatus("idle"), 2000);
-      // eslint-disable-next-line no-alert
+       
       window.prompt(t("sharePromptLabel"), url);
     }
   };

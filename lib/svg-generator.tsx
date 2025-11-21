@@ -424,7 +424,7 @@ export function generateSVG(
   // CSS styles for texture overlay fallback (mobile compatibility)
   // Note: Removed CSS fallback as it was incorrectly applying background-image to SVG rects
   // and hiding the actual SVG pattern on mobile.
-  let textureStyles = "";
+  const textureStyles = "";
 
   // Debug logging for mobile issues
   if (typeof window !== "undefined" && window.innerWidth < 768) {

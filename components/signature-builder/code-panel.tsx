@@ -36,7 +36,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
     if (type === "api") {
       return buildSignApiUrl(state);
     } else if (type === "react") {
-      let jsx = cleanSvg
+      const jsx = cleanSvg
         .replace(/class="/g, 'className="')
         .replace(/-([a-z])/g, (g) => g[1].toUpperCase())
         .replace(/style="([^"]*)"/g, "style={{$1}}");

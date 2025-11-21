@@ -99,7 +99,7 @@ export function PreviewArea(
     const generate = async () => {
       try {
         const glyphs = fontObj.stringToGlyphs(s.text || "Demo");
-        let paths: PathData[] = [];
+        const paths: PathData[] = [];
         let cursorX = 10;
         let minX = Infinity,
           minY = Infinity,
@@ -117,7 +117,7 @@ export function PreviewArea(
           const char = s.text[idx];
           let d = "";
           let isHanziPath = false;
-          let pathX = cursorX;
+          const pathX = cursorX;
 
           // Check if we should use hanzi-writer-data for this character
           if (s.useHanziData && char && isChinese(char)) {
