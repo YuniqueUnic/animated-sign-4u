@@ -54,6 +54,7 @@ export default function SignatureBuilderPage() {
   const [shareCopyStatus, setShareCopyStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [logoThemeKey, setLogoThemeKey] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const { t, locale, setLocale } = useI18n();
 
@@ -71,6 +72,15 @@ export default function SignatureBuilderPage() {
     if ([...params.keys()].length === 0) return;
 
     setState(() => buildStateFromQuery(params));
+  }, []);
+
+  useEffect(() => {
+    // Randomize logo theme only on the client after mount to avoid
+    // SSR/client hydration mismatches caused by Math.random and
+    // environment-specific origins.
+    const keys = Object.keys(THEMES);
+    if (keys.length === 0) return;
+    setLogoThemeKey(keys[Math.floor(Math.random() * keys.length)]);
   }, []);
 
   const updateState = (updates: Partial<SignatureState>) => {
@@ -258,11 +268,52 @@ export default function SignatureBuilderPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background font-sans">
       {/* Header */}
-      <header className="h-14 border-b bg-card backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
+      <header className="h-14 border-b bg-card backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-20 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-linear-to-br  from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg transform -rotate-3">
-            4U
-          </div>
+          {(() => {
+            // During SSR and the very first client render, render a simple
+            // static 4U block to keep server and client markup identical.
+            if (!logoThemeKey) {
+              return (
+                <div className="w-8 h-8 bg-linear-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xs transform -rotate-3">
+                  4U
+                </div>
+              );
+            }
+            const themeConfig = THEMES[logoThemeKey];
+            let logoState: SignatureState = {
+              ...INITIAL_STATE,
+              text: "4U",
+            };
+            if (themeConfig) {
+              logoState = {
+                ...logoState,
+                ...themeConfig,
+                text: "4U",
+                fontSize: 100,
+                bgSizeMode: "auto",
+                bgWidth: null,
+                bgHeight: null,
+              };
+            }
+            const logoUrl = buildSignApiUrl(logoState, { format: "svg" });
+
+            return (
+              <div className="w-8 h-8 rounded-lg overflow-hidden transform -rotate-3 shadow-none flex items-center justify-center">
+                <img
+                  src={logoUrl}
+                  alt="4U logo"
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                  style={{
+                    boxShadow: "none",
+                    border: "none",
+                    background: "none",
+                  }}
+                />
+              </div>
+            );
+          })()}
           <h1 className="text-sm font-bold tracking-tight hidden md:block">
             {t("appTitle")}
           </h1>
