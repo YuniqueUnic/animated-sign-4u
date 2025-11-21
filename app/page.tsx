@@ -9,6 +9,7 @@ import { INITIAL_STATE, THEMES } from "@/lib/constants";
 import { FillMode, SignatureState, TextureType } from "@/lib/types";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import {
+  Check,
   ChevronDown,
   Code2,
   Copy,
@@ -21,6 +22,7 @@ import {
   Share2,
   Sun,
   Triangle,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +51,9 @@ export default function SignatureBuilderPage() {
   const [svgCode, setSvgCode] = useState("");
   const [uploadedFont, setUploadedFont] = useState<ArrayBuffer | null>(null);
   const [isCodeOverlayOpen, setIsCodeOverlayOpen] = useState(false);
+  const [shareCopyStatus, setShareCopyStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const { theme, setTheme } = useTheme();
   const { t, locale, setLocale } = useI18n();
 
@@ -202,6 +207,8 @@ export default function SignatureBuilderPage() {
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
       try {
         await navigator.clipboard.writeText(url);
+        setShareCopyStatus("success");
+        setTimeout(() => setShareCopyStatus("idle"), 2000);
         return;
       } catch {
         // Fall through to prompt
@@ -209,6 +216,8 @@ export default function SignatureBuilderPage() {
     }
 
     if (typeof window !== "undefined") {
+      setShareCopyStatus("error");
+      setTimeout(() => setShareCopyStatus("idle"), 2000);
       // eslint-disable-next-line no-alert
       window.prompt(t("sharePromptLabel"), url);
     }
@@ -241,7 +250,8 @@ export default function SignatureBuilderPage() {
       const url = buildShareUrl(state);
       await copyShareUrl(url);
     } catch {
-      // no-op – copying should never break the main UI
+      setShareCopyStatus("error");
+      setTimeout(() => setShareCopyStatus("idle"), 2000);
     }
   };
 
@@ -363,8 +373,28 @@ export default function SignatureBuilderPage() {
                 className="text-xs flex items-center gap-2"
                 onClick={handleCopyShareUrl}
               >
-                <Copy className="w-3.5 h-3.5" />
-                <span>{t("shareCopyLabel")}</span>
+                {shareCopyStatus === "success" && (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-600">
+                      {t("shareCopySuccessLabel")}
+                    </span>
+                  </>
+                )}
+                {shareCopyStatus === "error" && (
+                  <>
+                    <X className="w-3.5 h-3.5 text-red-600" />
+                    <span className="text-red-600">
+                      {t("shareCopyErrorLabel")}
+                    </span>
+                  </>
+                )}
+                {shareCopyStatus === "idle" && (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{t("shareCopyLabel")}</span>
+                  </>
+                )}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-xs flex items-center gap-2"
@@ -393,8 +423,28 @@ export default function SignatureBuilderPage() {
                   onClick={handleCopyShareUrl}
                   className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md transition text-left"
                 >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{t("shareCopyLabel")}</span>
+                  {shareCopyStatus === "success" && (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-600">
+                        {t("shareCopySuccessLabel")}
+                      </span>
+                    </>
+                  )}
+                  {shareCopyStatus === "error" && (
+                    <>
+                      <X className="w-3.5 h-3.5 text-red-600" />
+                      <span className="text-red-600">
+                        {t("shareCopyErrorLabel")}
+                      </span>
+                    </>
+                  )}
+                  {shareCopyStatus === "idle" && (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{t("shareCopyLabel")}</span>
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
