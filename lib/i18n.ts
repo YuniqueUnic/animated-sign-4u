@@ -31,6 +31,11 @@ export const messages = {
         charSpacingLabel: "Character Spacing",
         hanziStrokeModeLabel: "Chinese Stroke Mode",
         hanziStrokeModeDescription: "Draw Chinese characters stroke by stroke",
+        gifExportSettings: "GIF Export Settings",
+        gifFpsLabel: "Frame Rate",
+        gifFpsDescription: "Higher FPS = smoother animation, larger file",
+        gifQualityLabel: "Quality",
+        gifQualityDescription: "Lower value = better quality, larger file (1-20)",
 
         // Style & Color labels
         cardBackgroundLabel: "Card Background",
@@ -111,6 +116,8 @@ export const messages = {
         // Download menu labels
         downloadPngLabel: "PNG Image",
         downloadGifLabel: "GIF Image",
+        downloadSvgAnimatedLabel: "SVG (Animated)",
+        downloadSvgStaticLabel: "SVG (Static)",
     },
     zh: {
         appTitle: "动态签名 4u",
@@ -142,6 +149,11 @@ export const messages = {
         charSpacingLabel: "字符间距",
         hanziStrokeModeLabel: "汉字笔画模式",
         hanziStrokeModeDescription: "按笔画顺序绘制中文字符",
+        gifExportSettings: "GIF 导出设置",
+        gifFpsLabel: "帧率",
+        gifFpsDescription: "帧率越高动画越流畅，文件越大",
+        gifQualityLabel: "画质",
+        gifQualityDescription: "数值越小质量越高，文件越大 (1-20)",
 
         // Style & Color labels
         cardBackgroundLabel: "卡片背景",
@@ -222,6 +234,8 @@ export const messages = {
         // Download menu labels
         downloadPngLabel: "PNG 图片",
         downloadGifLabel: "GIF 图片",
+        downloadSvgAnimatedLabel: "SVG (动态)",
+        downloadSvgStaticLabel: "SVG (静态)",
     },
 } as const;
 

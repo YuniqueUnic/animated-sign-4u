@@ -6,6 +6,7 @@ export const INITIAL_STATE: SignatureState = {
   fontSize: 120,
   charSpacing: 0,
   speed: 1,
+  repeat: true, // Default: infinite loop
   bg: "#ffffff",
   bg2: "#ffffff",
   bgMode: "solid",
@@ -33,6 +34,8 @@ export const INITIAL_STATE: SignatureState = {
   useShadow: false,
   linkFillStroke: false,
   useHanziData: false,
+  gifFps: 30,
+  gifQuality: 5,
 };
 
 export const DEFAULT_CHAR_COLORS = [

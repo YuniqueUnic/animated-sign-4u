@@ -11,6 +11,7 @@ import { SignatureState } from "@/lib/types";
 import { generateSVG, PathData } from "@/lib/svg-generator";
 import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
 import { buildStateFromQuery } from "@/lib/state-from-query";
+import { generateAnimatedGIF } from "@/lib/gif-generator";
 
 export const runtime = "nodejs";
 
@@ -188,29 +189,23 @@ export async function GET(req: NextRequest): Promise<Response> {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json; charset=utf-8",
-                    "Cache-Control": "s-maxage=86400, immutable",
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
                 },
             });
         }
 
-        // NOTE: GIF export currently renders a single-frame image of the
-        // final SVG state (no stroke-by-stroke animation timeline yet).
-        // This keeps the API simple and fast; a multi-frame animated GIF
-        // would require sampling the SVG animation over time and composing
-        // many frames, which is planned but not implemented here.
+        // Generate animated GIF with stroke-by-stroke animation
         if (format === "gif") {
-            const staticSvg = generateSVG(state, paths, viewBox, {
-                staticRender: true,
+            const gifBuffer = await generateAnimatedGIF(state, paths, viewBox, {
+                fps: state.gifFps ?? 30, // Use state parameter or default to 30 fps
+                quality: state.gifQuality ?? 5, // Use state parameter or default to 5 (higher quality)
             });
-            const gifBuffer = await sharp(Buffer.from(staticSvg)).gif()
-                .toBuffer();
-            const gifArray = new Uint8Array(gifBuffer);
 
-            return new Response(gifArray, {
+            return new Response(gifBuffer, {
                 status: 200,
                 headers: {
                     "Content-Type": "image/gif",
-                    "Cache-Control": "s-maxage=86400, immutable",
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
                 },
             });
         }
@@ -227,18 +222,24 @@ export async function GET(req: NextRequest): Promise<Response> {
                 status: 200,
                 headers: {
                     "Content-Type": "image/png",
-                    "Cache-Control": "s-maxage=86400, immutable",
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
                 },
             });
         }
 
-        const svg = generateSVG(state, paths, viewBox);
+        // Check if static SVG is requested
+        const staticParam = params.get("static");
+        const isStaticSvg = staticParam === "1" || staticParam === "true";
+
+        const svg = generateSVG(state, paths, viewBox, {
+            staticRender: isStaticSvg,
+        });
 
         return new Response(svg, {
             status: 200,
             headers: {
                 "Content-Type": "image/svg+xml; charset=utf-8",
-                "Cache-Control": "s-maxage=86400, immutable",
+                "Cache-Control": "no-cache, no-store, must-revalidate",
             },
         });
     } catch (error) {

@@ -93,6 +93,59 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
                                 updateState({ useHanziData: checked })}
                         />
                     </div>
+
+                    {/* GIF Export Settings */}
+                    <div className="pt-3 border-t border-slate-200/60">
+                        <div className="text-[11px] font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                            {t("gifExportSettings")}
+                        </div>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-xs font-medium">
+                                    <span className="text-muted-foreground">
+                                        {t("gifFpsLabel")}
+                                    </span>
+                                    <span className="text-indigo-600 font-mono">
+                                        {state.gifFps ?? 30} fps
+                                    </span>
+                                </div>
+                                <Slider
+                                    min={10}
+                                    max={60}
+                                    step={5}
+                                    value={[state.gifFps ?? 30]}
+                                    onValueChange={([v]) =>
+                                        updateState({ gifFps: v })}
+                                    className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
+                                />
+                                <p className="text-[10px] text-muted-foreground/70">
+                                    {t("gifFpsDescription")}
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-xs font-medium">
+                                    <span className="text-muted-foreground">
+                                        {t("gifQualityLabel")}
+                                    </span>
+                                    <span className="text-indigo-600 font-mono">
+                                        {state.gifQuality ?? 5}
+                                    </span>
+                                </div>
+                                <Slider
+                                    min={1}
+                                    max={20}
+                                    step={1}
+                                    value={[state.gifQuality ?? 5]}
+                                    onValueChange={([v]) =>
+                                        updateState({ gifQuality: v })}
+                                    className="**:data-[slot=slider-track]:bg-slate-200 **:data-[slot=slider-track]:h-2 **:data-[slot=slider-range]:bg-indigo-500 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:border-2 **:data-[slot=slider-thumb]:border-indigo-500 **:data-[slot=slider-thumb]:shadow-lg **:data-[slot=slider-thumb]:w-5 **:data-[slot=slider-thumb]:h-5"
+                                />
+                                <p className="text-[10px] text-muted-foreground/70">
+                                    {t("gifQualityDescription")}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </details>
         </section>

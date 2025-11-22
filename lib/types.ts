@@ -16,6 +16,7 @@ export interface SignatureState {
   font: string;
   fontSize: number;
   speed: number;
+  repeat: boolean; // Animation repeat mode: true for infinite loop, false for single play
 
   charSpacing: number;
 
@@ -59,6 +60,10 @@ export interface SignatureState {
 
   // Chinese Stroke Mode
   useHanziData?: boolean;
+
+  // GIF Export Settings
+  gifFps?: number;        // Frames per second for GIF export (default: 30)
+  gifQuality?: number;    // GIF quality 1-20, lower is better (default: 5)
 }
 
 export interface ThemeConfig extends Partial<SignatureState> {
