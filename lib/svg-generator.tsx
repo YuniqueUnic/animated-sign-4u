@@ -236,7 +236,8 @@ export function generateSVG(
     );
   }
 
-  // Build Paths with corrected animation
+  // Build Paths with SMIL animations - Carousel effect (draw → hold → erase → repeat)
+  // Using a global cycle controller like TypingSVG
   let pathElements = "";
   // Treat `speed` as a speed factor: larger values make the animation faster.
   // Base duration per character is ~1s at speed=1, then scaled as 1 / speed.
@@ -285,11 +286,23 @@ export function generateSVG(
     globalCharStart += charDuration;
   });
 
+  // Calculate total draw duration (from first path to last path complete)
+  const totalDrawDuration = globalCharStart;
+
+  // Carousel timing phases:
+  // - Draw phase: totalDrawDuration (left to right)
+  // - Hold phase: 1s (fully visible)
+  // - Erase phase: totalDrawDuration (right to left, reverse order)
+  // - Pause phase: 0.5s (before next loop)
+  const holdDuration = 1;
+  const pauseDuration = 0.5;
+  const totalCycleDuration = totalDrawDuration + holdDuration + totalDrawDuration + pauseDuration;
+
   // Use paths directly to ensure correct order (generation order is correct)
   paths.forEach((p, i) => {
     const timing = timings.get(p);
-    const duration = timing?.duration ?? ((p.len / 300) * charDuration);
-    const delay = timing?.delay ?? 0;
+    const drawDuration = timing?.duration ?? ((p.len / 300) * charDuration);
+    const drawDelay = timing?.delay ?? 0;
 
     const fill = state.fillMode === "single"
       ? state.fill1
@@ -318,47 +331,99 @@ export function generateSVG(
       filterRef = `url(#${idPrefix}shadow)`;
     }
 
-    const strokeDashoffset = staticRender ? 0 : (p.isHanzi ? -p.len : p.len);
-    const fillOpacity = staticRender ? 1 : 0;
-    const animationStyle = staticRender ? "" : `animation: 
-            ${idPrefix}draw-${i} ${duration}s ease-out forwards ${delay}s, 
-            ${idPrefix}fill-fade-${i} 0.8s ease-out forwards ${
-      delay + duration * 0.6
-    }s;`;
+    const initialStrokeDashoffset = p.isHanzi ? -p.len : p.len;
 
     // For Chinese characters using hanzi-writer-data, apply coordinate transformation
     let transformAttr = "";
     if (p.isHanzi && p.x !== undefined && p.fontSize !== undefined) {
       const scale = p.fontSize / 1024;
       const baseline = 150;
-      // hanzi-writer-data: (0,0) is top-left, (1024, 1024) is bottom-right
-      // But strokes are drawn mirrored, need Y-axis flip at center: translate(0, -1024) scale(1, -1)
-      // Combined: translate to position, scale with Y-flip, then adjust for flip offset
       transformAttr = `transform="translate(${p.x}, ${
         baseline - p.fontSize
       }) scale(${scale}, ${-scale}) translate(0, -1024)"`;
     }
 
+    // Calculate timing for carousel effect:
+    // Draw: starts at drawDelay, ends at drawDelay + drawDuration
+    // Erase: reverse order - last path erases first
+    // Erase delay = totalDrawDuration + holdDuration + (totalDrawDuration - drawDelay - drawDuration)
+    const eraseDelay = totalDrawDuration + holdDuration + (totalDrawDuration - drawDelay - drawDuration);
+    const fillFadeDelay = drawDelay + drawDuration * 0.6;
+    const fillEraseDelay = eraseDelay + drawDuration * 0.4;
+
+    // Cycle ID for animation reference
+    const cycleId = idPrefix ? `${idPrefix}cycle` : "cycle";
+
+    // SMIL animations using cycle.begin reference for carousel effect
+    const strokeDashAnimation = !staticRender
+      ? `
+        <animate
+          attributeName="stroke-dashoffset"
+          from="${initialStrokeDashoffset}"
+          to="0"
+          dur="${drawDuration}s"
+          begin="${cycleId}.begin + ${drawDelay}s"
+          fill="freeze"
+        />
+        <animate
+          attributeName="stroke-dashoffset"
+          from="0"
+          to="${initialStrokeDashoffset}"
+          dur="${drawDuration}s"
+          begin="${cycleId}.begin + ${eraseDelay}s"
+          fill="freeze"
+        />
+      `
+      : "";
+
+    const fillFadeAnimation = !staticRender
+      ? `
+        <animate
+          attributeName="fill-opacity"
+          from="0"
+          to="1"
+          dur="0.3s"
+          begin="${cycleId}.begin + ${fillFadeDelay}s"
+          fill="freeze"
+        />
+        <animate
+          attributeName="fill-opacity"
+          from="1"
+          to="0"
+          dur="0.3s"
+          begin="${cycleId}.begin + ${fillEraseDelay}s"
+          fill="freeze"
+        />
+      `
+      : "";
+
     pathElements += `
-      <path 
-        d="${p.d}" 
-        fill="${fill}" 
-        stroke="${stroke}" 
-        stroke-width="${strokeWidth}" 
-        stroke-linecap="round" 
+      <path
+        d="${p.d}"
+        fill="${fill}"
+        stroke="${stroke}"
+        stroke-width="${strokeWidth}"
+        stroke-linecap="round"
         stroke-linejoin="round"
         ${filterRef ? `filter="${filterRef}"` : ""}
         ${transformAttr}
         class="sig-path"
-        style="
-          stroke-dasharray: ${p.len}; 
-          stroke-dashoffset: ${strokeDashoffset}; 
-          fill-opacity: ${fillOpacity};
-          ${animationStyle}
-        "
-      />
+        stroke-dasharray="${p.len}"
+        stroke-dashoffset="${staticRender ? 0 : initialStrokeDashoffset}"
+        fill-opacity="${staticRender ? 1 : 0}"
+      >${strokeDashAnimation}${fillFadeAnimation}</path>
     `;
   });
+
+  // Add global cycle controller for looping animation
+  // Reference: TypingSVG uses <animate id="cycle" begin="0s;cycle.end" dur="Xs"/>
+  // The "begin=0s;cycle.end" makes it restart when it ends, creating infinite loop
+  const cycleId = idPrefix ? `${idPrefix}cycle` : "cycle";
+  const cycleController = !staticRender
+    ? state.repeat
+      ? `<animate id="${cycleId}" begin="0s;${cycleId}.end" dur="${totalCycleDuration}s"/>`
+      : `<animate id="${cycleId}" begin="0s" dur="${totalCycleDuration}s"/>`
+    : "";
 
   // Background rect (solid or gradient)
   // Background is independent from text bounds and can be smaller or
@@ -410,20 +475,10 @@ export function generateSVG(
              pointer-events="none"/>`;
   }
 
-  // Generate keyframes for each path (skip for static renders)
-  let keyframes = "";
-  if (!staticRender) {
-    paths.forEach((p, i) => {
-      keyframes += `
-        @keyframes ${idPrefix}draw-${i} { to { stroke-dashoffset: 0; } }
-        @keyframes ${idPrefix}fill-fade-${i} { to { fill-opacity: 1; } }
-      `;
-    });
-  }
-
   // CSS styles for texture overlay fallback (mobile compatibility)
   // Note: Removed CSS fallback as it was incorrectly applying background-image to SVG rects
   // and hiding the actual SVG pattern on mobile.
+  // Also removed keyframes as we now use SMIL animations
   const textureStyles = "";
 
   // Debug logging for mobile issues
@@ -439,9 +494,9 @@ export function generateSVG(
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${svgOriginX} ${svgOriginY} ${canvasWidth} ${canvasHeight}" width="${canvasWidth}" height="${canvasHeight}" style="display: block; max-width: 100%; height: auto; overflow: visible;">
       <defs>
+        ${cycleController}
         ${defs}
         <style>
-          ${keyframes}
           ${textureStyles}
         </style>
       </defs>

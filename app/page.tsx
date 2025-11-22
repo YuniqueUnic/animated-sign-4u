@@ -18,7 +18,9 @@ import {
   FileImage,
   Film,
   Github,
+  Image,
   Moon,
+  Play,
   Share2,
   Sun,
   Triangle,
@@ -95,6 +97,10 @@ export default function SignatureBuilderPage() {
         return <Triangle className="w-3.5 h-3.5 rotate-180" />;
       case "js":
         return <FileCode2 className="w-3.5 h-3.5" />;
+      case "svg-animated":
+        return <Play className="w-3.5 h-3.5" />;
+      case "svg-static":
+        return <Image className="w-3.5 h-3.5" />;
       case "svg":
         return <FileCode2 className="w-3.5 h-3.5" />;
       case "png":
@@ -125,17 +131,23 @@ export default function SignatureBuilderPage() {
     reader.readAsArrayBuffer(file);
   };
 
-  const downloadSVG = () => {
-    if (!svgCode) return;
-    const blob = new Blob([svgCode], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `signature_${state.text}.svg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const downloadSVG = (animated: boolean = true) => {
+    // Always fetch from API to get clean SVG without idPrefix
+    const url = buildSignApiUrl(state, { format: 'svg' }) + (animated ? '' : '&static=1');
+    fetch(url)
+      .then(res => res.text())
+      .then(svg => {
+        const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = `signature_${state.text}_${animated ? 'animated' : 'static'}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      })
+      .catch(err => console.error('Failed to download SVG:', err));
   };
 
   const downloadRaster = (format: "png" | "gif") => {
@@ -165,9 +177,14 @@ export default function SignatureBuilderPage() {
       action: () => downloadComponent("js"),
     },
     {
-      key: "svg",
-      label: t("svgButton"),
-      action: () => downloadSVG(),
+      key: "svg-animated",
+      label: t("downloadSvgAnimatedLabel"),
+      action: () => downloadSVG(true),
+    },
+    {
+      key: "svg-static",
+      label: t("downloadSvgStaticLabel"),
+      action: () => downloadSVG(false),
     },
     {
       key: "png",

@@ -95,6 +95,14 @@ function buildParamsFromState(
         params.set("linkFillStroke", "1");
     }
 
+    // GIF export settings (only add if not default values)
+    if (state.gifFps && state.gifFps !== 30) {
+        params.set("gifFps", String(state.gifFps));
+    }
+    if (state.gifQuality && state.gifQuality !== 5) {
+        params.set("gifQuality", String(state.gifQuality));
+    }
+
     if (options.includeFormat !== false && options.format) {
         params.set("format", options.format);
     }
