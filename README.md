@@ -149,7 +149,7 @@ switch (format) {
 - `buildStateFromQuery` merges `INITIAL_STATE`, optional `theme`, and query parameters.
 - `buildPaths` uses `svg-path-properties` for path lengths.
 - `generateSVG` is called with `staticRender=true` for PNG (single-frame snapshot).
-- `generateAnimatedGIF` samples the animation timeline at 15fps and creates a multi-frame animated GIF with stroke-by-stroke animation.
+- `generateAnimatedGIF` samples the animation timeline at 30fps and creates a multi-frame animated GIF with stroke-by-stroke animation.
 
 ---
 
