@@ -1,5 +1,5 @@
 import { SignatureState } from "@/lib/types";
-import { PathData, getTextureDefs } from "@/lib/svg-generator";
+import { getTextureDefs, PathData } from "@/lib/svg-generator";
 
 /**
  * Calculate the total animation duration for a set of paths
@@ -50,7 +50,10 @@ function calculatePathTimings(
   });
 
   const charIndices = Array.from(charGroups.keys()).sort((a, b) => a - b);
-  const timings = new Map<PathData, { duration: number; delay: number; fillDelay: number }>();
+  const timings = new Map<
+    PathData,
+    { duration: number; delay: number; fillDelay: number }
+  >();
   let globalCharStart = 0;
 
   charIndices.forEach((charIndex) => {

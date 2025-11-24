@@ -1,4 +1,4 @@
-<div align="center"> 
+<div align="center">
   <img src="https://sign.yunique.top/api/sign?text=Animated+Signature+4u&font=pacifico&fontSize=101&speed=7.6&charSpacing=0&borderRadius=4&cardPadding=24&fill=gradient&fill1=facc15&fill2=d946ef&stroke=facc15&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=gradient&bg2=1e293b&texture=cross&texColor=050910&texSize=38&texThickness=1&texOpacity=0.2&useGlow=1" align="center"  alt="Animated Sign 4u" />
   </br>
   <div style="display: flex; justify-content: center;">
@@ -18,14 +18,15 @@
 >
 > 你看到的动态签名正是本项目提供的!!!
 
-Animated Sign 4u 是一款用于生成**动画签名 SVG**和**静态 PNG/GIF**图像的小型 Next.js 应用与 HTTP API。
+Animated Sign 4u 是一款用于生成**动画签名 SVG**和**静态 PNG/GIF**图像的小型
+Next.js 应用与 HTTP API。
 
 你可以：
 
 - 输入姓名/签名并选择手写字体/品牌字体
-<a href="https://signature4u.vercel.app/Signature?font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true">
+  <a href="https://signature4u.vercel.app/Signature?font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true">
   <img src="https://sign.yunique.top/api/sign?text=Signature&font=sacramento&fontSize=120&speed=3&charSpacing=0&borderRadius=8&cardPadding=24&fill1=d9534f&fill2=ec4899&stroke=d9534f&stroke2=333333&strokeMode=single&strokeEnabled=1&bg=transparent&bgMode=solid&bg2=f0f0f0&texture=mizige&texColor=d24141&texSize=84&texThickness=1.5&texOpacity=0.4&useHanziData=true" align="right" width="320" alt="Animated Sign EN" />
-</a>
+  </a>
 
 - 应用主题（背景、纹理、发光/阴影）
 - 使用逐字符颜色或渐变效果
@@ -76,7 +77,7 @@ lib/
 高层数据流：
 
 ```text
-UI（page.tsx）  --SignatureState-->  PreviewArea
+UI (page.tsx)  --SignatureState-->  PreviewArea
    ^                                   |
    |                                   v
    +----------- CodePanel <--- buildSignApiUrl
@@ -119,7 +120,8 @@ const svg = generateSVG(state, paths, viewBox, { idPrefix: "desktop-" });
 ```
 
 - 拉丁文本的字形路径来自 `opentype.js`。
-- 当 `useHanziData=true` 时，中文文本的笔画数据通过 `hanzi-data.ts` 获取，每个笔画成为独立路径。
+- 当 `useHanziData=true` 时，中文文本的笔画数据通过 `hanzi-data.ts`
+  获取，每个笔画成为独立路径。
 - `buildPaths` 计算所有字形周围的带内边距的 `viewBox`。
 - `generateSVG` 随后：
   - 添加背景矩形（纯色或渐变）与可选纹理图案
@@ -137,10 +139,14 @@ const font = await loadFont(state.font);
 const { paths, viewBox } = await buildPaths(font, state);
 
 switch (format) {
-  case "json":  return { paths, viewBox };
-  case "png":   return sharp(staticSvg).png();
-  case "gif":   return sharp(staticSvg).gif();
-  default:       return animatedSvg;
+  case "json":
+    return { paths, viewBox };
+  case "png":
+    return sharp(staticSvg).png();
+  case "gif":
+    return sharp(staticSvg).gif();
+  default:
+    return animatedSvg;
 }
 ```
 
@@ -148,7 +154,8 @@ switch (format) {
 - `buildPaths` 使用 `svg-path-properties` 计算路径长度。
 - `generateSVG` 在 PNG/GIF 情况下以 `staticRender=true` 调用（单帧快照）。
 
-> **注意**：GIF 导出目前为**静态**（单帧）。动态 GIF 输出需要沿动画时间轴采样多帧，尚未实现。
+> **注意**：GIF 导出目前为**静态**（单帧）。动态 GIF
+> 输出需要沿动画时间轴采样多帧，尚未实现。
 
 ---
 
@@ -213,6 +220,7 @@ HTTP API 通过单一端点对外提供服务：
 | `gifQuality`      | `gq`      | gif        | GIF quality (1-20, higher is better)              |
 | `format`          | `fmt`     | meta       | Output format (svg/png/gif/json)                  |
 | `static`          | `sta`     | meta       | Request a static snapshot when using SVG output   |
+
 <!-- API_PARAM_MAPPING_ZH:END -->
 
 ### 4.3 请求示例

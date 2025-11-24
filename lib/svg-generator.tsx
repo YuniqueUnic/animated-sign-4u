@@ -69,7 +69,7 @@ export function getTextureDefs(
     `;
   }
   if (type === "tianzige") {
-    // 田字格: outer box + center cross lines
+    // 田字格：outer box + center cross lines
     const half = s / 2;
     return `
       <pattern id="${id}" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
@@ -79,7 +79,7 @@ export function getTextureDefs(
     `;
   }
   if (type === "mizige") {
-    // 米字格: tianzige + diagonal lines
+    // 米字格：tianzige + diagonal lines
     const half = s / 2;
     return `
       <pattern id="${id}" x="${px}" y="${py}" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
@@ -498,9 +498,9 @@ export function generateSVG(
 
     // Add both pattern fill (for desktop) and a class for CSS fallback (for mobile)
     textureOverlay =
-      `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${innerH}" 
-             fill="url(#${idPrefix}texture-${state.texture})" 
-             class="texture-overlay texture-${state.texture}" 
+      `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${innerH}"
+             fill="url(#${idPrefix}texture-${state.texture})"
+             class="texture-overlay texture-${state.texture}"
              data-texture="${state.texture}"
              data-color="${state.texColor}"
              data-size="${state.texSize}"
