@@ -26,7 +26,7 @@ export async function generateAnimatedGIF(
     quality?: number;
   },
 ): Promise<Buffer> {
-  const fps = options?.fps ?? 30; // Frames per second (increased from 15 to 30 for smoother animation)
+  const fps = options?.fps ?? 30; // Frames per second (30 for smoother animation)
   const quality = options?.quality ?? 5; // 1-20, lower is better (5 for higher quality)
 
   // Calculate total animation duration
