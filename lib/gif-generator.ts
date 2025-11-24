@@ -29,8 +29,21 @@ export async function generateAnimatedGIF(
   const fps = options?.fps ?? 30; // Frames per second (30 for smoother animation)
   const quality = options?.quality ?? 5; // 1-20, lower is better (5 for higher quality)
 
-  // Calculate total animation duration
-  const totalDuration = calculateAnimationDuration(paths, state.speed || 1);
+  // Base animation duration for a single forward draw + fill timeline
+  const baseDuration = calculateAnimationDuration(paths, state.speed || 1);
+
+  // When eraseOnComplete is enabled, approximate the carousel behavior used for
+  // SVG SMIL animations:
+  //   draw -> hold (fully drawn) -> erase (reverse) -> blank pause
+  // The GIF itself always loops (encoder.setRepeat(0)), so we only need to
+  // encode a single logical cycle and let the viewer repeat it.
+  const useEraseCycle = !!state.eraseOnComplete;
+  const holdDuration = useEraseCycle ? 0.8 : 0; // hold fully drawn frame
+  const blankDuration = useEraseCycle ? 0.5 : 0; // blank pause before next loop
+
+  const totalDuration = useEraseCycle
+    ? baseDuration + holdDuration + baseDuration + blankDuration
+    : baseDuration;
 
   // Calculate number of frames
   const frameCount = Math.ceil(totalDuration * fps);
@@ -73,14 +86,40 @@ export async function generateAnimatedGIF(
 
   // Generate each frame
   for (let i = 0; i < frameCount; i++) {
-    const currentTime = i / fps;
+    const t = i / fps;
 
-    // Generate SVG at this time point
+    let sampleTime: number;
+    if (!useEraseCycle) {
+      // Simple forward timeline: 0 -> baseDuration
+      sampleTime = t;
+    } else {
+      // Erase cycle timeline:
+      //   [0, baseDuration]                      -> draw phase
+      //   (baseDuration, baseDuration+hold]      -> hold fully drawn
+      //   (.., baseDuration+hold+baseDuration]   -> erase (reverse timeline)
+      //   (.., totalDuration]                   -> blank (time=0)
+      if (t <= baseDuration) {
+        // Forward draw
+        sampleTime = t;
+      } else if (t <= baseDuration + holdDuration) {
+        // Hold fully drawn frame
+        sampleTime = baseDuration;
+      } else if (t <= baseDuration + holdDuration + baseDuration) {
+        // Erase: walk the timeline backwards from baseDuration -> 0
+        const eraseProgress = t - (baseDuration + holdDuration);
+        sampleTime = Math.max(0, baseDuration - eraseProgress);
+      } else {
+        // Blank pause: show initial state (no strokes drawn, no fill)
+        sampleTime = 0;
+      }
+    }
+
+    // Generate SVG at this mapped time point
     const svgString = generateSVGFrame(
       state,
       paths,
       viewBox,
-      currentTime,
+      sampleTime,
       { idPrefix: `frame${i}-` },
     );
 

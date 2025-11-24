@@ -249,9 +249,10 @@ When **both** `repeat=true` and `eraseOnComplete=true`:
 
 Notes:
 
-- Static SVG (`format=svg&static=1`) and PNG/GIF snapshots ignore these flags
+- Static SVG (`format=svg&static=1`) and PNG snapshots ignore these flags
   because they are single-frame outputs.
-- GIF exports always loop regardless of `repeat`; the GIF encoder is configured
+- Animated GIF exports sample the same logical timeline (draw → hold → erase →
+  blank) but always loop regardless of `repeat`; the GIF encoder is configured
   to repeat forever for better UX in typical chat and browser viewers.
 
 ### 4.3 Example Requests

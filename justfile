@@ -6,6 +6,11 @@ set shell := ["bash", "-c"]
 default:
     @just --list
 
+init:
+    npm install -g pnpm
+    npm install -g @j178/prek
+    pnpm install
+
 # Development shortcuts
 
 # pnpm dev
@@ -26,7 +31,10 @@ build:
 
 # lint + test + build
 check:
-    pnpm lint && pnpm vitest run && pnpm build
+    pnpm lint --fix && pnpm vitest run && pnpm build
+
+happy: check
+    prek run -a
 
 # Release-only: bump version, create commit and tag via pnpm version
 # Usage:
