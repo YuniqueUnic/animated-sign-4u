@@ -119,6 +119,21 @@ describe("/api/sign URL and state roundtrip", () => {
         expect(parsed.useShadow).toBe(example.useShadow);
     });
 
+    it("roundtrips eraseOnComplete flag via URL", () => {
+        const example = {
+            ...buildExampleState(),
+            eraseOnComplete: true as const,
+        };
+
+        const url = buildSignApiUrl(example, {
+            origin: "http://localhost:3000",
+        });
+        const params = new URL(url).searchParams;
+        const parsed = buildStateFromQuery(params);
+
+        expect(parsed.eraseOnComplete).toBe(true);
+    });
+
     it("supports path parameter format for text (alternative API format)", () => {
         // Simulate the path parameter format: /api/sign/MyText?font=sacramento
         // In this format, text is extracted from the path and merged with query params

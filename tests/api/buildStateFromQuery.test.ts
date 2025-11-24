@@ -164,6 +164,18 @@ describe("buildStateFromQuery", () => {
         expect(state.bg2).toBe("#112233");
     });
 
+    it("parses repeat and eraseOnComplete flags", () => {
+        const params = new URLSearchParams({
+            repeat: "0",
+            eraseOnComplete: "1",
+        });
+
+        const state = buildStateFromQuery(params);
+
+        expect(state.repeat).toBe(false);
+        expect(state.eraseOnComplete).toBe(true);
+    });
+
     it("ignores invalid numeric values and keeps INITIAL_STATE defaults", () => {
         const params = new URLSearchParams({
             fontSize: "-10",

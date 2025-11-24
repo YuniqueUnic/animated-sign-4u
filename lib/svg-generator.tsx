@@ -236,8 +236,11 @@ export function generateSVG(
     );
   }
 
-  // Build Paths with SMIL animations - Carousel effect (draw → hold → erase → repeat)
-  // Using a global cycle controller like TypingSVG
+  // Build Paths with SMIL animations.
+  // When `eraseOnComplete` is true, use a carousel effect:
+  //   draw → hold → erase → (optionally repeat when `repeat` is true).
+  // When `eraseOnComplete` is false (default), only play a forward
+  // draw + fill animation once and keep the final frame visible.
   let pathElements = "";
   // Treat `speed` as a speed factor: larger values make the animation faster.
   // Base duration per character is ~1s at speed=1, then scaled as 1 / speed.
@@ -296,7 +299,10 @@ export function generateSVG(
   // - Pause phase: 0.5s (before next loop)
   const holdDuration = 1;
   const pauseDuration = 0.5;
-  const totalCycleDuration = totalDrawDuration + holdDuration + totalDrawDuration + pauseDuration;
+  const totalCycleDuration = totalDrawDuration + holdDuration +
+    totalDrawDuration + pauseDuration;
+
+  const useCarousel = !staticRender && state.eraseOnComplete;
 
   // Use paths directly to ensure correct order (generation order is correct)
   paths.forEach((p) => {
@@ -346,17 +352,23 @@ export function generateSVG(
     // Calculate timing for carousel effect:
     // Draw: starts at drawDelay, ends at drawDelay + drawDuration
     // Erase: reverse order - last path erases first
-    // Erase delay = totalDrawDuration + holdDuration + (totalDrawDuration - drawDelay - drawDuration)
-    const eraseDelay = totalDrawDuration + holdDuration + (totalDrawDuration - drawDelay - drawDuration);
+    // Erase delay = totalDrawDuration + holdDuration +
+    //   (totalDrawDuration - drawDelay - drawDuration)
+    const eraseDelay = totalDrawDuration +
+      holdDuration +
+      (totalDrawDuration - drawDelay - drawDuration);
     const fillFadeDelay = drawDelay + drawDuration * 0.6;
     const fillEraseDelay = eraseDelay + drawDuration * 0.4;
 
-    // Cycle ID for animation reference
+    // Cycle ID for animation reference (only used when carousel is enabled)
     const cycleId = idPrefix ? `${idPrefix}cycle` : "cycle";
 
-    // SMIL animations using cycle.begin reference for carousel effect
+    // SMIL animations.
+    // - Carousel mode: use cycle.begin and include erase phase.
+    // - Non-carousel mode: single forward draw + fill, no erase.
     const strokeDashAnimation = !staticRender
-      ? `
+      ? useCarousel
+        ? `
         <animate
           attributeName="stroke-dashoffset"
           from="${initialStrokeDashoffset}"
@@ -374,10 +386,21 @@ export function generateSVG(
           fill="freeze"
         />
       `
+        : `
+        <animate
+          attributeName="stroke-dashoffset"
+          from="${initialStrokeDashoffset}"
+          to="0"
+          dur="${drawDuration}s"
+          begin="${drawDelay}s"
+          fill="freeze"
+        />
+      `
       : "";
 
     const fillFadeAnimation = !staticRender
-      ? `
+      ? useCarousel
+        ? `
         <animate
           attributeName="fill-opacity"
           from="0"
@@ -392,6 +415,16 @@ export function generateSVG(
           to="0"
           dur="0.3s"
           begin="${cycleId}.begin + ${fillEraseDelay}s"
+          fill="freeze"
+        />
+      `
+        : `
+        <animate
+          attributeName="fill-opacity"
+          from="0"
+          to="1"
+          dur="0.3s"
+          begin="${fillFadeDelay}s"
           fill="freeze"
         />
       `
@@ -415,14 +448,14 @@ export function generateSVG(
     `;
   });
 
-  // Add global cycle controller for looping animation
+  // Add global cycle controller for looping animation when carousel is enabled.
   // Reference: TypingSVG uses <animate id="cycle" begin="0s;cycle.end" dur="Xs"/>
-  // The "begin=0s;cycle.end" makes it restart when it ends, creating infinite loop
+  // The "begin=0s;cycle.end" makes it restart when it ends, creating infinite loop.
   const cycleId = idPrefix ? `${idPrefix}cycle` : "cycle";
-  const cycleController = !staticRender
-    ? state.repeat
+  const cycleController = !staticRender && state.eraseOnComplete
+    ? (state.repeat
       ? `<animate id="${cycleId}" begin="0s;${cycleId}.end" dur="${totalCycleDuration}s"/>`
-      : `<animate id="${cycleId}" begin="0s" dur="${totalCycleDuration}s"/>`
+      : `<animate id="${cycleId}" begin="0s" dur="${totalCycleDuration}s"/>`)
     : "";
 
   // Background rect (solid or gradient)

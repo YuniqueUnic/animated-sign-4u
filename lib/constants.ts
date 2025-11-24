@@ -7,6 +7,7 @@ export const INITIAL_STATE: SignatureState = {
   charSpacing: 0,
   speed: 1,
   repeat: true, // Default: infinite loop
+  eraseOnComplete: false, // Default: do not erase after drawing; keep final frame
   bg: "#ffffff",
   bg2: "#ffffff",
   bgMode: "solid",

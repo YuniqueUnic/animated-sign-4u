@@ -19,6 +19,7 @@ import {
   Film,
   Github,
   Image,
+  Loader2,
   Moon,
   Play,
   Share2,
@@ -27,6 +28,15 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -56,6 +66,9 @@ export default function SignatureBuilderPage() {
   const [shareCopyStatus, setShareCopyStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [isGifDialogOpen, setIsGifDialogOpen] = useState(false);
+  const [isGeneratingGif, setIsGeneratingGif] = useState(false);
+  const [gifError, setGifError] = useState<string | null>(null);
   const [logoThemeKey, setLogoThemeKey] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const { t, locale, setLocale } = useI18n();
@@ -133,21 +146,23 @@ export default function SignatureBuilderPage() {
 
   const downloadSVG = (animated: boolean = true) => {
     // Always fetch from API to get clean SVG without idPrefix
-    const url = buildSignApiUrl(state, { format: 'svg', static: !animated });
+    const url = buildSignApiUrl(state, { format: "svg", static: !animated });
     fetch(url)
-      .then(res => res.text())
-      .then(svg => {
+      .then((res) => res.text())
+      .then((svg) => {
         const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = blobUrl;
-        a.download = `signature_${state.text}_${animated ? 'animated' : 'static'}.svg`;
+        a.download = `signature_${state.text}_${
+          animated ? "animated" : "static"
+        }.svg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(blobUrl);
       })
-      .catch(err => console.error('Failed to download SVG:', err));
+      .catch((err) => console.error("Failed to download SVG:", err));
   };
 
   const downloadRaster = (format: "png" | "gif") => {
@@ -158,6 +173,36 @@ export default function SignatureBuilderPage() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleGenerateGif = async () => {
+    try {
+      setGifError(null);
+      setIsGeneratingGif(true);
+
+      const url = buildSignApiUrl(state, { format: "gif" });
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("Failed to generate GIF");
+      }
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `signature_${state.text || "sign"}.gif`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+
+      setIsGeneratingGif(false);
+      setIsGifDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to generate GIF:", error);
+      setGifError(t("gifGenerateErrorLabel"));
+      setIsGeneratingGif(false);
+    }
   };
 
   const downloadOptions = [
@@ -194,7 +239,7 @@ export default function SignatureBuilderPage() {
     {
       key: "gif",
       label: t("downloadGifLabel"),
-      action: () => downloadRaster("gif"),
+      action: () => setIsGifDialogOpen(true),
     },
   ];
 
@@ -648,6 +693,109 @@ export default function SignatureBuilderPage() {
           </ResizablePanelGroup>
         </main>
       </div>
+
+      {/* GIF Export Dialog */}
+      <Dialog
+        open={isGifDialogOpen}
+        onOpenChange={(open) => {
+          if (isGeneratingGif && !open) return;
+          setIsGifDialogOpen(open);
+          if (!open) {
+            setGifError(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("gifDialogTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("gifDialogDescription")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-medium">
+                <span className="text-muted-foreground">
+                  {t("gifFpsLabel")}
+                </span>
+                <span className="text-indigo-600 font-mono">
+                  {state.gifFps ?? 30} fps
+                </span>
+              </div>
+              <Slider
+                min={10}
+                max={60}
+                step={5}
+                value={[state.gifFps ?? 30]}
+                onValueChange={([v]) => updateState({ gifFps: v })}
+              />
+              <p className="text-[10px] text-muted-foreground/70">
+                {t("gifFpsDescription")}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-medium">
+                <span className="text-muted-foreground">
+                  {t("gifQualityLabel")}
+                </span>
+                <span className="text-indigo-600 font-mono">
+                  {state.gifQuality ?? 5}
+                </span>
+              </div>
+              <Slider
+                min={1}
+                max={20}
+                step={1}
+                value={[state.gifQuality ?? 5]}
+                onValueChange={([v]) => updateState({ gifQuality: v })}
+              />
+              <p className="text-[10px] text-muted-foreground/70">
+                {t("gifQualityDescription")}
+              </p>
+            </div>
+
+            {isGeneratingGif && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t("gifGeneratingLabel")}</span>
+              </div>
+            )}
+
+            {gifError && (
+              <p className="text-xs text-red-600">
+                {gifError}
+              </p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (isGeneratingGif) return;
+                setIsGifDialogOpen(false);
+                setGifError(null);
+              }}
+            >
+              {t("gifCancelButtonLabel")}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleGenerateGif}
+              disabled={isGeneratingGif}
+            >
+              {isGeneratingGif
+                ? t("gifGeneratingLabel")
+                : t("gifStartButtonLabel")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {isCodeOverlayOpen && (
         <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex flex-col md:hidden">

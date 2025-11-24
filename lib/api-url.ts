@@ -3,6 +3,7 @@ import { SignatureState } from "./types";
 export interface BuildSignApiUrlOptions {
     format?: string;
     origin?: string;
+    static?: boolean;
 }
 
 interface BuildUrlParamsOptions {
@@ -95,6 +96,10 @@ function buildParamsFromState(
         params.set("linkFillStroke", "1");
     }
 
+    if (state.eraseOnComplete) {
+        params.set("eraseOnComplete", "1");
+    }
+
     // GIF export settings (only add if not default values)
     if (state.gifFps && state.gifFps !== 30) {
         params.set("gifFps", String(state.gifFps));
@@ -119,6 +124,10 @@ export function buildSignApiUrl(
         includeFormat: true,
         format: options.format,
     });
+
+    if (options.static) {
+        params.set("static", "1");
+    }
 
     const origin = options.origin ??
         (typeof window !== "undefined"
