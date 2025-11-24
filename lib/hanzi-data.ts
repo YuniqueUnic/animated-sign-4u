@@ -21,7 +21,9 @@ export function isChinese(char: string): boolean {
 /**
  * Fetch stroke data for a Chinese character from hanzi-writer-data CDN
  */
-export async function fetchHanziData(char: string): Promise<HanziStrokeData | null> {
+export async function fetchHanziData(
+  char: string,
+): Promise<HanziStrokeData | null> {
   if (!isChinese(char)) {
     return null;
   }

@@ -1,6 +1,7 @@
 # Animated Sign 4u
 
-Animated Sign 4u 是一款交互式网页应用与 HTTP API，用于生成**动画签名 SVG**及**静态 PNG/GIF 导出**，具备以下功能：
+Animated Sign 4u 是一款交互式网页应用与 HTTP API，用于生成**动画签名
+SVG**及**静态 PNG/GIF 导出**，具备以下功能：
 
 - 手写字体/品牌字体及自定义字体上传
 - 逐字符颜色与渐变效果
@@ -153,8 +154,8 @@ export interface SignatureState {
   text: string;
   font: string;
   fontSize: number;
-  speed: number;           // 速度系数：值越大 = 动画越快
-  charSpacing: number;     // 基础字符间距，支持语言感知
+  speed: number; // 速度系数：值越大 = 动画越快
+  charSpacing: number; // 基础字符间距，支持语言感知
 
   // 背景卡片
   bg: string;
@@ -267,11 +268,13 @@ const viewBox = {
 const svg = generateSVG(state, paths, viewBox, { idPrefix: "desktop-" });
 ```
 
-移动端预览使用类似的调用，但传递不同的 `idPrefix`（如 `"mobile-"`），以保持不同实例间 SVG `id` 属性的唯一性。
+移动端预览使用类似的调用，但传递不同的 `idPrefix`（如
+`"mobile-"`），以保持不同实例间 SVG `id` 属性的唯一性。
 
 ### 4.2 API 路径构建（`app/api/sign/route.ts`）
 
-在服务端，`buildPaths(font, state)` 使用 `opentype.js` 与 `svg-path-properties`（无 DOM）执行相同的概念性工作。
+在服务端，`buildPaths(font, state)` 使用 `opentype.js` 与
+`svg-path-properties`（无 DOM）执行相同的概念性工作。
 
 - 计算每个字符的字形路径与长度。
 - 应用与 UI 相同的**语言感知字符间距**规则。
@@ -280,7 +283,8 @@ const svg = generateSVG(state, paths, viewBox, { idPrefix: "desktop-" });
 
 ### 4.3 `generateSVG`（`lib/svg-generator.tsx`）
 
-`generateSVG` 是一个纯函数，接收当前视觉状态与路径数据，返回完整的 `<svg>` 字符串。
+`generateSVG` 是一个纯函数，接收当前视觉状态与路径数据，返回完整的 `<svg>`
+字符串。
 
 **输入**
 
@@ -458,11 +462,12 @@ return <svg ...>{defs}{background}{texture}{groupOfPaths}</svg>;
   - 平移偏移（如 `translate(0, -1024)`）以匹配数据集的坐标空间。
 - 对于动画方向：
   - 对于普通字形，`strokeDashoffset` 从 `+len` 动画到 `0`。
-  - 对于汉字笔画，`strokeDashoffset` 从 `-len` 开始，使感知到的绘制方向遵循自然笔顺。
+  - 对于汉字笔画，`strokeDashoffset` 从 `-len`
+    开始，使感知到的绘制方向遵循自然笔顺。
 
 ---
 
-## 5. API：`/api/sign`
+## 5. API:`/api/sign`
 
 实现文件：`app/api/sign/route.ts`。
 
@@ -518,7 +523,8 @@ return <svg ...>{defs}{background}{texture}{groupOfPaths}</svg>;
 
 附加逻辑：
 
-- 当 `fillMode === "multi"` 但 `charColors` 为空时，从主题函数（`charColorsFn`）或默认调色板派生逐字符颜色。
+- 当 `fillMode === "multi"` 但 `charColors`
+  为空时，从主题函数（`charColorsFn`）或默认调色板派生逐字符颜色。
 - 当 `strokeMode === "multi"` 但 `strokeCharColors` 为空时，依次尝试：
   1. 若可用则使用 `theme.strokeCharColorsFn`。
   2. 若 `fillMode === "multi"` 则复用填充模式（`theme.charColorsFn`）。
@@ -544,7 +550,9 @@ switch (formatParam) {
   case "png":
   case "gif": {
     // 静态（非动画）光栅导出
-    const staticSvg = generateSVG(state, paths, viewBox, { staticRender: true });
+    const staticSvg = generateSVG(state, paths, viewBox, {
+      staticRender: true,
+    });
     const image = await sharp(Buffer.from(staticSvg))
       [formatParam]() // .png() 或 .gif()
       .toBuffer();
@@ -559,11 +567,13 @@ switch (formatParam) {
 }
 ```
 
-> **注意**：当前的 GIF 导出是**单帧静态 GIF**（最终渲染状态的快照）。尚不支持生成动态 GIF。
+> **注意**：当前的 GIF 导出是**单帧静态
+> GIF**（最终渲染状态的快照）。尚不支持生成动态 GIF。
 
 ### 5.3 API URL 构建器（`lib/api-url.ts`）
 
-`buildSignApiUrl(state, options)` 将 `SignatureState` 转换为可复现相同视觉输出的 `/api/sign` URL。
+`buildSignApiUrl(state, options)` 将 `SignatureState` 转换为可复现相同视觉输出的
+`/api/sign` URL。
 
 关键细节：
 
@@ -607,7 +617,12 @@ switch (formatParam) {
   - GitHub 仓库按钮：
 
     ```tsx
-    <Button asChild variant="ghost" size="icon-sm" className="h-8 w-8 text-xs inline-flex">
+    <Button
+      asChild
+      variant="ghost"
+      size="icon-sm"
+      className="h-8 w-8 text-xs inline-flex"
+    >
       <a
         href="https://github.com/YuniqueUnic/animated-sign-4u "
         target="_blank"
@@ -616,7 +631,7 @@ switch (formatParam) {
       >
         <Github className="h-4 w-4" />
       </a>
-    </Button>
+    </Button>;
     ```
 
   - 桌面下载按钮：悬停打开包含所有下载选项的面板（React、Vue、JS、SVG、PNG、GIF）。
@@ -717,7 +732,8 @@ if (baseSpacing !== 0 && char && isChinese(char)) {
   - 在多色模式下，`strokeCharColors` 镜像 `charColors`。
   - 描边控件在视觉上被禁用（降低透明度与指针事件），表示描边由填充派生。
 
-`sidebar-style-section.tsx` 中的辅助函数 `withLinkedStroke(patch)` 在以下情况应用正确的描边设置：
+`sidebar-style-section.tsx` 中的辅助函数 `withLinkedStroke(patch)`
+在以下情况应用正确的描边设置：
 
 - 填充模式变更（single/gradient/multi）。
 - 填充颜色（`fill1`、`fill2`）变更。
@@ -744,7 +760,8 @@ if (baseSpacing !== 0 && char && isChinese(char)) {
 
 ### 7.2 纹理（`lib/svg-generator.tsx`）
 
-纹理在 `<defs>` 中实现为 `<pattern>` 定义，并通过在背景卡片内的叠加 `<rect>` 上使用 `fill="url(#pattern-id)"` 来应用。
+纹理在 `<defs>` 中实现为 `<pattern>` 定义，并通过在背景卡片内的叠加 `<rect>`
+上使用 `fill="url(#pattern-id)"` 来应用。
 
 支持的纹理（`TextureType`）：
 
@@ -762,7 +779,8 @@ if (baseSpacing !== 0 && char && isChinese(char)) {
 - `texThickness`：线宽
 - `texOpacity`：叠加层透明度
 
-快速主题侧边栏使用 CSS `background-image` 可视化这些纹理，而实际 SVG 输出使用 `getTextureDefs` 辅助函数生成真正的矢量图案。
+快速主题侧边栏使用 CSS `background-image` 可视化这些纹理，而实际 SVG 输出使用
+`getTextureDefs` 辅助函数生成真正的矢量图案。
 
 ---
 
@@ -787,7 +805,8 @@ if (baseSpacing !== 0 && char && isChinese(char)) {
 
 - `tests/lib/svg-generator.test.ts`
   - 覆盖纹理图案、渐变与描边 dashoffset 逻辑。
-  - 检查基于 `idPrefix` 的作用域隔离，避免多 SVG 实例冲突（如桌面与移动端预览）。
+  - 检查基于 `idPrefix` 的作用域隔离，避免多 SVG
+    实例冲突（如桌面与移动端预览）。
 
 运行测试：
 
@@ -845,10 +864,12 @@ pnpm start
 
 - **字体**
   - 应用内置若干拉丁字体与中文字体。
-  - 可在 `FONTS` 中扩展字体列表（位于 `app/api/sign/route.ts` 与相应 UI 选项中）。
+  - 可在 `FONTS` 中扩展字体列表（位于 `app/api/sign/route.ts` 与相应 UI
+    选项中）。
 
 - **汉字笔画数据**
   - 汉字模式依赖 `lib/hanzi-data.ts` 获取的外部数据集。
   - 数据加载失败时，应用会优雅地回退到标准字形轮廓。
 
-本 README 旨在作为当前实现的动态技术文档，应作为未来重构、功能开发（如动态 GIF 导出）、新增主题/纹理以及更广泛语言支持的参考。
+本 README 旨在作为当前实现的动态技术文档，应作为未来重构、功能开发（如动态 GIF
+导出）、新增主题/纹理以及更广泛语言支持的参考。

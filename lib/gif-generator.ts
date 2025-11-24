@@ -73,7 +73,7 @@ export async function generateAnimatedGIF(
 
   // Generate each frame
   for (let i = 0; i < frameCount; i++) {
-    const currentTime = (i / fps);
+    const currentTime = i / fps;
 
     // Generate SVG at this time point
     const svgString = generateSVGFrame(
@@ -86,14 +86,13 @@ export async function generateAnimatedGIF(
 
     // Convert SVG directly to raw RGBA buffer for GIF encoder
     const { data } = await sharp(Buffer.from(svgString))
-        .resize(targetWidth, targetHeight, {
-            fit: "contain",
-            background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
-        .ensureAlpha()
-        .raw()
-        .toBuffer({ resolveWithObject: true });
-
+      .resize(targetWidth, targetHeight, {
+        fit: "contain",
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
 
     // Add frame to encoder
     encoder.addFrame(data);

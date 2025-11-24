@@ -3,82 +3,80 @@ import { GET } from "@/app/[text]/route";
 import { NextRequest } from "next/server";
 
 describe("/[text] - Root-level share URL redirect", () => {
-    it("should redirect simple text path to builder with text param", async () => {
-        const url = "http://localhost:3000/HelloWorld";
-        const req = new NextRequest(url);
+  it("should redirect simple text path to builder with text param", async () => {
+    const url = "http://localhost:3000/HelloWorld";
+    const req = new NextRequest(url);
 
-        const response = await GET(req, { params: { text: "HelloWorld" } });
+    const response = await GET(req, { params: { text: "HelloWorld" } });
 
-        expect(response.status).toBe(308);
-        const location = response.headers.get("Location");
-        expect(location).toBe("http://localhost:3000/?text=HelloWorld");
-    });
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBe("http://localhost:3000/?text=HelloWorld");
+  });
 
-    it("should merge path text with existing query parameters", async () => {
-        const url =
-            "http://localhost:3000/CustomText?font=sacramento&fontSize=80";
-        const req = new NextRequest(url);
+  it("should merge path text with existing query parameters", async () => {
+    const url = "http://localhost:3000/CustomText?font=sacramento&fontSize=80";
+    const req = new NextRequest(url);
 
-        const response = await GET(req, { params: { text: "CustomText" } });
+    const response = await GET(req, { params: { text: "CustomText" } });
 
-        expect(response.status).toBe(308);
-        const location = response.headers.get("Location");
-        expect(location).toBeTruthy();
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBeTruthy();
 
-        const redirected = new URL(location!);
-        const params = redirected.searchParams;
-        expect(params.get("text")).toBe("CustomText");
-        expect(params.get("font")).toBe("sacramento");
-        expect(params.get("fontSize")).toBe("80");
-    });
+    const redirected = new URL(location!);
+    const params = redirected.searchParams;
+    expect(params.get("text")).toBe("CustomText");
+    expect(params.get("font")).toBe("sacramento");
+    expect(params.get("fontSize")).toBe("80");
+  });
 
-    it("should decode URL-encoded text in path", async () => {
-        const url = "http://localhost:3000/Hello%20World";
-        const req = new NextRequest(url);
+  it("should decode URL-encoded text in path", async () => {
+    const url = "http://localhost:3000/Hello%20World";
+    const req = new NextRequest(url);
 
-        const response = await GET(req, { params: { text: "Hello%20World" } });
+    const response = await GET(req, { params: { text: "Hello%20World" } });
 
-        expect(response.status).toBe(308);
-        const location = response.headers.get("Location");
-        expect(location).toBeTruthy();
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBeTruthy();
 
-        const redirected = new URL(location!);
-        const params = redirected.searchParams;
-        expect(params.get("text")).toBe("Hello World");
-    });
+    const redirected = new URL(location!);
+    const params = redirected.searchParams;
+    expect(params.get("text")).toBe("Hello World");
+  });
 
-    it("should handle Chinese characters in path", async () => {
-        const url =
-            "http://localhost:3000/你好世界?font=ma-shan-zheng";
-        const req = new NextRequest(url);
+  it("should handle Chinese characters in path", async () => {
+    const url = "http://localhost:3000/你好世界？font=ma-shan-zheng";
+    const req = new NextRequest(url);
 
-        const response = await GET(req, { params: { text: "你好世界" } });
+    const response = await GET(req, { params: { text: "你好世界" } });
 
-        expect(response.status).toBe(308);
-        const location = response.headers.get("Location");
-        expect(location).toBeTruthy();
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBeTruthy();
 
-        const redirected = new URL(location!);
-        const params = redirected.searchParams;
-        expect(params.get("text")).toBe("你好世界");
-        expect(params.get("font")).toBe("ma-shan-zheng");
-    }, 10000);
+    const redirected = new URL(location!);
+    const params = redirected.searchParams;
+    expect(params.get("text")).toBe("你好世界");
+    expect(params.get("font")).toBe("ma-shan-zheng");
+  }, 10000);
 
-    it("should preserve existing query string when both path text and text query are present", async () => {
-        const url =
-            "http://localhost:3000/PathText?text=QueryText&font=great-vibes";
-        const req = new NextRequest(url);
+  it("should preserve existing query string when both path text and text query are present", async () => {
+    const url =
+      "http://localhost:3000/PathText?text=QueryText&font=great-vibes";
+    const req = new NextRequest(url);
 
-        const response = await GET(req, { params: { text: "PathText" } });
+    const response = await GET(req, { params: { text: "PathText" } });
 
-        expect(response.status).toBe(308);
-        const location = response.headers.get("Location");
-        expect(location).toBeTruthy();
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBeTruthy();
 
-        const redirected = new URL(location!);
-        const params = redirected.searchParams;
-        // Path text should win over query `text`
-        expect(params.get("text")).toBe("PathText");
-        expect(params.get("font")).toBe("great-vibes");
-    });
+    const redirected = new URL(location!);
+    const params = redirected.searchParams;
+    // Path text should win over query `text`
+    expect(params.get("text")).toBe("PathText");
+    expect(params.get("font")).toBe("great-vibes");
+  });
 });

@@ -86,7 +86,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
 const createSignature = () => {
   const container = document.getElementById('signature-container');
   if (!container) return;
-  
+
   container.innerHTML = \`
     <div style="display:inline-block; padding:20px; background-color:${bgVal}; border-radius:${state.borderRadius}px;">
       ${cleanSvg}

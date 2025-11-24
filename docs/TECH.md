@@ -1,6 +1,7 @@
 # Animated Sign 4u
 
-Animated Sign 4u is an interactive web app and HTTP API for generating **animated signature SVGs** and **static PNG/GIF exports** with:
+Animated Sign 4u is an interactive web app and HTTP API for generating
+**animated signature SVGs** and **static PNG/GIF exports** with:
 
 - Script / brand fonts and custom font upload
 - Per-character colors and gradients
@@ -9,7 +10,8 @@ Animated Sign 4u is an interactive web app and HTTP API for generating **animate
 - Fill/stroke linking mode
 - Responsive desktop & mobile UI
 
-This document describes the **current implementation** as of version `0.2.4`, based on the actual source code in this repository.
+This document describes the **current implementation** as of version `0.2.4`,
+based on the actual source code in this repository.
 
 ---
 
@@ -104,10 +106,12 @@ HTTP clients:
 
 - **UI layer (`app/page.tsx` + `components/signature-builder/*`)**
   - Holds a `SignatureState` in React state via `useState(INITIAL_STATE)`.
-  - Mutates it through `updateState(partial)` callbacks passed into sidebar sections and preview.
+  - Mutates it through `updateState(partial)` callbacks passed into sidebar
+    sections and preview.
   - Renders:
     - Desktop layout: left sidebar, center preview, bottom code panel.
-    - Mobile layout: preview + bottom resizable drawer + fullscreen code overlay.
+    - Mobile layout: preview + bottom resizable drawer + fullscreen code
+      overlay.
 
 - **Preview & Rendering (`preview-area.tsx` + `lib/svg-generator.tsx`)**
   - Builds glyph or Hanzi stroke paths from font data and `SignatureState`.
@@ -155,8 +159,8 @@ export interface SignatureState {
   text: string;
   font: string;
   fontSize: number;
-  speed: number;           // Speed factor: higher = faster animation
-  charSpacing: number;     // Base character spacing, language-aware
+  speed: number; // Speed factor: higher = faster animation
+  charSpacing: number; // Base character spacing, language-aware
 
   // Background card
   bg: string;
@@ -201,14 +205,16 @@ export interface SignatureState {
 }
 ```
 
-- `INITIAL_STATE` in `lib/constants.ts` is used both by the client UI and the API.
+- `INITIAL_STATE` in `lib/constants.ts` is used both by the client UI and the
+  API.
 - Theme presets (`THEMES`) are expressed as partial `SignatureState` objects.
 
 ---
 
 ## 4. Path Building & SVG Generation
 
-There are two closely related pipelines that build text/stroke paths and render SVG:
+There are two closely related pipelines that build text/stroke paths and render
+SVG:
 
 - **UI pipeline** – for the on-page preview (`preview-area.tsx`).
 - **API pipeline** – for server-side rendering in `/api/sign` (`route.ts`).
@@ -269,11 +275,13 @@ const viewBox = {
 const svg = generateSVG(state, paths, viewBox, { idPrefix: "desktop-" });
 ```
 
-The mobile preview uses a similar call but passes a different `idPrefix` (e.g. `"mobile-"`) to keep SVG `id` attributes unique across instances.
+The mobile preview uses a similar call but passes a different `idPrefix` (e.g.
+`"mobile-"`) to keep SVG `id` attributes unique across instances.
 
 ### 4.2 API path building (`app/api/sign/route.ts`)
 
-On the server side, `buildPaths(font, state)` performs the same conceptual work using `opentype.js` and `svg-path-properties` (no DOM).
+On the server side, `buildPaths(font, state)` performs the same conceptual work
+using `opentype.js` and `svg-path-properties` (no DOM).
 
 - Computes glyph paths and lengths for each character.
 - Applies **language-aware character spacing** with the same rules as the UI.
@@ -282,7 +290,8 @@ On the server side, `buildPaths(font, state)` performs the same conceptual work 
 
 ### 4.3 `generateSVG` (`lib/svg-generator.tsx`)
 
-`generateSVG` is a pure function that takes the current visual state and path data and returns a complete `<svg>` string.
+`generateSVG` is a pure function that takes the current visual state and path
+data and returns a complete `<svg>` string.
 
 **Inputs**
 
@@ -306,7 +315,8 @@ function generateSVG(
   - `@keyframes` for per-path draw and fill-fade animations.
 - Background card `<rect>` (optionally transparent or gradient-filled).
 - Inner texture overlay `<rect>` anchored to that card.
-- A `<g>` containing one `<path>` per glyph/stroke, with inline animation styles.
+- A `<g>` containing one `<path>` per glyph/stroke, with inline animation
+  styles.
 
 **Key steps (pseudo-code)**
 
@@ -455,12 +465,15 @@ return <svg ...>{defs}{background}{texture}{groupOfPaths}</svg>;
 ### 4.4 Hanzi stroke direction & coordinate system
 
 - Hanzi stroke paths come from a dataset where the Y axis is top-down.
-- To render them in the same coordinate system as Latin glyphs, `generateSVG` applies:
+- To render them in the same coordinate system as Latin glyphs, `generateSVG`
+  applies:
   - A vertical flip `scale(1, -1)` at the appropriate origin.
-  - A translate offset (e.g. `translate(0, -1024)`) to match the dataset’s coordinate space.
+  - A translate offset (e.g. `translate(0, -1024)`) to match the dataset’s
+    coordinate space.
 - For animation direction:
   - For normal glyphs, `strokeDashoffset` starts at `+len` and animates to `0`.
-  - For Hanzi strokes, `strokeDashoffset` starts at `-len` so the perceived draw direction follows the natural stroke order.
+  - For Hanzi strokes, `strokeDashoffset` starts at `-len` so the perceived draw
+    direction follows the natural stroke order.
 
 ---
 
@@ -472,7 +485,8 @@ The route is a Next.js App Router handler that exposes a single `GET` endpoint.
 
 ### 5.1 `buildStateFromQuery`
 
-Defined in `lib/state-from-query.ts`, `buildStateFromQuery(params)` is responsible for:
+Defined in `lib/state-from-query.ts`, `buildStateFromQuery(params)` is
+responsible for:
 
 1. Starting from `INITIAL_STATE`.
 2. Optionally applying a theme (`theme` query param, merged from `THEMES[...]`).
@@ -487,14 +501,16 @@ Important query parameters (names and semantics):
 - **Geometry & animation**
   - `fontSize`: number
   - `speed`: animation **speed factor** (`> 0`, larger = faster)
-  - `charSpacing`: base character spacing (language-aware scaling is applied later)
+  - `charSpacing`: base character spacing (language-aware scaling is applied
+    later)
   - `borderRadius`: card corner radius
   - `cardPadding`: inner padding between text and card edges
 
 - **Fill & stroke**
   - `fill`: one of `single | gradient | multi`
   - `fill1`, `fill2`: primary / secondary fill colors
-  - `colors`: comma-separated per-character fill colors (`#rrggbb`), implies `fillMode="multi"`
+  - `colors`: comma-separated per-character fill colors (`#rrggbb`), implies
+    `fillMode="multi"`
   - `stroke`, `stroke2`: stroke colors
   - `strokeMode`: one of `single | gradient | multi`
   - `strokeEnabled`: `"true" | "1" | "false" | "0"`
@@ -520,7 +536,9 @@ Important query parameters (names and semantics):
 
 Additional logic:
 
-- When `fillMode === "multi"` but `charColors` is empty, it derives per-character colors from theme functions (`charColorsFn`) or a default palette.
+- When `fillMode === "multi"` but `charColors` is empty, it derives
+  per-character colors from theme functions (`charColorsFn`) or a default
+  palette.
 - When `strokeMode === "multi"` but `strokeCharColors` is empty, it tries:
   1. `theme.strokeCharColorsFn` if available.
   2. Reuse fill pattern (`theme.charColorsFn`) if `fillMode === "multi"`.
@@ -546,7 +564,9 @@ switch (formatParam) {
   case "png":
   case "gif": {
     // Static (non-animated) raster export
-    const staticSvg = generateSVG(state, paths, viewBox, { staticRender: true });
+    const staticSvg = generateSVG(state, paths, viewBox, {
+      staticRender: true,
+    });
     const image = await sharp(Buffer.from(staticSvg))
       [formatParam]() // .png() or .gif()
       .toBuffer();
@@ -561,11 +581,13 @@ switch (formatParam) {
 }
 ```
 
-> **Note**: The current GIF export is a **single-frame static GIF** (snapshot of the final rendered state). It does not yet produce an animated GIF.
+> **Note**: The current GIF export is a **single-frame static GIF** (snapshot of
+> the final rendered state). It does not yet produce an animated GIF.
 
 ### 5.3 API URL Builder (`lib/api-url.ts`)
 
-`buildSignApiUrl(state, options)` converts a `SignatureState` into a `/api/sign` URL that can reproduce the same visual output.
+`buildSignApiUrl(state, options)` converts a `SignatureState` into a `/api/sign`
+URL that can reproduce the same visual output.
 
 Key details:
 
@@ -609,7 +631,12 @@ The top bar is shared by both desktop and mobile layouts and includes:
   - GitHub repo button:
 
     ```tsx
-    <Button asChild variant="ghost" size="icon-sm" className="h-8 w-8 text-xs inline-flex">
+    <Button
+      asChild
+      variant="ghost"
+      size="icon-sm"
+      className="h-8 w-8 text-xs inline-flex"
+    >
       <a
         href="https://github.com/YuniqueUnic/animated-sign-4u"
         target="_blank"
@@ -618,11 +645,13 @@ The top bar is shared by both desktop and mobile layouts and includes:
       >
         <Github className="h-4 w-4" />
       </a>
-    </Button>
+    </Button>;
     ```
 
-  - Desktop download button: hover opens a panel with all download options (React, Vue, JS, SVG, PNG, GIF).
-  - Mobile download dropdown + “Code” button that opens a fullscreen overlay containing the `CodePanel`.
+  - Desktop download button: hover opens a panel with all download options
+    (React, Vue, JS, SVG, PNG, GIF).
+  - Mobile download dropdown + “Code” button that opens a fullscreen overlay
+    containing the `CodePanel`.
 
 ### 6.2 Desktop Layout
 
@@ -638,18 +667,23 @@ The top bar is shared by both desktop and mobile layouts and includes:
 +----------------------+--------------------------------------+
 ```
 
-- `Sidebar` (`components/signature-builder/sidebar.tsx`) contains four logical sections (each in its own file):
+- `Sidebar` (`components/signature-builder/sidebar.tsx`) contains four logical
+  sections (each in its own file):
   - **Content & Font** – signature text, font selection, custom font upload.
-  - **Parameters** – font size, animation speed, character spacing, Hanzi stroke mode.
+  - **Parameters** – font size, animation speed, character spacing, Hanzi stroke
+    mode.
   - **Quick Themes** – theme presets with small cards and texture previews.
   - **Style & Color** – background, texture, fill/stroke colors, effects.
 
-- `PreviewArea` renders the animated SVG with card, textures, and a zoom control.
-  - Zoom ranges are clamped (e.g. 0.1×–4×) and applied to the whole card, including shadow and textures.
+- `PreviewArea` renders the animated SVG with card, textures, and a zoom
+  control.
+  - Zoom ranges are clamped (e.g. 0.1×–4×) and applied to the whole card,
+    including shadow and textures.
 
 - `CodePanel` shows:
   - The current SVG markup
-  - Example React / Vue / JS wrapper components generated by `lib/code-generators.tsx`
+  - Example React / Vue / JS wrapper components generated by
+    `lib/code-generators.tsx`
   - The API URL built by `buildSignApiUrl`
 
 ### 6.3 Mobile Layout
@@ -671,11 +705,13 @@ The mobile drawer implements:
 - A resizable bottom panel whose height can be dragged.
 - Swipe left/right to change between sections (Content, Params, Themes, Style).
 - Special handling to avoid conflicts between horizontal swipes and sliders:
-  - If a pointer/touch starts on a slider (`[data-slot="slider"]`), swipe-to-change-section is suppressed.
+  - If a pointer/touch starts on a slider (`[data-slot="slider"]`),
+    swipe-to-change-section is suppressed.
 
 ### 6.4 Character Spacing (Language-Aware)
 
-Both UI and API use the same function to transform `state.charSpacing` into actual spacing per character:
+Both UI and API use the same function to transform `state.charSpacing` into
+actual spacing per character:
 
 ```ts
 const baseSpacing = state.charSpacing || 0;
@@ -689,10 +725,12 @@ if (baseSpacing !== 0 && char && isChinese(char)) {
 
 - For **Latin text**, spacing is applied as-is.
 - For **Chinese characters**:
-  - When spacing is negative, it is magnified (×5) so you can quickly compress the text.
+  - When spacing is negative, it is magnified (×5) so you can quickly compress
+    the text.
   - When spacing is positive, it is reduced (÷5) to avoid overly large gaps.
 
-Unit tests in `tests/api/char-spacing.test.ts` ensure this logic behaves as intended.
+Unit tests in `tests/api/char-spacing.test.ts` ensure this logic behaves as
+intended.
 
 ### 6.5 Animation Speed (Larger = Faster)
 
@@ -711,21 +749,25 @@ Unit tests in `tests/api/char-spacing.test.ts` ensure this logic behaves as inte
 
 ### 6.6 Fill / Stroke Linking Mode
 
-In the Style & Color section, there is a toggle that enables **linked fill/stroke mode**:
+In the Style & Color section, there is a toggle that enables **linked
+fill/stroke mode**:
 
 - When `linkFillStroke` is `true`:
   - `strokeMode` mirrors `fillMode`.
   - `stroke` and `stroke2` mirror `fill1` and `fill2`.
   - In multi-color mode, `strokeCharColors` mirrors `charColors`.
-  - Stroke controls are visually disabled (reduced opacity and pointer-events) to indicate that stroke is derived from fill.
+  - Stroke controls are visually disabled (reduced opacity and pointer-events)
+    to indicate that stroke is derived from fill.
 
-The helper `withLinkedStroke(patch)` in `sidebar-style-section.tsx` applies the correct stroke settings whenever:
+The helper `withLinkedStroke(patch)` in `sidebar-style-section.tsx` applies the
+correct stroke settings whenever:
 
 - The fill mode changes (single/gradient/multi).
 - The fill colors (`fill1`, `fill2`) change.
 - Per-character colors are updated in multi mode.
 
-`linkFillStroke` is also round-tripped through the API and URL builder so server-rendered outputs match the preview.
+`linkFillStroke` is also round-tripped through the API and URL builder so
+server-rendered outputs match the preview.
 
 ---
 
@@ -742,11 +784,14 @@ The helper `withLinkedStroke(patch)` in `sidebar-style-section.tsx` applies the 
   - `charColorsFn(text: string): string[]`
   - `strokeCharColorsFn(text: string): string[]`
 
-These functions are used when fill or stroke operates in multi-color mode and no explicit per-character array has been provided.
+These functions are used when fill or stroke operates in multi-color mode and no
+explicit per-character array has been provided.
 
 ### 7.2 Textures (`lib/svg-generator.tsx`)
 
-Textures are implemented as `<pattern>` definitions in `<defs>` and applied using `fill="url(#pattern-id)"` to an overlay `<rect>` inside the background card.
+Textures are implemented as `<pattern>` definitions in `<defs>` and applied
+using `fill="url(#pattern-id)"` to an overlay `<rect>` inside the background
+card.
 
 Supported textures (`TextureType`):
 
@@ -764,7 +809,9 @@ Additional parameters:
 - `texThickness`: line thickness
 - `texOpacity`: opacity of the overlay
 
-The quick themes sidebar visualizes these textures using CSS `background-image`, while the actual SVG output uses the `getTextureDefs` helper for true vector patterns.
+The quick themes sidebar visualizes these textures using CSS `background-image`,
+while the actual SVG output uses the `getTextureDefs` helper for true vector
+patterns.
 
 ---
 
@@ -773,8 +820,10 @@ The quick themes sidebar visualizes these textures using CSS `background-image`,
 Key test suites include:
 
 - `tests/api/buildStateFromQuery.test.ts`
-  - Verifies parsing of all major query parameters into a correct `SignatureState`.
-  - Covers themes, defaults, background sizes, textures, effects, and multi-color arrays.
+  - Verifies parsing of all major query parameters into a correct
+    `SignatureState`.
+  - Covers themes, defaults, background sizes, textures, effects, and
+    multi-color arrays.
 
 - `tests/api/buildPaths.test.ts`
   - Ensures path and `viewBox` construction is consistent.
@@ -789,7 +838,8 @@ Key test suites include:
 
 - `tests/lib/svg-generator.test.ts`
   - Covers texture patterns, gradients, and stroke dashoffset logic.
-  - Checks `idPrefix`-based scoping to avoid collisions between multiple SVG instances (e.g., desktop vs. mobile previews).
+  - Checks `idPrefix`-based scoping to avoid collisions between multiple SVG
+    instances (e.g., desktop vs. mobile previews).
 
 Run tests with:
 
@@ -839,18 +889,25 @@ pnpm start
 ## 10. Limitations & Future Work
 
 - **Animated GIF export**
-  - Currently, `format=gif` returns a single-frame static GIF generated from the final SVG state.
+  - Currently, `format=gif` returns a single-frame static GIF generated from the
+    final SVG state.
   - A true animated GIF pipeline would need to:
     - Sample multiple SVG frames along the animation timeline.
-    - Encode them as a multi-frame animated GIF using `sharp` or another encoder.
+    - Encode them as a multi-frame animated GIF using `sharp` or another
+      encoder.
     - Carefully balance frame count, resolution, and file size.
 
 - **Fonts**
   - The app ships with several Latin fonts and a Chinese script font.
-  - You can extend the font list in `FONTS` (in `app/api/sign/route.ts` and corresponding UI options).
+  - You can extend the font list in `FONTS` (in `app/api/sign/route.ts` and
+    corresponding UI options).
 
 - **Hanzi stroke data**
   - Hanzi mode relies on an external dataset fetched by `lib/hanzi-data.ts`.
-  - When data loading fails, the app gracefully falls back to standard glyph outlines.
+  - When data loading fails, the app gracefully falls back to standard glyph
+    outlines.
 
-This README is intended as a living technical document of the current implementation and should serve as a reference for future refactors, feature work (such as animated GIF export), additional themes/textures, and broader language support.
+This README is intended as a living technical document of the current
+implementation and should serve as a reference for future refactors, feature
+work (such as animated GIF export), additional themes/textures, and broader
+language support.

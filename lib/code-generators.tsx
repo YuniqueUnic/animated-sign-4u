@@ -1,14 +1,20 @@
-import { SignatureState } from './types';
+import { SignatureState } from "./types";
 
-export function generateReactComponent(svgCode: string, state: SignatureState): string {
-  const cleanSvg = svgCode.replace(/<svg([^>]*)style="[^"]*"([^>]*)>/, '<svg$1$2>');
-  const bgVal = state.bgTransparent ? 'transparent' : state.bg;
+export function generateReactComponent(
+  svgCode: string,
+  state: SignatureState,
+): string {
+  const cleanSvg = svgCode.replace(
+    /<svg([^>]*)style="[^"]*"([^>]*)>/,
+    "<svg$1$2>",
+  );
+  const bgVal = state.bgTransparent ? "transparent" : state.bg;
 
   return `import React from 'react';
 
 export default function AnimatedSignature() {
   return (
-    <div 
+    <div
       style={{
         display: 'inline-block',
         padding: '20px',
@@ -22,9 +28,15 @@ export default function AnimatedSignature() {
 }`;
 }
 
-export function generateVueComponent(svgCode: string, state: SignatureState): string {
-  const cleanSvg = svgCode.replace(/<svg([^>]*)style="[^"]*"([^>]*)>/, '<svg$1$2>');
-  const bgVal = state.bgTransparent ? 'transparent' : state.bg;
+export function generateVueComponent(
+  svgCode: string,
+  state: SignatureState,
+): string {
+  const cleanSvg = svgCode.replace(
+    /<svg([^>]*)style="[^"]*"([^>]*)>/,
+    "<svg$1$2>",
+  );
+  const bgVal = state.bgTransparent ? "transparent" : state.bg;
 
   return `<template>
   <div class="signature-wrapper">
@@ -48,9 +60,15 @@ const svgContent = ref(\`${cleanSvg}\`);
 </style>`;
 }
 
-export function generateJSComponent(svgCode: string, state: SignatureState): string {
-  const cleanSvg = svgCode.replace(/<svg([^>]*)style="[^"]*"([^>]*)>/, '<svg$1$2>');
-  const bgVal = state.bgTransparent ? 'transparent' : state.bg;
+export function generateJSComponent(
+  svgCode: string,
+  state: SignatureState,
+): string {
+  const cleanSvg = svgCode.replace(
+    /<svg([^>]*)style="[^"]*"([^>]*)>/,
+    "<svg$1$2>",
+  );
+  const bgVal = state.bgTransparent ? "transparent" : state.bg;
 
   return `/**
  * Animated Signature Component
@@ -63,17 +81,17 @@ export function createAnimatedSignature(containerId) {
     console.error(\`Container with id "\${containerId}" not found\`);
     return;
   }
-  
+
   const wrapper = document.createElement('div');
   wrapper.style.display = 'inline-block';
   wrapper.style.padding = '20px';
   wrapper.style.backgroundColor = '${bgVal}';
   wrapper.style.borderRadius = '${state.borderRadius}px';
-  
+
   wrapper.innerHTML = \`${cleanSvg}\`;
-  
+
   container.appendChild(wrapper);
-  
+
   return wrapper;
 }
 
