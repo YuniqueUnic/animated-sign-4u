@@ -101,19 +101,23 @@ describe("GET /api/sign", () => {
         expect(buffer.byteLength).toBeGreaterThan(0);
     });
 
-    it("returns GIF when format=gif", async () => {
-        const { GET } = await import("@/app/api/sign/route");
+    it(
+        "returns GIF when format=gif",
+        async () => {
+            const { GET } = await import("@/app/api/sign/route");
 
-        const req = new Request(
-            "http://localhost/api/sign?text=GifTest&format=gif",
-        );
-        const res = await GET(req as any);
-        const buffer = await res.arrayBuffer();
+            const req = new Request(
+                "http://localhost/api/sign?text=GifTest&format=gif",
+            );
+            const res = await GET(req as any);
+            const buffer = await res.arrayBuffer();
 
-        expect(res.status).toBe(200);
-        expect(res.headers.get("Content-Type")).toContain("image/gif");
-        expect(buffer.byteLength).toBeGreaterThan(0);
-    });
+            expect(res.status).toBe(200);
+            expect(res.headers.get("Content-Type")).toContain("image/gif");
+            expect(buffer.byteLength).toBeGreaterThan(0);
+        },
+        10000,
+    ); // 10-second timeout
 
     it("handles missing text with theme and format=json", async () => {
         const { GET } = await import("@/app/api/sign/route");

@@ -141,16 +141,15 @@ const { paths, viewBox } = await buildPaths(font, state);
 switch (format) {
   case "json":  return { paths, viewBox };
   case "png":   return sharp(staticSvg).png();
-  case "gif":   return sharp(staticSvg).gif();
+  case "gif":   return generateAnimatedGIF(state, paths, viewBox);
   default:       return animatedSvg;
 }
 ```
 
 - `buildStateFromQuery` merges `INITIAL_STATE`, optional `theme`, and query parameters.
 - `buildPaths` uses `svg-path-properties` for path lengths.
-- `generateSVG` is called with `staticRender=true` for PNG/GIF (single-frame snapshot).
-
-> **Note**: GIF export is currently **static** (one frame). Animated GIF output would require sampling multiple frames and is not implemented yet.
+- `generateSVG` is called with `staticRender=true` for PNG (single-frame snapshot).
+- `generateAnimatedGIF` samples the animation timeline at 30fps and creates a multi-frame animated GIF with stroke-by-stroke animation.
 
 ---
 

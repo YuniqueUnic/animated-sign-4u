@@ -36,6 +36,13 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
+  const repeatParam = params.get("repeat");
+  if (repeatParam === "0" || repeatParam === "false") {
+    state.repeat = false;
+  } else if (repeatParam === "1" || repeatParam === "true") {
+    state.repeat = true;
+  }
+
   const fill = params.get("fill") as FillMode | null;
   if (fill === "single" || fill === "gradient" || fill === "multi") {
     state.fillMode = fill;
@@ -228,6 +235,23 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
   const useHanziData = params.get("useHanziData");
   if (useHanziData === "true" || useHanziData === "1") {
     state.useHanziData = true;
+  }
+
+  // GIF export settings
+  const gifFpsParam = params.get("gifFps");
+  if (gifFpsParam) {
+    const v = Number(gifFpsParam);
+    if (Number.isFinite(v) && v > 0 && v <= 60) {
+      state.gifFps = v;
+    }
+  }
+
+  const gifQualityParam = params.get("gifQuality");
+  if (gifQualityParam) {
+    const v = Number(gifQualityParam);
+    if (Number.isFinite(v) && v >= 1 && v <= 20) {
+      state.gifQuality = v;
+    }
   }
 
   if (
