@@ -133,7 +133,7 @@ export default function SignatureBuilderPage() {
 
   const downloadSVG = (animated: boolean = true) => {
     // Always fetch from API to get clean SVG without idPrefix
-    const url = buildSignApiUrl(state, { format: 'svg' }) + (animated ? '' : '&static=1');
+    const url = buildSignApiUrl(state, { format: 'svg', static: !animated });
     fetch(url)
       .then(res => res.text())
       .then(svg => {
