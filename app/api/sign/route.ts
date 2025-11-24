@@ -3,10 +3,7 @@ import opentype from "opentype.js";
 import { svgPathProperties } from "svg-path-properties";
 import sharp from "sharp";
 
-import {
-    FONTS,
-    INITIAL_STATE,
-} from "@/lib/constants";
+import { FONTS, INITIAL_STATE } from "@/lib/constants";
 import { SignatureState } from "@/lib/types";
 import { generateSVG, PathData } from "@/lib/svg-generator";
 import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
@@ -181,7 +178,8 @@ export async function GET(req: NextRequest): Promise<Response> {
             return new Response("No paths generated", { status: 400 });
         }
 
-        const format = params.get("format") || "svg";
+        const formatParam = params.get("format") ?? params.get("fmt");
+        const format = formatParam || "svg";
 
         if (format === "json") {
             const body = JSON.stringify({ paths, viewBox });
@@ -201,7 +199,9 @@ export async function GET(req: NextRequest): Promise<Response> {
                 quality: state.gifQuality ?? 5, // Use state parameter or default to 5 (higher quality)
             });
 
-            return new Response(gifBuffer, {
+            const gifArray = new Uint8Array(gifBuffer);
+
+            return new Response(gifArray, {
                 status: 200,
                 headers: {
                     "Content-Type": "image/gif",
@@ -227,8 +227,8 @@ export async function GET(req: NextRequest): Promise<Response> {
             });
         }
 
-        // Check if static SVG is requested
-        const staticParam = params.get("static");
+        // Check if static SVG is requested (support long and short keys)
+        const staticParam = params.get("static") ?? params.get("st");
         const isStaticSvg = staticParam === "1" || staticParam === "true";
 
         const svg = generateSVG(state, paths, viewBox, {

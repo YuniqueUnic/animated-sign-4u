@@ -34,7 +34,22 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
     const bgVal = state.bgTransparent ? "transparent" : state.bg;
 
     if (type === "api") {
-      return buildSignApiUrl(state);
+      const animatedUrl = buildSignApiUrl(state, { format: "svg" });
+      const staticUrl = animatedUrl.includes("?")
+        ? `${animatedUrl}&st=1`
+        : `${animatedUrl}?st=1`;
+      const gifUrl = buildSignApiUrl(state, { format: "gif" });
+
+      return [
+        "// Animated SVG",
+        animatedUrl,
+        "",
+        "// Static SVG",
+        staticUrl,
+        "",
+        "// Animated GIF",
+        gifUrl,
+      ].join("\n");
     } else if (type === "react") {
       const jsx = cleanSvg
         .replace(/class="/g, 'className="')

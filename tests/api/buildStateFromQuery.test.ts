@@ -176,6 +176,18 @@ describe("buildStateFromQuery", () => {
         expect(state.eraseOnComplete).toBe(true);
     });
 
+    it("parses gifFps and gifQuality from short keys", () => {
+        const params = new URLSearchParams({
+            gf: "24",
+            gq: "12",
+        });
+
+        const state = buildStateFromQuery(params);
+
+        expect(state.gifFps).toBe(24);
+        expect(state.gifQuality).toBe(12);
+    });
+
     it("ignores invalid numeric values and keeps INITIAL_STATE defaults", () => {
         const params = new URLSearchParams({
             fontSize: "-10",
