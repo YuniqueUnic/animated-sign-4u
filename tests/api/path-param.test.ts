@@ -7,7 +7,7 @@ describe("/[text] - Root-level share URL redirect", () => {
     const url = "http://localhost:3000/HelloWorld";
     const req = new NextRequest(url);
 
-    const response = await GET(req, { params: { text: "HelloWorld" } });
+    const response = await GET(req);
 
     expect(response.status).toBe(308);
     const location = response.headers.get("Location");
@@ -18,7 +18,7 @@ describe("/[text] - Root-level share URL redirect", () => {
     const url = "http://localhost:3000/CustomText?font=sacramento&fontSize=80";
     const req = new NextRequest(url);
 
-    const response = await GET(req, { params: { text: "CustomText" } });
+    const response = await GET(req);
 
     expect(response.status).toBe(308);
     const location = response.headers.get("Location");
@@ -35,7 +35,7 @@ describe("/[text] - Root-level share URL redirect", () => {
     const url = "http://localhost:3000/Hello%20World";
     const req = new NextRequest(url);
 
-    const response = await GET(req, { params: { text: "Hello%20World" } });
+    const response = await GET(req);
 
     expect(response.status).toBe(308);
     const location = response.headers.get("Location");
@@ -50,7 +50,7 @@ describe("/[text] - Root-level share URL redirect", () => {
     const url = "http://localhost:3000/你好世界？font=ma-shan-zheng";
     const req = new NextRequest(url);
 
-    const response = await GET(req, { params: { text: "你好世界" } });
+    const response = await GET(req);
 
     expect(response.status).toBe(308);
     const location = response.headers.get("Location");
@@ -67,7 +67,7 @@ describe("/[text] - Root-level share URL redirect", () => {
       "http://localhost:3000/PathText?text=QueryText&font=great-vibes";
     const req = new NextRequest(url);
 
-    const response = await GET(req, { params: { text: "PathText" } });
+    const response = await GET(req);
 
     expect(response.status).toBe(308);
     const location = response.headers.get("Location");

@@ -248,4 +248,22 @@ describe("GET /api/sign", () => {
       state.strokeCharColors.slice(first4).every((c) => c === "#ffffff"),
     ).toBe(true);
   });
+
+  it("enables carousel erase animation when eraseOnComplete=1 and repeat=1", async () => {
+    const { GET } = await import("@/app/api/sign/route");
+
+    const req = new Request(
+      "http://localhost/api/sign?text=Loop&eraseOnComplete=1&repeat=1",
+    );
+    const res = await GET(req as any);
+    const body = await res.text();
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toContain("image/svg+xml");
+
+    // Carousel controller should be present and drive per-path animations
+    expect(body).toContain('id="cycle"');
+    expect(body).toContain('begin="0s;cycle.end"');
+    expect(body).toContain('begin="cycle.begin + ');
+  });
 });

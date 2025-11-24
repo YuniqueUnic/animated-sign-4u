@@ -181,45 +181,45 @@ HTTP API 通过单一端点对外提供服务：
 
 <!-- API_PARAM_MAPPING_ZH:START -->
 
-| Long name         | Short key | Group      | Description                                       |
-| ----------------- | --------- | ---------- | ------------------------------------------------- |
-| `text`            | `t`       | core       | Signature text                                    |
-| `font`            | `f`       | core       | Font id from FONTS                                |
-| `theme`           | `-`       | core       | Optional theme key from THEMES                    |
-| `repeat`          | `r`       | core       | Whether the animation should loop                 |
-| `eraseOnComplete` | `eo`      | core       | Erase the signature after drawing (carousel mode) |
-| `fontSize`        | `fs`      | layout     | Font size (px)                                    |
-| `speed`           | `sp`      | layout     | Animation speed factor (larger = faster)          |
-| `charSpacing`     | `cs`      | layout     | Base character spacing                            |
-| `borderRadius`    | `br`      | layout     | Card border radius                                |
-| `cardPadding`     | `cp`      | layout     | Inner padding used by texture overlay             |
-| `bgSizeMode`      | `bgs`     | layout     | Background sizing mode (auto/custom)              |
-| `bgWidth`         | `bw`      | layout     | Custom background/card width                      |
-| `bgHeight`        | `bh`      | layout     | Custom background/card height                     |
-| `bg`              | `-`       | background | Background color or 'transparent'                 |
-| `bgMode`          | `bm`      | background | Background mode (solid/gradient)                  |
-| `bg2`             | `-`       | background | Secondary background color for gradients          |
-| `fill`            | `fm`      | fill       | Fill mode (single/gradient/multi)                 |
-| `fill1`           | `f1`      | fill       | Primary fill color                                |
-| `fill2`           | `f2`      | fill       | Secondary fill color                              |
-| `colors`          | `cl`      | fill       | Per-character fill colors (enables multi mode)    |
-| `stroke`          | `st`      | stroke     | Primary stroke color                              |
-| `stroke2`         | `st2`     | stroke     | Secondary stroke color                            |
-| `strokeMode`      | `sm`      | stroke     | Stroke mode (single/gradient/multi)               |
-| `strokeEnabled`   | `se`      | stroke     | Toggle stroke on/off                              |
-| `linkFillStroke`  | `lfs`     | stroke     | Link stroke behavior to fill mode/colors          |
-| `texture`         | `tx`      | texture    | Texture overlay type                              |
-| `texColor`        | `txc`     | texture    | Texture color                                     |
-| `texSize`         | `txs`     | texture    | Texture scale                                     |
-| `texThickness`    | `txt`     | texture    | Texture line thickness                            |
-| `texOpacity`      | `txo`     | texture    | Texture opacity (0..1)                            |
-| `useGlow`         | `gl`      | effects    | Enable glow effect                                |
-| `useShadow`       | `sh`      | effects    | Enable shadow effect                              |
-| `useHanziData`    | `hz`      | hanzi      | Use Hanzi stroke data for Chinese characters      |
-| `gifFps`          | `gf`      | gif        | GIF frame rate (fps)                              |
-| `gifQuality`      | `gq`      | gif        | GIF quality (1-20, higher is better)              |
-| `format`          | `fmt`     | meta       | Output format (svg/png/gif/json)                  |
-| `static`          | `sta`     | meta       | Request a static snapshot when using SVG output   |
+| 参数名             | 短 key | 分组   | 描述                                         |
+| ------------------ | ------ | ------ | -------------------------------------------- |
+| `文本`             | `t`    | 核心   | 签名文本内容                                 |
+| `字体`             | `f`    | 核心   | 要使用的字体 ID，来自 FONTS                  |
+| `主题`             | `-`    | 核心   | 可选主题键，来自 THEMES                      |
+| `循环播放`         | `r`    | 核心   | 是否循环播放整个动画                         |
+| `动画结束后擦除`   | `eo`   | 核心   | 绘制完成后擦除签名，并进入往返轮播模式       |
+| `字体大小`         | `fs`   | 布局   | 字体大小（像素）                             |
+| `动画速度`         | `sp`   | 布局   | 动画速度系数（值越大动画越快）               |
+| `字符间距`         | `cs`   | 布局   | 基础字符间距                                 |
+| `卡片圆角`         | `br`   | 布局   | 卡片圆角半径                                 |
+| `卡片内边距`       | `cp`   | 布局   | 卡片内边距（纹理可用区域）                   |
+| `背景尺寸模式`     | `bgs`  | 布局   | 背景尺寸模式（自动/自定义）                  |
+| `背景宽度`         | `bw`   | 布局   | 自定义背景/卡片宽度                          |
+| `背景高度`         | `bh`   | 布局   | 自定义背景/卡片高度                          |
+| `背景颜色`         | `-`    | 背景   | 背景颜色，或 transparent 表示透明            |
+| `背景模式`         | `bm`   | 背景   | 背景模式（纯色/渐变）                        |
+| `背景副色`         | `-`    | 背景   | 渐变背景的副颜色                             |
+| `填充模式`         | `fm`   | 填充   | 填充模式（单色/渐变/多色）                   |
+| `主填充颜色`       | `f1`   | 填充   | 主填充颜色                                   |
+| `副填充颜色`       | `f2`   | 填充   | 副填充颜色                                   |
+| `逐字符填充颜色`   | `cl`   | 填充   | 逐字符填充颜色列表（启用多色模式）           |
+| `主描边颜色`       | `st`   | 描边   | 主描边颜色                                   |
+| `副描边颜色`       | `st2`  | 描边   | 副描边颜色                                   |
+| `描边模式`         | `sm`   | 描边   | 描边模式（单色/渐变/多色）                   |
+| `启用描边`         | `se`   | 描边   | 是否启用描边                                 |
+| `填充/描边联动`    | `lfs`  | 描边   | 是否让描边跟随填充模式和颜色                 |
+| `纹理类型`         | `tx`   | 纹理   | 背景纹理类型                                 |
+| `纹理颜色`         | `txc`  | 纹理   | 纹理颜色                                     |
+| `纹理大小`         | `txs`  | 纹理   | 纹理网格尺寸                                 |
+| `纹理线宽`         | `txt`  | 纹理   | 纹理线条粗细                                 |
+| `纹理不透明度`     | `txo`  | 纹理   | 纹理不透明度（0..1）                         |
+| `发光效果`         | `gl`   | 特效   | 是否启用发光效果                             |
+| `阴影效果`         | `sh`   | 特效   | 是否启用阴影效果                             |
+| `使用汉字笔画数据` | `hz`   | 汉字   | 中文文本是否使用汉字笔画数据进行逐笔绘制     |
+| `GIF 帧率`         | `gf`   | GIF    | GIF 帧率（fps）                              |
+| `GIF 画质`         | `gq`   | GIF    | GIF 画质（1–20，数值越小画质越好、体积越大） |
+| `输出格式`         | `fmt`  | 元信息 | 输出格式（svg/png/gif/json）                 |
+| `静态 SVG 快照`    | `sta`  | 元信息 | 在使用 SVG 输出时请求静态快照（无动画）      |
 
 <!-- API_PARAM_MAPPING_ZH:END -->
 
