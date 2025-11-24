@@ -35,9 +35,7 @@ export function CodePanel({ svgCode, state }: CodePanelProps) {
 
     if (type === "api") {
       const animatedUrl = buildSignApiUrl(state, { format: "svg" });
-      const staticUrl = animatedUrl.includes("?")
-        ? `${animatedUrl}&st=1`
-        : `${animatedUrl}?st=1`;
+      const staticUrl = buildSignApiUrl(state, { format: "svg", static: true });
       const gifUrl = buildSignApiUrl(state, { format: "gif" });
 
       return [

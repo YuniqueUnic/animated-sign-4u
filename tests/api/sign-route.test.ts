@@ -205,11 +205,11 @@ describe("GET /api/sign", () => {
         expect(body).not.toContain("<rect");
     });
 
-    it("supports short keys fmt=svg and st=1 for static SVG", async () => {
+    it("supports short keys fmt=svg and sta=1 for static SVG", async () => {
         const { GET } = await import("@/app/api/sign/route");
 
         const req = new Request(
-            "http://localhost/api/sign?text=StaticShort&fmt=svg&st=1",
+            "http://localhost/api/sign?text=StaticShort&fmt=svg&sta=1",
         );
         const res = await GET(req as any);
         const body = await res.text();
