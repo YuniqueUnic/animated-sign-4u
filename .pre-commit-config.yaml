@@ -11,6 +11,18 @@ repos:
         entry: pnpm generate:api-docs
         language: system
         pass_filenames: false
+      - id: test-on-push
+        name: Run pnpm test on push
+        entry: pnpm test
+        language: system
+        pass_filenames: false
+        stages: [push]
+      - id: lint-on-push
+        name: Run pnpm lint on push
+        entry: pnpm lint
+        language: system
+        pass_filenames: false
+        stages: [push]
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: v6.0.0

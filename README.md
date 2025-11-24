@@ -230,6 +230,30 @@ are not HTTP API endpoints themselves.
 
 <!-- API_PARAM_MAPPING:END -->
 
+#### 4.2.1 Animation loop & erase behavior
+
+Two core flags control the animation timeline when using animated SVG output:
+
+- **repeat** (`r`)
+  - When `true`, the animation timeline loops indefinitely.
+  - When `false`, the timeline runs once and then stops.
+- **eraseOnComplete** (`eo`)
+  - Enables a carousel-style cycle for each loop:
+    - Draw the signature (stroke animation)
+    - Hold the fully drawn frame
+    - Erase the signature back to the beginning
+
+When **both** `repeat=true` and `eraseOnComplete=true`:
+
+- Animated SVGs continuously run a draw → hold → erase carousel.
+
+Notes:
+
+- Static SVG (`format=svg&static=1`) and PNG/GIF snapshots ignore these flags
+  because they are single-frame outputs.
+- GIF exports always loop regardless of `repeat`; the GIF encoder is configured
+  to repeat forever for better UX in typical chat and browser viewers.
+
 ### 4.3 Example Requests
 
 - **Simple SVG (HTTP API)**

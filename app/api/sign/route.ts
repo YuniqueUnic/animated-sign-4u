@@ -13,22 +13,81 @@ import { getIncomingValue } from "@/lib/api-params";
 
 export const runtime = "nodejs";
 
+const FONT_CACHE = new Map<string, any>();
+
+function createFallbackFont(): any {
+  const unitsPerEm = 1000;
+  return {
+    unitsPerEm,
+    stringToGlyphs(text: string) {
+      return Array.from(text).map(() => {
+        return {
+          advanceWidth: unitsPerEm / 2,
+          getPath(x: number, y: number, fontSize: number) {
+            const left = x;
+            const right = x + fontSize / 2;
+            const top = y - fontSize / 2;
+            const bottom = y + fontSize / 2;
+            return {
+              toPathData: () =>
+                `M${left} ${top}L${right} ${top}L${right} ${bottom}L${left} ${bottom}Z`,
+              getBoundingBox: () => ({
+                x1: left,
+                y1: top,
+                x2: right,
+                y2: bottom,
+              }),
+            };
+          },
+        };
+      });
+    },
+  };
+}
+
+const FALLBACK_FONT = createFallbackFont();
+
 export async function loadFont(fontId: string): Promise<any> {
   const fallbackId = INITIAL_STATE.font;
   const fontEntry = FONTS.find((f) => f.value === fontId) ??
     FONTS.find((f) => f.value === fallbackId);
 
   if (!fontEntry) {
-    throw new Error("Font is not configured");
+    console.error("[/api/sign] Font is not configured", { fontId, fallbackId });
+    return FALLBACK_FONT;
   }
 
-  const res = await fetch(fontEntry.url);
-  if (!res.ok) {
-    throw new Error(`Failed to load font: ${res.status}`);
-  }
+  const cacheKey = fontEntry.value;
+  const cached = FONT_CACHE.get(cacheKey);
+  if (cached) return cached;
 
-  const buffer = await res.arrayBuffer();
-  return opentype.parse(buffer);
+  try {
+    const res = await fetch(fontEntry.url);
+    if (!res.ok) {
+      throw new Error(`Failed to load font: ${res.status}`);
+    }
+
+    const buffer = await res.arrayBuffer();
+    const font = opentype.parse(buffer);
+    FONT_CACHE.set(cacheKey, font);
+    return font;
+  } catch (error) {
+    console.error("[/api/sign] Failed to fetch font, using fallback font", {
+      fontId: fontEntry.value,
+      url: fontEntry.url,
+      error,
+    });
+
+    // Prefer any previously cached font as a graceful fallback.
+    const cachedFallback = Array.from(FONT_CACHE.values())[0];
+    if (cachedFallback) {
+      return cachedFallback;
+    }
+
+    // Last resort: use a simple in-memory box font so we can still render
+    // a signature instead of returning a 500 error.
+    return FALLBACK_FONT;
+  }
 }
 
 export async function buildPaths(font: any, state: SignatureState): Promise<{
