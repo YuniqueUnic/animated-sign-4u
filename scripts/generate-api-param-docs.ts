@@ -23,15 +23,15 @@ function buildEnglishTable(): string {
 }
 
 function buildChineseTable(): string {
-  const header = "| Long name | Short key | Group | Description |\n" +
-    "| -------- | -------- | ----- | ----------- |";
+  const header = "| 参数名 | 短 key | 分组 | 描述 |\n" +
+    "| ------ | ------ | ---- | ---- |";
 
   const rows = API_PARAM_DEFS.map((def) => {
+    const longName = def.zhName ?? def.name;
     const short = def.shortKey ?? "-";
-    const group = def.group;
-    // For now we reuse the English description to keep things in sync.
-    const desc = def.description;
-    return `| \`${def.name}\` | \`${short}\` | ${group} | ${desc} |`;
+    const group = def.zhGroup ?? def.group;
+    const desc = def.zhDescription ?? def.description;
+    return `| \`${longName}\` | \`${short}\` | ${group} | ${desc} |`;
   });
 
   return [header, ...rows].join("\n");

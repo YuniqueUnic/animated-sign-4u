@@ -311,3 +311,81 @@ describe("generateSVG - idPrefix scoping", () => {
     expect(svg).toContain('fill="url(#mobile-texture-grid)"');
   });
 });
+
+describe("generateSVG - eraseOnComplete carousel behavior", () => {
+  const baseViewBox = { x: 0, y: 0, w: 200, h: 100 };
+  const simplePaths: PathData[] = [
+    { d: "M0 0 L10 0", len: 10, index: 0 },
+  ];
+
+  it("uses forward-only animation without cycle controller when eraseOnComplete is false", () => {
+    const state: SignatureState = {
+      ...(INITIAL_STATE as SignatureState),
+      eraseOnComplete: false,
+      repeat: true,
+    };
+
+    const svg = generateSVG(state, simplePaths, baseViewBox);
+
+    // No global cycle controller should be present
+    expect(svg).not.toContain('id="cycle"');
+    expect(svg).not.toContain("cycle.begin");
+
+    // Paths still animate stroke-dashoffset forward once
+    expect(svg).toContain('attributeName="stroke-dashoffset"');
+    expect(svg).toContain('begin="0s"');
+  });
+
+  it("adds repeating cycle controller and erase phase when eraseOnComplete is true and repeat=true", () => {
+    const state: SignatureState = {
+      ...(INITIAL_STATE as SignatureState),
+      eraseOnComplete: true,
+      repeat: true,
+    };
+
+    const svg = generateSVG(state, simplePaths, baseViewBox);
+
+    // Global cycle controller with repeat semantics
+    expect(svg).toContain('id="cycle"');
+    expect(svg).toContain('begin="0s;cycle.end"');
+
+    // Per-path animations should be driven by the cycle controller
+    expect(svg).toContain('begin="cycle.begin + ');
+  });
+
+  it("adds non-repeating cycle controller when eraseOnComplete is true and repeat=false", () => {
+    const state: SignatureState = {
+      ...(INITIAL_STATE as SignatureState),
+      eraseOnComplete: true,
+      repeat: false,
+    };
+
+    const svg = generateSVG(state, simplePaths, baseViewBox);
+
+    // Global cycle controller should run once without cycle.end chaining
+    expect(svg).toContain('id="cycle"');
+    expect(svg).toContain('begin="0s"');
+    expect(svg).not.toContain("cycle.end");
+
+    // Per-path animations are still tied to the cycle begin time
+    expect(svg).toContain('begin="cycle.begin + ');
+  });
+
+  it("omits SMIL animations and keeps final frame visible in staticRender mode", () => {
+    const state: SignatureState = {
+      ...(INITIAL_STATE as SignatureState),
+      eraseOnComplete: true,
+    };
+
+    const svg = generateSVG(state, simplePaths, baseViewBox, {
+      staticRender: true,
+    });
+
+    // Static render should not emit any <animate> elements
+    expect(svg).not.toContain("<animate");
+
+    // Paths should be fully drawn and filled in the final frame
+    expect(svg).toContain('stroke-dashoffset="0"');
+    expect(svg).toContain('fill-opacity="1"');
+  });
+});
