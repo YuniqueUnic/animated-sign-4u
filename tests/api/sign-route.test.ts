@@ -205,6 +205,22 @@ describe("GET /api/sign", () => {
         expect(body).not.toContain("<rect");
     });
 
+    it("supports short keys fmt=svg and st=1 for static SVG", async () => {
+        const { GET } = await import("@/app/api/sign/route");
+
+        const req = new Request(
+            "http://localhost/api/sign?text=StaticShort&fmt=svg&st=1",
+        );
+        const res = await GET(req as any);
+        const body = await res.text();
+
+        expect(res.status).toBe(200);
+        expect(res.headers.get("Content-Type")).toContain("image/svg+xml");
+        expect(body).toContain("<svg");
+        // Static SVG should not contain SMIL <animate> tags
+        expect(body).not.toContain("<animate");
+    });
+
     it("initializes pepsi theme as multi fill and stroke with black/white pattern", async () => {
         const params = new URLSearchParams("text=Signature&theme=pepsi");
         const state = buildStateFromQuery(params);

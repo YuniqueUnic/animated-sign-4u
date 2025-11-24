@@ -4,23 +4,30 @@ import { FillMode, SignatureState, TextureType } from "@/lib/types";
 export function buildStateFromQuery(params: URLSearchParams): SignatureState {
   let state: SignatureState = { ...INITIAL_STATE };
 
+  const get = (longKey: string, shortKey?: string): string | null => {
+    const v = params.get(longKey);
+    if (v !== null) return v;
+    if (shortKey) return params.get(shortKey);
+    return null;
+  };
+
   const themeKey = params.get("theme");
   const theme = themeKey && themeKey in THEMES ? THEMES[themeKey] : undefined;
   if (theme) {
     state = { ...state, ...theme } as SignatureState;
   }
 
-  const text = params.get("text");
+  const text = get("text", "t");
   if (text) {
     state.text = text;
   }
 
-  const font = params.get("font");
+  const font = get("font", "f");
   if (font) {
     state.font = font;
   }
 
-  const fontSizeParam = params.get("fontSize");
+  const fontSizeParam = get("fontSize", "fs");
   if (fontSizeParam) {
     const v = Number(fontSizeParam);
     if (Number.isFinite(v) && v > 0) {
@@ -28,7 +35,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const speedParam = params.get("speed");
+  const speedParam = get("speed", "sp");
   if (speedParam) {
     const v = Number(speedParam);
     if (Number.isFinite(v) && v > 0) {
@@ -36,26 +43,26 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const repeatParam = params.get("repeat");
+  const repeatParam = get("repeat", "r");
   if (repeatParam === "0" || repeatParam === "false") {
     state.repeat = false;
   } else if (repeatParam === "1" || repeatParam === "true") {
     state.repeat = true;
   }
 
-  const eraseParam = params.get("eraseOnComplete");
+  const eraseParam = get("eraseOnComplete", "eo");
   if (eraseParam === "1" || eraseParam === "true") {
     state.eraseOnComplete = true;
   } else if (eraseParam === "0" || eraseParam === "false") {
     state.eraseOnComplete = false;
   }
 
-  const fill = params.get("fill") as FillMode | null;
+  const fill = get("fill", "fm") as FillMode | null;
   if (fill === "single" || fill === "gradient" || fill === "multi") {
     state.fillMode = fill;
   }
 
-  const colorsParam = params.get("colors");
+  const colorsParam = get("colors", "cl");
   if (colorsParam) {
     const rawColors = colorsParam.split(/[,-]/);
     const parsed = rawColors
@@ -68,31 +75,31 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const fill1Param = params.get("fill1");
+  const fill1Param = get("fill1", "f1");
   if (fill1Param) {
     state.fill1 = fill1Param.startsWith("#") ? fill1Param : `#${fill1Param}`;
   }
 
-  const fill2Param = params.get("fill2");
+  const fill2Param = get("fill2", "f2");
   if (fill2Param) {
     state.fill2 = fill2Param.startsWith("#") ? fill2Param : `#${fill2Param}`;
   }
 
-  const strokeParam = params.get("stroke");
+  const strokeParam = get("stroke", "st");
   if (strokeParam) {
     state.stroke = strokeParam.startsWith("#")
       ? strokeParam
       : `#${strokeParam}`;
   }
 
-  const stroke2Param = params.get("stroke2");
+  const stroke2Param = get("stroke2", "st2");
   if (stroke2Param) {
     state.stroke2 = stroke2Param.startsWith("#")
       ? stroke2Param
       : `#${stroke2Param}`;
   }
 
-  const strokeModeParam = params.get("strokeMode") as
+  const strokeModeParam = get("strokeMode", "sm") as
     | "single"
     | "gradient"
     | "multi"
@@ -105,19 +112,19 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     state.strokeMode = strokeModeParam;
   }
 
-  const strokeEnabledParam = params.get("strokeEnabled");
+  const strokeEnabledParam = get("strokeEnabled", "se");
   if (strokeEnabledParam === "0" || strokeEnabledParam === "false") {
     state.strokeEnabled = false;
   } else if (strokeEnabledParam === "1" || strokeEnabledParam === "true") {
     state.strokeEnabled = true;
   }
 
-  const bgSizeMode = params.get("bgSizeMode");
+  const bgSizeMode = get("bgSizeMode", "bgs");
   if (bgSizeMode === "auto" || bgSizeMode === "custom") {
     state.bgSizeMode = bgSizeMode as any;
   }
 
-  const charSpacing = params.get("charSpacing");
+  const charSpacing = get("charSpacing", "cs");
   if (charSpacing) {
     const v = Number(charSpacing);
     if (Number.isFinite(v)) {
@@ -125,7 +132,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const borderRadiusParam = params.get("borderRadius");
+  const borderRadiusParam = get("borderRadius", "br");
   if (borderRadiusParam) {
     const v = Number(borderRadiusParam);
     if (Number.isFinite(v) && v >= 0) {
@@ -133,7 +140,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const cardPaddingParam = params.get("cardPadding");
+  const cardPaddingParam = get("cardPadding", "cp");
   if (cardPaddingParam) {
     const v = Number(cardPaddingParam);
     if (Number.isFinite(v) && v >= 0) {
@@ -141,7 +148,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const bgWidthParam = params.get("bgWidth");
+  const bgWidthParam = get("bgWidth", "bw");
   if (bgWidthParam) {
     const v = Number(bgWidthParam);
     if (Number.isFinite(v) && v > 0) {
@@ -149,7 +156,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const bgHeightParam = params.get("bgHeight");
+  const bgHeightParam = get("bgHeight", "bh");
   if (bgHeightParam) {
     const v = Number(bgHeightParam);
     if (Number.isFinite(v) && v > 0) {
@@ -157,7 +164,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const bgParam = params.get("bg");
+  const bgParam = get("bg", "bg");
   if (bgParam) {
     if (bgParam === "transparent") {
       state.bgTransparent = true;
@@ -167,17 +174,17 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const bgModeParam = params.get("bgMode");
+  const bgModeParam = get("bgMode", "bm");
   if (bgModeParam === "solid" || bgModeParam === "gradient") {
     state.bgMode = bgModeParam as any;
   }
 
-  const bg2Param = params.get("bg2");
+  const bg2Param = get("bg2", "bg2");
   if (bg2Param) {
     state.bg2 = bg2Param.startsWith("#") ? bg2Param : `#${bg2Param}`;
   }
 
-  const texture = params.get("texture") as TextureType | null;
+  const texture = get("texture", "tx") as TextureType | null;
   const allowedTextures: TextureType[] = [
     "none",
     "grid",
@@ -191,14 +198,14 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     state.texture = texture;
   }
 
-  const texColorParam = params.get("texColor");
+  const texColorParam = get("texColor", "txc");
   if (texColorParam) {
     state.texColor = texColorParam.startsWith("#")
       ? texColorParam
       : `#${texColorParam}`;
   }
 
-  const texSizeParam = params.get("texSize");
+  const texSizeParam = get("texSize", "txs");
   if (texSizeParam) {
     const v = Number(texSizeParam);
     if (Number.isFinite(v) && v > 0) {
@@ -206,7 +213,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const texThicknessParam = params.get("texThickness");
+  const texThicknessParam = get("texThickness", "txt");
   if (texThicknessParam) {
     const v = Number(texThicknessParam);
     if (Number.isFinite(v) && v > 0) {
@@ -214,7 +221,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const texOpacityParam = params.get("texOpacity");
+  const texOpacityParam = get("texOpacity", "txo");
   if (texOpacityParam) {
     const v = Number(texOpacityParam);
     if (Number.isFinite(v) && v >= 0 && v <= 1) {
@@ -222,34 +229,34 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const useGlowParam = params.get("useGlow");
+  const useGlowParam = get("useGlow", "gl");
   if (useGlowParam === "true" || useGlowParam === "1") {
     state.useGlow = true;
   } else if (useGlowParam === "false" || useGlowParam === "0") {
     state.useGlow = false;
   }
 
-  const useShadowParam = params.get("useShadow");
+  const useShadowParam = get("useShadow", "sh");
   if (useShadowParam === "true" || useShadowParam === "1") {
     state.useShadow = true;
   } else if (useShadowParam === "false" || useShadowParam === "0") {
     state.useShadow = false;
   }
 
-  const linkFillStrokeParam = params.get("linkFillStroke");
+  const linkFillStrokeParam = get("linkFillStroke", "lfs");
   if (linkFillStrokeParam === "true" || linkFillStrokeParam === "1") {
     state.linkFillStroke = true;
   } else if (linkFillStrokeParam === "false" || linkFillStrokeParam === "0") {
     state.linkFillStroke = false;
   }
 
-  const useHanziData = params.get("useHanziData");
+  const useHanziData = get("useHanziData", "hz");
   if (useHanziData === "true" || useHanziData === "1") {
     state.useHanziData = true;
   }
 
   // GIF export settings
-  const gifFpsParam = params.get("gifFps");
+  const gifFpsParam = get("gifFps", "gf");
   if (gifFpsParam) {
     const v = Number(gifFpsParam);
     if (Number.isFinite(v) && v > 0 && v <= 60) {
@@ -257,7 +264,7 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     }
   }
 
-  const gifQualityParam = params.get("gifQuality");
+  const gifQualityParam = get("gifQuality", "gq");
   if (gifQualityParam) {
     const v = Number(gifQualityParam);
     if (Number.isFinite(v) && v >= 1 && v <= 20) {

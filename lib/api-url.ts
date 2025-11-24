@@ -4,12 +4,14 @@ export interface BuildSignApiUrlOptions {
     format?: string;
     origin?: string;
     static?: boolean;
+    shortKeys?: boolean;
 }
 
 interface BuildUrlParamsOptions {
     includeText?: boolean;
     includeFormat?: boolean;
     format?: string;
+    shortKeys?: boolean;
 }
 
 function buildParamsFromState(
@@ -18,98 +20,106 @@ function buildParamsFromState(
 ): URLSearchParams {
     const params = new URLSearchParams();
 
+    const useShort = options.shortKeys === true;
+    const k = (longKey: string, shortKey: string) =>
+        useShort ? shortKey : longKey;
+
     if (options.includeText !== false) {
-        params.set("text", state.text);
+        params.set(k("text", "t"), state.text);
     }
 
-    params.set("font", state.font);
+    params.set(k("font", "f"), state.font);
 
     // Core layout
-    params.set("fontSize", String(state.fontSize));
-    params.set("speed", String(state.speed));
-    params.set("charSpacing", String(state.charSpacing));
-    params.set("borderRadius", String(state.borderRadius));
-    params.set("cardPadding", String(state.cardPadding));
+    params.set(k("fontSize", "fs"), String(state.fontSize));
+    params.set(k("speed", "sp"), String(state.speed));
+    params.set(k("charSpacing", "cs"), String(state.charSpacing));
+    params.set(k("borderRadius", "br"), String(state.borderRadius));
+    params.set(k("cardPadding", "cp"), String(state.cardPadding));
 
     if (state.fillMode !== "single") {
-        params.set("fill", state.fillMode);
+        params.set(k("fill", "fm"), state.fillMode);
     }
 
     // Fill & stroke colors/modes
-    params.set("fill1", state.fill1.replace("#", ""));
+    params.set(k("fill1", "f1"), state.fill1.replace("#", ""));
     if (state.fill2) {
-        params.set("fill2", state.fill2.replace("#", ""));
+        params.set(k("fill2", "f2"), state.fill2.replace("#", ""));
     }
 
-    params.set("stroke", state.stroke.replace("#", ""));
+    params.set(k("stroke", "st"), state.stroke.replace("#", ""));
     if (state.stroke2) {
-        params.set("stroke2", state.stroke2.replace("#", ""));
+        params.set(k("stroke2", "st2"), state.stroke2.replace("#", ""));
     }
-    params.set("strokeMode", state.strokeMode);
-    params.set("strokeEnabled", state.strokeEnabled ? "1" : "0");
+    params.set(k("strokeMode", "sm"), state.strokeMode);
+    params.set(k("strokeEnabled", "se"), state.strokeEnabled ? "1" : "0");
 
     // Background
     if (state.bgTransparent) {
-        params.set("bg", "transparent");
+        params.set(k("bg", "bg"), "transparent");
     } else if (state.bg !== "#ffffff") {
-        params.set("bg", state.bg.replace("#", ""));
+        params.set(k("bg", "bg"), state.bg.replace("#", ""));
     }
 
-    params.set("bgMode", state.bgMode);
+    params.set(k("bgMode", "bm"), state.bgMode);
     if (state.bg2) {
-        params.set("bg2", state.bg2.replace("#", ""));
+        params.set(k("bg2", "bg2"), state.bg2.replace("#", ""));
     }
 
     if (state.bgSizeMode === "custom") {
-        params.set("bgSizeMode", "custom");
-        if (state.bgWidth) params.set("bgWidth", String(state.bgWidth));
-        if (state.bgHeight) params.set("bgHeight", String(state.bgHeight));
+        params.set(k("bgSizeMode", "bgs"), "custom");
+        if (state.bgWidth) {
+            params.set(k("bgWidth", "bw"), String(state.bgWidth));
+        }
+        if (state.bgHeight) {
+            params.set(k("bgHeight", "bh"), String(state.bgHeight));
+        }
     }
 
     // Texture and effects
     if (state.texture !== "none") {
-        params.set("texture", state.texture);
+        params.set(k("texture", "tx"), state.texture);
     }
-    params.set("texColor", state.texColor.replace("#", ""));
-    params.set("texSize", String(state.texSize));
-    params.set("texThickness", String(state.texThickness));
-    params.set("texOpacity", String(state.texOpacity));
+    params.set(k("texColor", "txc"), state.texColor.replace("#", ""));
+    params.set(k("texSize", "txs"), String(state.texSize));
+    params.set(k("texThickness", "txt"), String(state.texThickness));
+    params.set(k("texOpacity", "txo"), String(state.texOpacity));
 
     if (state.fillMode === "multi" && state.text) {
         const colors = state.text.split("").map((_, idx) =>
             (state.charColors[idx] || state.fill1).replace("#", "")
         );
-        params.set("colors", colors.join("-"));
+        params.set(k("colors", "cl"), colors.join("-"));
     }
     if (state.useGlow) {
-        params.set("useGlow", "1");
+        params.set(k("useGlow", "gl"), "1");
     }
     if (state.useShadow) {
-        params.set("useShadow", "1");
+        params.set(k("useShadow", "sh"), "1");
     }
 
     if (state.useHanziData) {
-        params.set("useHanziData", "true");
+        params.set(k("useHanziData", "hz"), "true");
     }
 
     if (state.linkFillStroke) {
-        params.set("linkFillStroke", "1");
+        params.set(k("linkFillStroke", "lfs"), "1");
     }
 
     if (state.eraseOnComplete) {
-        params.set("eraseOnComplete", "1");
+        params.set(k("eraseOnComplete", "eo"), "1");
     }
 
     // GIF export settings (only add if not default values)
     if (state.gifFps && state.gifFps !== 30) {
-        params.set("gifFps", String(state.gifFps));
+        params.set(k("gifFps", "gf"), String(state.gifFps));
     }
     if (state.gifQuality && state.gifQuality !== 5) {
-        params.set("gifQuality", String(state.gifQuality));
+        params.set(k("gifQuality", "gq"), String(state.gifQuality));
     }
 
     if (options.includeFormat !== false && options.format) {
-        params.set("format", options.format);
+        params.set(k("format", "fmt"), options.format);
     }
 
     return params;
@@ -123,10 +133,11 @@ export function buildSignApiUrl(
         includeText: true,
         includeFormat: true,
         format: options.format,
+        shortKeys: options.shortKeys ?? true,
     });
 
     if (options.static) {
-        params.set("static", "1");
+        params.set(options.shortKeys ?? true ? "st" : "static", "1");
     }
 
     const origin = options.origin ??
@@ -148,6 +159,7 @@ export function buildShareUrl(
     const params = buildParamsFromState(state, {
         includeText: false,
         includeFormat: false,
+        shortKeys: true,
     });
 
     const origin = options.origin ??
