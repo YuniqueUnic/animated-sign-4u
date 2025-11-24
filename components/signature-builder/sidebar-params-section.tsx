@@ -3,8 +3,13 @@ import { SignatureState } from "@/lib/types";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ChevronDown, Settings2 } from "lucide-react";
+import { ChevronDown, MessageCircleWarningIcon, Settings2 } from "lucide-react";
 import { useI18n } from "@/components/i18n-provider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ParamsSectionProps {
   state: SignatureState;
@@ -78,6 +83,30 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
+              <div className="flex items-center gap-1">
+                <Label className="text-xs text-muted-foreground">
+                  {t("repeatLabel")}
+                </Label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <MessageCircleWarningIcon className="inline-flex w-4 h-4 text-muted-foreground/80 hover:bg-muted transition-colors cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" align="start">
+                    {t("repeatTooltip")}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <p className="text-[10px] text-muted-foreground/70">
+                {t("repeatDescription")}
+              </p>
+            </div>
+            <Switch
+              checked={state.repeat}
+              onCheckedChange={(checked) => updateState({ repeat: checked })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
               <Label className="text-xs text-muted-foreground">
                 {t("eraseOnCompleteLabel")}
               </Label>
@@ -96,9 +125,9 @@ export function ParamsSection({ state, updateState }: ParamsSectionProps) {
               <Label className="text-xs text-muted-foreground">
                 {t("hanziStrokeModeLabel")}
               </Label>
-              <span className="text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground/70">
                 {t("hanziStrokeModeDescription")}
-              </span>
+              </p>
             </div>
             <Switch
               checked={state.useHanziData ?? false}

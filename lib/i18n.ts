@@ -31,6 +31,11 @@ export const messages = {
     charSpacingLabel: "Character Spacing",
     hanziStrokeModeLabel: "Chinese Stroke Mode",
     hanziStrokeModeDescription: "Draw Chinese characters stroke by stroke",
+    repeatLabel: "Loop animation",
+    repeatDescription:
+      "When enabled, the animation will keep looping instead of playing once",
+    repeatTooltip:
+      "When combined with 'Erase after animation', the signature will draw → hold → erase in a continuous loop (requires SVG SMIL animation support).",
     eraseOnCompleteLabel: "Erase after animation",
     eraseOnCompleteDescription:
       "After drawing, erase the signature and optionally loop when repeat is enabled",
@@ -158,6 +163,10 @@ export const messages = {
     charSpacingLabel: "字符间距",
     hanziStrokeModeLabel: "汉字笔画模式",
     hanziStrokeModeDescription: "按笔画顺序绘制中文字符",
+    repeatLabel: "循环播放",
+    repeatDescription: "是否循环播放整个动画",
+    repeatTooltip:
+      "与「动画结束后擦除」一起使用时，动画会按 路径绘制 → 停留 → 擦除 的顺序循环播放（需要浏览器支持 SVG SMIL 动画）。",
     eraseOnCompleteLabel: "动画结束后擦除",
     eraseOnCompleteDescription:
       "动画绘制完成后擦除签名，配合循环可以形成往复动画",

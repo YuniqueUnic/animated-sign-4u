@@ -11,6 +11,51 @@ interface CodePanelProps {
   state: SignatureState;
 }
 
+interface ApiExampleRowProps {
+  label: string;
+  url: string;
+  wrap: boolean;
+}
+
+function ApiExampleRow({ label, url, wrap }: ApiExampleRowProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-[#8b949e] uppercase tracking-wide">
+          {label}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCopy}
+          className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
+        >
+          {copied
+            ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
+            : <Copy className="w-3 h-3 mr-1.5" />}
+          {copied ? "Copied!" : "Copy"}
+        </Button>
+      </div>
+      <div
+        className={"rounded border border-[#30363d] bg-[#0d1117] px-3 py-2 text-xs font-mono text-[#c9d1d9] " +
+          (wrap
+            ? "break-all whitespace-pre-wrap"
+            : "overflow-x-auto whitespace-pre")}
+      >
+        {url}
+      </div>
+    </div>
+  );
+}
+
 export function CodePanel({ svgCode, state }: CodePanelProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("svg");
@@ -102,6 +147,11 @@ export { createSignature };`;
 
   useEffect(() => {
     const highlight = async () => {
+      if (activeTab === "api") {
+        setHighlightedCode("");
+        return;
+      }
+
       const code = getCode(activeTab);
       if (!code) {
         setHighlightedCode("");
@@ -152,28 +202,52 @@ export { createSignature };`;
           >
             {wrapCode ? "No wrap" : "Wrap"}
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleCopy}
-            className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
-          >
-            {copied
-              ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
-              : <Copy className="w-3 h-3 mr-1.5" />}
-            {copied ? "Copied!" : "Copy"}
-          </Button>
+          {activeTab !== "api" && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopy}
+              className="h-7 text-xs text-[#c9d1d9] hover:text-white hover:bg-[#21262d] transition-colors"
+            >
+              {copied
+                ? <Check className="w-3 h-3 mr-1.5 text-green-400" />
+                : <Copy className="w-3 h-3 mr-1.5" />}
+              {copied ? "Copied!" : "Copy"}
+            </Button>
+          )}
         </div>
       </div>
 
       <div className="flex-1 relative overflow-auto">
-        <div
-          className={"p-4 text-sm font-mono leading-relaxed " +
-            (wrapCode
-              ? "[&_pre]:whitespace-pre-wrap [&_code]:whitespace-pre-wrap wrap-break-word"
-              : "overflow-x-auto [&_pre]:whitespace-pre [&_code]:whitespace-pre")}
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
-        />
+        {activeTab === "api"
+          ? (
+            <div className="p-4 text-sm font-mono leading-relaxed space-y-4">
+              <ApiExampleRow
+                label="Animated SVG"
+                url={buildSignApiUrl(state, { format: "svg" })}
+                wrap={wrapCode}
+              />
+              <ApiExampleRow
+                label="Static SVG"
+                url={buildSignApiUrl(state, { format: "svg", static: true })}
+                wrap={wrapCode}
+              />
+              <ApiExampleRow
+                label="Animated GIF"
+                url={buildSignApiUrl(state, { format: "gif" })}
+                wrap={wrapCode}
+              />
+            </div>
+          )
+          : (
+            <div
+              className={"p-4 text-sm font-mono leading-relaxed " +
+                (wrapCode
+                  ? "[&_pre]:whitespace-pre-wrap [&_code]:whitespace-pre-wrap wrap-break-word"
+                  : "overflow-x-auto [&_pre]:whitespace-pre [&_code]:whitespace-pre")}
+              dangerouslySetInnerHTML={{ __html: highlightedCode }}
+            />
+          )}
       </div>
     </div>
   );
