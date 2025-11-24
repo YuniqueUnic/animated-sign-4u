@@ -17,6 +17,7 @@ export interface SignatureState {
   fontSize: number;
   speed: number;
   repeat: boolean; // Animation repeat mode: true for infinite loop, false for single play
+  eraseOnComplete: boolean; // When true, use carousel animation: draw → hold → erase (can loop when repeat is true)
 
   charSpacing: number;
 
@@ -62,8 +63,8 @@ export interface SignatureState {
   useHanziData?: boolean;
 
   // GIF Export Settings
-  gifFps?: number;        // Frames per second for GIF export (default: 30)
-  gifQuality?: number;    // GIF quality 1-20, lower is better (default: 5)
+  gifFps?: number; // Frames per second for GIF export (default: 30)
+  gifQuality?: number; // GIF quality 1-20, lower is better (default: 5)
 }
 
 export interface ThemeConfig extends Partial<SignatureState> {

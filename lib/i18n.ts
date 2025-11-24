@@ -31,11 +31,21 @@ export const messages = {
         charSpacingLabel: "Character Spacing",
         hanziStrokeModeLabel: "Chinese Stroke Mode",
         hanziStrokeModeDescription: "Draw Chinese characters stroke by stroke",
+        eraseOnCompleteLabel: "Erase after animation",
+        eraseOnCompleteDescription:
+            "After drawing, erase the signature and optionally loop when repeat is enabled",
         gifExportSettings: "GIF Export Settings",
         gifFpsLabel: "Frame Rate",
         gifFpsDescription: "Higher FPS = smoother animation, larger file",
         gifQualityLabel: "Quality",
-        gifQualityDescription: "Lower value = better quality, larger file (1-20)",
+        gifQualityDescription:
+            "Lower value = better quality, larger file (1-20)",
+        gifDialogTitle: "GIF Export",
+        gifDialogDescription: "Adjust GIF settings, then start generation.",
+        gifGeneratingLabel: "Generating GIF...",
+        gifStartButtonLabel: "Generate & Download",
+        gifCancelButtonLabel: "Cancel",
+        gifGenerateErrorLabel: "Failed to generate GIF. Please try again.",
 
         // Style & Color labels
         cardBackgroundLabel: "Card Background",
@@ -149,11 +159,20 @@ export const messages = {
         charSpacingLabel: "字符间距",
         hanziStrokeModeLabel: "汉字笔画模式",
         hanziStrokeModeDescription: "按笔画顺序绘制中文字符",
+        eraseOnCompleteLabel: "动画结束后擦除",
+        eraseOnCompleteDescription:
+            "动画绘制完成后擦除签名，配合循环可以形成往复动画",
         gifExportSettings: "GIF 导出设置",
         gifFpsLabel: "帧率",
         gifFpsDescription: "帧率越高动画越流畅，文件越大",
         gifQualityLabel: "画质",
         gifQualityDescription: "数值越小质量越高，文件越大 (1-20)",
+        gifDialogTitle: "GIF 导出",
+        gifDialogDescription: "调整 GIF 的导出参数，然后开始生成。",
+        gifGeneratingLabel: "GIF 制作中，请耐心等待...",
+        gifStartButtonLabel: "生成并下载",
+        gifCancelButtonLabel: "取消",
+        gifGenerateErrorLabel: "GIF 生成失败，请稍后重试。",
 
         // Style & Color labels
         cardBackgroundLabel: "卡片背景",

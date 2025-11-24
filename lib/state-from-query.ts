@@ -43,6 +43,13 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
     state.repeat = true;
   }
 
+  const eraseParam = params.get("eraseOnComplete");
+  if (eraseParam === "1" || eraseParam === "true") {
+    state.eraseOnComplete = true;
+  } else if (eraseParam === "0" || eraseParam === "false") {
+    state.eraseOnComplete = false;
+  }
+
   const fill = params.get("fill") as FillMode | null;
   if (fill === "single" || fill === "gradient" || fill === "multi") {
     state.fillMode = fill;
@@ -73,12 +80,16 @@ export function buildStateFromQuery(params: URLSearchParams): SignatureState {
 
   const strokeParam = params.get("stroke");
   if (strokeParam) {
-    state.stroke = strokeParam.startsWith("#") ? strokeParam : `#${strokeParam}`;
+    state.stroke = strokeParam.startsWith("#")
+      ? strokeParam
+      : `#${strokeParam}`;
   }
 
   const stroke2Param = params.get("stroke2");
   if (stroke2Param) {
-    state.stroke2 = stroke2Param.startsWith("#") ? stroke2Param : `#${stroke2Param}`;
+    state.stroke2 = stroke2Param.startsWith("#")
+      ? stroke2Param
+      : `#${stroke2Param}`;
   }
 
   const strokeModeParam = params.get("strokeMode") as
