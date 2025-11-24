@@ -1,0 +1,93 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { API_PARAM_DEFS } from "../lib/api-params";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT = path.resolve(__dirname, "..");
+
+function buildEnglishTable(): string {
+    const header = "| Name | Short | Group | Description |\n" +
+        "| ---- | ----- | ----- | ----------- |";
+
+    const rows = API_PARAM_DEFS.map((def) => {
+        const short = def.shortKey ?? "-";
+        const group = def.group;
+        const desc = def.description;
+        return `| \`${def.name}\` | \`${short}\` | ${group} | ${desc} |`;
+    });
+
+    return [header, ...rows].join("\n");
+}
+
+function buildChineseTable(): string {
+    const header = "| Long name | Short key | Group | Description |\n" +
+        "| -------- | -------- | ----- | ----------- |";
+
+    const rows = API_PARAM_DEFS.map((def) => {
+        const short = def.shortKey ?? "-";
+        const group = def.group;
+        // For now we reuse the English description to keep things in sync.
+        const desc = def.description;
+        return `| \`${def.name}\` | \`${short}\` | ${group} | ${desc} |`;
+    });
+
+    return [header, ...rows].join("\n");
+}
+
+async function replaceSection(
+    filePath: string,
+    startMarker: string,
+    endMarker: string,
+    replacement: string,
+): Promise<void> {
+    const raw = await fs.readFile(filePath, "utf8");
+    const start = raw.indexOf(startMarker);
+    const end = raw.indexOf(endMarker);
+
+    if (start === -1 || end === -1 || end < start) {
+        throw new Error(
+            `Markers not found in ${path.basename(filePath)}. ` +
+                `Expected markers: ${startMarker} ... ${endMarker}`,
+        );
+    }
+
+    const before = raw.slice(0, start + startMarker.length);
+    const after = raw.slice(end);
+
+    const next = `${before}\n\n${replacement}\n${after}`;
+    await fs.writeFile(filePath, next, "utf8");
+}
+
+async function main() {
+    const enTable = buildEnglishTable();
+    const zhTable = buildChineseTable();
+
+    const readmeEn = path.join(ROOT, "README.md");
+    const readmeZh = path.join(ROOT, "README.ZH.md");
+
+    await replaceSection(
+        readmeEn,
+        "<!-- API_PARAM_MAPPING:START -->",
+        "<!-- API_PARAM_MAPPING:END -->",
+        enTable,
+    );
+
+    await replaceSection(
+        readmeZh,
+        "<!-- API_PARAM_MAPPING_ZH:START -->",
+        "<!-- API_PARAM_MAPPING_ZH:END -->",
+        zhTable,
+    );
+
+    console.log(
+        "API param mapping tables updated in README.md and README.ZH.md",
+    );
+}
+
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});

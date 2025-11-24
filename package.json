@@ -11,6 +11,7 @@
     "test:watch": "vitest --watch",
     "test:ci": "vitest run",
     "check": "pnpm lint && pnpm test:ci && pnpm build",
+    "generate:api-docs": "tsx scripts/generate-api-param-docs.ts",
     "release:patch": "pnpm version patch --message \"chore: release v%s\"",
     "release:minor": "pnpm version minor --message \"chore: release v%s\"",
     "release:major": "pnpm version major --message \"chore: release v%s\""
@@ -86,6 +87,7 @@
     "tw-animate-css": "1.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.10",
+    "tsx": "^4.19.0"
   }
 }

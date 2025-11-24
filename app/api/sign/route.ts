@@ -9,6 +9,7 @@ import { generateSVG, PathData } from "@/lib/svg-generator";
 import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import { generateAnimatedGIF } from "@/lib/gif-generator";
+import { getIncomingValue } from "@/lib/api-params";
 
 export const runtime = "nodejs";
 
@@ -178,7 +179,7 @@ export async function GET(req: NextRequest): Promise<Response> {
             return new Response("No paths generated", { status: 400 });
         }
 
-        const formatParam = params.get("format") ?? params.get("fmt");
+        const formatParam = getIncomingValue(params, "format");
         const format = formatParam || "svg";
 
         if (format === "json") {
@@ -227,8 +228,8 @@ export async function GET(req: NextRequest): Promise<Response> {
             });
         }
 
-        // Check if static SVG is requested (support long and short keys)
-        const staticParam = params.get("static") ?? params.get("st");
+        // Check if static SVG is requested
+        const staticParam = getIncomingValue(params, "static");
         const isStaticSvg = staticParam === "1" || staticParam === "true";
 
         const svg = generateSVG(state, paths, viewBox, {

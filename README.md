@@ -169,43 +169,54 @@ builder page `/`, using the same query parameters to initialize the UI state. Th
 ideal for sharing configurations with other people, but they are not HTTP API endpoints
 themselves.
 
-### 4.2 Core Query Parameters
+### 4.2 Short key mapping
 
-Below is a compact list of the most important parameters. All are optional; unspecified fields fall back to `INITIAL_STATE` or theme defaults.
+> The table below is auto-generated from `lib/api-params.ts` by running
+> `pnpm generate:api-docs`. Do not edit it by hand; instead, update the
+> mapping definitions and re-run the script.
 
-| Param                  | Type / Values                                                              | Description                                     |
-| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------- |
-| `text`                 | string                                                                     | Signature text                                  |
-| `font`                 | string (font id)                                                           | Font key from `FONTS` in `lib/constants.ts`     |
-| `theme`                | string                                                                     | Theme key from `THEMES`                         |
-| `format`               | `svg` (default) \| `png` \| `gif` \| `json`                                | Output format                                   |
-| `fontSize`             | number > 0                                                                 | Font size                                       |
-| `speed`                | number > 0                                                                 | Animation speed **factor** (larger = faster)    |
-| `charSpacing`          | number                                                                     | Base character spacing (language-aware scaling) |
-| `fill`                 | `single` \| `gradient` \| `multi`                                          | Fill mode                                       |
-| `fill1` / `fill2`      | color (e.g. `ff0000` or `#ff0000`)                                         | Primary / secondary fill colors                 |
-| `colors`               | `c1-c2-...`                                                                | Per-character fill colors (enables multi mode)  |
-| `stroke` / `stroke2`   | color                                                                      | Stroke colors                                   |
-| `strokeMode`           | `single` \| `gradient` \| `multi`                                          | Stroke mode                                     |
-| `strokeEnabled`        | `0`/`1`/`false`/`true`                                                     | Toggle stroke                                   |
-| `bg`                   | `transparent` or color                                                     | Background color / transparency                 |
-| `bgMode`               | `solid` \| `gradient`                                                      | Background mode                                 |
-| `bg2`                  | color                                                                      | Secondary background color for gradients        |
-| `bgSizeMode`           | `auto` \| `custom`                                                         | Auto card size or a fixed card size             |
-| `bgWidth` / `bgHeight` | number > 0                                                                 | Custom card size (centered)                     |
-| `borderRadius`         | number >= 0                                                                | Card corner radius                              |
-| `cardPadding`          | number >= 0                                                                | Inner padding used by texture overlay           |
-| `texture`              | `none` \| `grid` \| `dots` \| `lines` \| `cross` \| `tianzige` \| `mizige` | Texture overlay type                            |
-| `texColor`             | color                                                                      | Texture color                                   |
-| `texSize`              | number > 0                                                                 | Texture scale                                   |
-| `texThickness`         | number > 0                                                                 | Texture line thickness                          |
-| `texOpacity`           | 0..1                                                                       | Texture opacity                                 |
-| `useGlow`              | `0`/`1`/`false`/`true`                                                     | Enable glow effect                              |
-| `useShadow`            | `0`/`1`/`false`/`true`                                                     | Enable shadow effect                            |
-| `useHanziData`         | `0`/`1`/`false`/`true`                                                     | Use Hanzi stroke data for Chinese characters    |
-| `linkFillStroke`       | `0`/`1`/`false`/`true`                                                     | Make stroke follow fill mode/colors             |
+<!-- API_PARAM_MAPPING:START -->
 
-> For full, up-to-date defaults, see `buildStateFromQuery` in `lib/state-from-query.ts`.
+| Name              | Short | Group      | Description                                       |
+| ----------------- | ----- | ---------- | ------------------------------------------------- |
+| `text`            | `t`   | core       | Signature text                                    |
+| `font`            | `f`   | core       | Font id from FONTS                                |
+| `theme`           | `-`   | core       | Optional theme key from THEMES                    |
+| `repeat`          | `r`   | core       | Whether the animation should loop                 |
+| `eraseOnComplete` | `eo`  | core       | Erase the signature after drawing (carousel mode) |
+| `fontSize`        | `fs`  | layout     | Font size (px)                                    |
+| `speed`           | `sp`  | layout     | Animation speed factor (larger = faster)          |
+| `charSpacing`     | `cs`  | layout     | Base character spacing                            |
+| `borderRadius`    | `br`  | layout     | Card border radius                                |
+| `cardPadding`     | `cp`  | layout     | Inner padding used by texture overlay             |
+| `bgSizeMode`      | `bgs` | layout     | Background sizing mode (auto/custom)              |
+| `bgWidth`         | `bw`  | layout     | Custom background/card width                      |
+| `bgHeight`        | `bh`  | layout     | Custom background/card height                     |
+| `bg`              | `-`   | background | Background color or 'transparent'                 |
+| `bgMode`          | `bm`  | background | Background mode (solid/gradient)                  |
+| `bg2`             | `-`   | background | Secondary background color for gradients          |
+| `fill`            | `fm`  | fill       | Fill mode (single/gradient/multi)                 |
+| `fill1`           | `f1`  | fill       | Primary fill color                                |
+| `fill2`           | `f2`  | fill       | Secondary fill color                              |
+| `colors`          | `cl`  | fill       | Per-character fill colors (enables multi mode)    |
+| `stroke`          | `st`  | stroke     | Primary stroke color                              |
+| `stroke2`         | `st2` | stroke     | Secondary stroke color                            |
+| `strokeMode`      | `sm`  | stroke     | Stroke mode (single/gradient/multi)               |
+| `strokeEnabled`   | `se`  | stroke     | Toggle stroke on/off                              |
+| `linkFillStroke`  | `lfs` | stroke     | Link stroke behavior to fill mode/colors          |
+| `texture`         | `tx`  | texture    | Texture overlay type                              |
+| `texColor`        | `txc` | texture    | Texture color                                     |
+| `texSize`         | `txs` | texture    | Texture scale                                     |
+| `texThickness`    | `txt` | texture    | Texture line thickness                            |
+| `texOpacity`      | `txo` | texture    | Texture opacity (0..1)                            |
+| `useGlow`         | `gl`  | effects    | Enable glow effect                                |
+| `useShadow`       | `sh`  | effects    | Enable shadow effect                              |
+| `useHanziData`    | `hz`  | hanzi      | Use Hanzi stroke data for Chinese characters      |
+| `gifFps`          | `gf`  | gif        | GIF frame rate (fps)                              |
+| `gifQuality`      | `gq`  | gif        | GIF quality (1-20, higher is better)              |
+| `format`          | `fmt` | meta       | Output format (svg/png/gif/json)                  |
+| `static`          | `sta` | meta       | Request a static snapshot when using SVG output   |
+<!-- API_PARAM_MAPPING:END -->
 
 ### 4.3 Example Requests
 

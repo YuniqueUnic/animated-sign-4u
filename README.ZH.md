@@ -167,43 +167,53 @@ HTTP API 通过单一端点对外提供服务：
 页面 `/`，并使用相同的查询参数初始化 UI 状态，适合在浏览器中分享配置。但它们
 本身不再作为 HTTP API 端点使用。
 
-### 4.2 核心查询参数
+### 4.2 参数与短 key 映射
 
-以下是重要参数的精简列表。所有参数均为可选；未指定的字段回退到 `INITIAL_STATE` 或主题默认值。
+> 下表由 `lib/api-params.ts` 中的配置通过 `pnpm generate:api-docs` 自动生成，
+> 请勿手动修改表格内容。如需调整，请编辑映射定义并重新运行脚本。
 
-| 参数                   | 类型/值                                                        | 描述                                        |
-| ---------------------- | -------------------------------------------------------------- | ------------------------------------------- |
-| `text`                 | 字符串                                                         | 签名文本                                    |
-| `font`                 | 字符串（字体 id）                                              | 来自 `lib/constants.ts` 中 `FONTS` 的字体键 |
-| `theme`                | 字符串                                                         | 来自 `THEMES` 的主题键                      |
-| `format`               | `svg`（默认）\|`png`\|`gif`\|`json`                            | 输出格式                                    |
-| `fontSize`             | 大于 0 的数字                                                  | 字体大小                                    |
-| `speed`                | 大于 0 的数字                                                  | 动画速度**系数**（值越大 = 越快）           |
-| `charSpacing`          | 数字                                                           | 基础字符间距（语言感知缩放）                |
-| `fill`                 | `single`\|`gradient`\|`multi`                                  | 填充模式                                    |
-| `fill1` / `fill2`      | 颜色（如 `ff0000` 或 `#ff0000`）                               | 主/次填充颜色                               |
-| `colors`               | `c1-c2-...`                                                    | 逐字符填充颜色（启用多色模式）              |
-| `stroke` / `stroke2`   | 颜色                                                           | 描边颜色                                    |
-| `strokeMode`           | `single`\|`gradient`\|`multi`                                  | 描边模式                                    |
-| `strokeEnabled`        | `0`/`1`/`false`/`true`                                         | 开关描边                                    |
-| `bg`                   | `transparent` 或颜色                                           | 背景颜色/透明度                             |
-| `bgMode`               | `solid`\|`gradient`                                            | 背景模式                                    |
-| `bg2`                  | 颜色                                                           | 渐变副色                                    |
-| `bgSizeMode`           | `auto`\|`custom`                                               | 自动卡片尺寸或固定卡片尺寸                  |
-| `bgWidth` / `bgHeight` | 大于 0 的数字                                                  | 自定义卡片尺寸（居中）                      |
-| `borderRadius`         | 大于等于 0 的数字                                              | 卡片圆角半径                                |
-| `cardPadding`          | 大于等于 0 的数字                                              | 纹理叠加使用的内边距                        |
-| `texture`              | `none`\|`grid`\|`dots`\|`lines`\|`cross`\|`tianzige`\|`mizige` | 纹理叠加类型                                |
-| `texColor`             | 颜色                                                           | 纹理颜色                                    |
-| `texSize`              | 大于 0 的数字                                                  | 纹理缩放                                    |
-| `texThickness`         | 大于 0 的数字                                                  | 纹理线宽                                    |
-| `texOpacity`           | 0 到 1                                                         | 纹理透明度                                  |
-| `useGlow`              | `0`/`1`/`false`/`true`                                         | 启用发光效果                                |
-| `useShadow`            | `0`/`1`/`false`/`true`                                         | 启用阴影效果                                |
-| `useHanziData`         | `0`/`1`/`false`/`true`                                         | 对汉字使用笔画数据                          |
-| `linkFillStroke`       | `0`/`1`/`false`/`true`                                         | 使描边跟随填充模式/颜色                     |
+<!-- API_PARAM_MAPPING_ZH:START -->
 
-> 关于完整的最新默认值，请参见 `lib/state-from-query.ts` 中的 `buildStateFromQuery`。
+| Long name         | Short key | Group      | Description                                       |
+| ----------------- | --------- | ---------- | ------------------------------------------------- |
+| `text`            | `t`       | core       | Signature text                                    |
+| `font`            | `f`       | core       | Font id from FONTS                                |
+| `theme`           | `-`       | core       | Optional theme key from THEMES                    |
+| `repeat`          | `r`       | core       | Whether the animation should loop                 |
+| `eraseOnComplete` | `eo`      | core       | Erase the signature after drawing (carousel mode) |
+| `fontSize`        | `fs`      | layout     | Font size (px)                                    |
+| `speed`           | `sp`      | layout     | Animation speed factor (larger = faster)          |
+| `charSpacing`     | `cs`      | layout     | Base character spacing                            |
+| `borderRadius`    | `br`      | layout     | Card border radius                                |
+| `cardPadding`     | `cp`      | layout     | Inner padding used by texture overlay             |
+| `bgSizeMode`      | `bgs`     | layout     | Background sizing mode (auto/custom)              |
+| `bgWidth`         | `bw`      | layout     | Custom background/card width                      |
+| `bgHeight`        | `bh`      | layout     | Custom background/card height                     |
+| `bg`              | `-`       | background | Background color or 'transparent'                 |
+| `bgMode`          | `bm`      | background | Background mode (solid/gradient)                  |
+| `bg2`             | `-`       | background | Secondary background color for gradients          |
+| `fill`            | `fm`      | fill       | Fill mode (single/gradient/multi)                 |
+| `fill1`           | `f1`      | fill       | Primary fill color                                |
+| `fill2`           | `f2`      | fill       | Secondary fill color                              |
+| `colors`          | `cl`      | fill       | Per-character fill colors (enables multi mode)    |
+| `stroke`          | `st`      | stroke     | Primary stroke color                              |
+| `stroke2`         | `st2`     | stroke     | Secondary stroke color                            |
+| `strokeMode`      | `sm`      | stroke     | Stroke mode (single/gradient/multi)               |
+| `strokeEnabled`   | `se`      | stroke     | Toggle stroke on/off                              |
+| `linkFillStroke`  | `lfs`     | stroke     | Link stroke behavior to fill mode/colors          |
+| `texture`         | `tx`      | texture    | Texture overlay type                              |
+| `texColor`        | `txc`     | texture    | Texture color                                     |
+| `texSize`         | `txs`     | texture    | Texture scale                                     |
+| `texThickness`    | `txt`     | texture    | Texture line thickness                            |
+| `texOpacity`      | `txo`     | texture    | Texture opacity (0..1)                            |
+| `useGlow`         | `gl`      | effects    | Enable glow effect                                |
+| `useShadow`       | `sh`      | effects    | Enable shadow effect                              |
+| `useHanziData`    | `hz`      | hanzi      | Use Hanzi stroke data for Chinese characters      |
+| `gifFps`          | `gf`      | gif        | GIF frame rate (fps)                              |
+| `gifQuality`      | `gq`      | gif        | GIF quality (1-20, higher is better)              |
+| `format`          | `fmt`     | meta       | Output format (svg/png/gif/json)                  |
+| `static`          | `sta`     | meta       | Request a static snapshot when using SVG output   |
+<!-- API_PARAM_MAPPING_ZH:END -->
 
 ### 4.3 请求示例
 
