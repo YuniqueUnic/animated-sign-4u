@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/components/i18n-provider";
 import { cn } from "@/lib/utils";
 
 export interface EmbedRowsProps {
@@ -24,6 +25,7 @@ function buildRowValue(key: RowKey, imageUrl: string): string {
 }
 
 export function EmbedRows({ imageUrl }: EmbedRowsProps) {
+  const { t } = useI18n();
   const rows = useMemo(
     () =>
       ([
@@ -82,13 +84,13 @@ export function EmbedRows({ imageUrl }: EmbedRowsProps) {
                 ? (
                   <>
                     <Check className="w-3.5 h-3.5 mr-1.5" />
-                    已复制
+                    {t("landingCopiedLabel")}
                   </>
                 )
                 : (
                   <>
                     <Copy className="w-3.5 h-3.5 mr-1.5" />
-                    复制
+                    {t("landingCopyLabel")}
                   </>
                 )}
             </Button>
@@ -98,4 +100,3 @@ export function EmbedRows({ imageUrl }: EmbedRowsProps) {
     </div>
   );
 }
-

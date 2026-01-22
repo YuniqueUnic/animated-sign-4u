@@ -128,6 +128,16 @@ export const messages = {
     shareCopySuccessLabel: "Copied",
     shareCopyErrorLabel: "Copy failed",
 
+    // Landing (quick mode)
+    landingEnterEditorLabel: "Open advanced editor",
+    landingPreviewAlt: "Signature preview",
+    landingChineseLabel: "Chinese",
+    landingHanziStrokeLabel: "Hanzi strokes",
+    landingHint:
+      "Type to generate an embeddable image URL, then copy Markdown / HTML / URL.",
+    landingCopyLabel: "Copy",
+    landingCopiedLabel: "Copied",
+
     // Download menu labels
     downloadPngLabel: "PNG Image",
     downloadGifLabel: "GIF Image",
@@ -259,6 +269,16 @@ export const messages = {
     shareNativeLabel: "系统分享",
     shareCopySuccessLabel: "复制成功",
     shareCopyErrorLabel: "复制失败",
+
+    // Landing（快速模式）
+    landingEnterEditorLabel: "进入高级编辑页面",
+    landingPreviewAlt: "签名预览",
+    landingChineseLabel: "中文",
+    landingHanziStrokeLabel: "中文笔画",
+    landingHint:
+      "输入文字后会实时生成可嵌入的图片 URL；支持复制 Markdown / HTML / 直链。",
+    landingCopyLabel: "复制",
+    landingCopiedLabel: "已复制",
 
     // Download menu labels
     downloadPngLabel: "PNG 图片",

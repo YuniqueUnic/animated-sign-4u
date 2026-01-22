@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SignatureState } from "@/lib/types";
-import { generateSVG, PathData } from "@/lib/svg-generator";
+import { generateSVG } from "@/lib/svg-generator";
 import { FONTS } from "@/lib/constants";
 import opentype from "opentype.js";
 import { Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fetchHanziData, isChinese } from "@/lib/hanzi-data";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
+import { buildPaths } from "@/lib/build-paths";
 
 interface PreviewAreaProps {
   state: SignatureState;
@@ -23,7 +23,6 @@ export function PreviewArea(
   const [fontObj, setFontObj] = useState<any | null>(null);
   const [zoom, setZoom] = useState(1);
   const [, setContainerSize] = useState({ width: 0, height: 0 });
-  const measureRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Debounced preview state to avoid regenerating SVG on every tiny change
@@ -92,179 +91,20 @@ export function PreviewArea(
 
   // Generate SVG
   useEffect(() => {
-    if (!fontObj || !measureRef.current) return;
+    if (!fontObj) return;
 
     const s = previewState;
 
     const generate = async () => {
       try {
-        const glyphs = fontObj.stringToGlyphs(s.text || "Demo");
-        const paths: PathData[] = [];
-        let cursorX = 10;
-        let minX = Infinity,
-          minY = Infinity,
-          maxX = -Infinity,
-          maxY = -Infinity;
-
-        // Clear measure SVG
-        while (measureRef.current?.firstChild) {
-          measureRef.current.removeChild(measureRef.current.firstChild);
-        }
-
-        // Process each glyph and check if we should use hanzi stroke data
-        for (let idx = 0; idx < glyphs.length; idx++) {
-          const glyph = glyphs[idx];
-          const char = s.text[idx];
-          let d = "";
-          let isHanziPath = false;
-          const pathX = cursorX;
-
-          // Check if we should use hanzi-writer-data for this character
-          if (s.useHanziData && char && isChinese(char)) {
-            try {
-              const hanziData = await fetchHanziData(char);
-              if (hanziData && hanziData.strokes.length > 0) {
-                isHanziPath = true;
-
-                // Update bounding box for the character
-                const scale = s.fontSize / 1024;
-                const baseline = 150;
-                const x1 = pathX;
-                const y1 = baseline - s.fontSize;
-                const x2 = x1 + s.fontSize;
-                const y2 = baseline;
-                minX = Math.min(minX, x1);
-                minY = Math.min(minY, y1);
-                maxX = Math.max(maxX, x2);
-                maxY = Math.max(maxY, y2);
-
-                // Create a separate path for each stroke
-                for (
-                  let strokeIdx = 0;
-                  strokeIdx < hanziData.strokes.length;
-                  strokeIdx++
-                ) {
-                  const strokePath = hanziData.strokes[strokeIdx];
-
-                  // Measure length using DOM
-                  const el = document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "path",
-                  );
-                  el.setAttribute("d", strokePath);
-                  el.setAttribute(
-                    "transform",
-                    `translate(${pathX}, ${
-                      baseline - s.fontSize
-                    }) scale(${scale})`,
-                  );
-                  measureRef.current?.appendChild(el);
-                  const len = Math.ceil(el.getTotalLength());
-
-                  paths.push({
-                    d: strokePath,
-                    len,
-                    index: idx,
-                    isHanzi: true,
-                    x: pathX,
-                    fontSize: s.fontSize,
-                    strokeIndex: strokeIdx,
-                    totalStrokes: hanziData.strokes.length,
-                  });
-                }
-              }
-            } catch {
-              console.warn(
-                `Failed to fetch hanzi data for ${char}, falling back to font`,
-              );
-            }
-          }
-
-          // Fallback to regular font path if not using hanzi data
-          if (!isHanziPath) {
-            const path = glyph.getPath(cursorX, 150, s.fontSize);
-            d = path.toPathData(2);
-
-            if (d) {
-              const bbox = path.getBoundingBox();
-              minX = Math.min(minX, bbox.x1);
-              minY = Math.min(minY, bbox.y1);
-              maxX = Math.max(maxX, bbox.x2);
-              maxY = Math.max(maxY, bbox.y2);
-
-              // Measure length using DOM
-              const el = document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "path",
-              );
-              el.setAttribute("d", d);
-              measureRef.current?.appendChild(el);
-              const len = Math.ceil(el.getTotalLength());
-
-              paths.push({
-                d,
-                len,
-                index: idx,
-              });
-            }
-          }
-
-          const baseSpacing = s.charSpacing || 0;
-          let spacing = baseSpacing;
-          if (baseSpacing !== 0 && char) {
-            if (isChinese(char)) {
-              spacing = baseSpacing > 0 ? baseSpacing / 5 : baseSpacing * 5;
-            }
-          }
-
-          cursorX += glyph.advanceWidth * (s.fontSize / fontObj.unitsPerEm) +
-            spacing;
-        }
-
+        const { paths, viewBox } = await buildPaths(fontObj, s);
         if (paths.length === 0) {
           setSvgContent("");
+          onSvgGenerated("");
           return;
         }
 
-        // Sort paths to ensure correct rendering order:
-        // 1. Group by character index
-        // 2. Within each character, sort hanzi strokes by strokeIndex
-        // 3. Keep non-hanzi paths in original order
-        const sortedPaths = paths.slice().sort((a, b) => {
-          // First sort by character index
-          if (a.index !== b.index) {
-            return a.index - b.index;
-          }
-          // Within same character, if both are hanzi strokes, sort by strokeIndex
-          if (a.isHanzi && b.isHanzi) {
-            return (a.strokeIndex || 0) - (b.strokeIndex || 0);
-          }
-          // Keep original order for non-hanzi or mixed cases
-          return 0;
-        });
-
-        const p = 40;
-        // Ensure valid bounding box
-        if (
-          !isFinite(minX) || !isFinite(minY) || !isFinite(maxX) ||
-          !isFinite(maxY)
-        ) {
-          minX = 0;
-          minY = 0;
-          maxX = 100;
-          maxY = 100;
-        }
-
-        // Normalize viewBox to start from (0, 0) to avoid negative coordinates
-        // The offset will be compensated in the transform attribute of the path group
-        const viewBox = {
-          x: minX - p,
-          y: minY - p,
-          w: (maxX - minX) + (p * 2),
-          h: (maxY - minY) + (p * 2),
-        };
-
-        const svg = generateSVG(s, sortedPaths, viewBox, { idPrefix });
+        const svg = generateSVG(s, paths, viewBox, { idPrefix });
 
         // Debug logging for mobile issues
         if (window.innerWidth < 768) {
@@ -286,7 +126,7 @@ export function PreviewArea(
     };
 
     void generate();
-  }, [previewState, fontObj]);
+  }, [previewState, fontObj, idPrefix, onSvgGenerated]);
 
   const replay = () => {
     const current = svgContent;
@@ -296,9 +136,6 @@ export function PreviewArea(
 
   return (
     <div className="h-full min-h-0 flex flex-col bg-[#f8f9fa] relative overflow-hidden">
-      {/* Hidden SVG for measuring */}
-      <svg ref={measureRef} className="absolute -top-[9999px] invisible" />
-
       <div className="flex-1 flex items-center justify-center p-10 overflow-auto relative z-0">
         <div
           className="absolute inset-0 opacity-[0.02] pointer-events-none"
