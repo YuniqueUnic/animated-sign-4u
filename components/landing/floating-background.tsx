@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { THEMES, INITIAL_STATE } from "@/lib/constants";
+import { INITIAL_STATE, THEMES } from "@/lib/constants";
 import { buildSignApiUrl } from "@/lib/api-url";
 import { SignatureState } from "@/lib/types";
 
@@ -50,7 +50,7 @@ const BACKGROUND_CARDS = [
   },
 ];
 
-// Helper to map generic theme names to actual keys if needed, 
+// Helper to map generic theme names to actual keys if needed,
 // though we can just use valid keys from THEMES.
 const THEME_MAP: Record<string, string> = {
   neon: "cyber",
@@ -78,7 +78,7 @@ export function FloatingBackground() {
       {BACKGROUND_CARDS.map((card, index) => {
         const themeKey = THEME_MAP[card.theme] || card.theme;
         const themeConfig = THEMES[themeKey] || THEMES["default"];
-        
+
         // Construct state for image generation
         const cardState: SignatureState = {
           ...INITIAL_STATE,
@@ -88,12 +88,16 @@ export function FloatingBackground() {
           bgTransparent: true,
         };
 
-        const imgUrl = buildSignApiUrl(cardState, { format: "svg", origin: "" });
+        const imgUrl = buildSignApiUrl(cardState, {
+          format: "svg",
+          origin: "",
+        });
 
         // Determine card style based on theme (simplified for background)
-        const cardBg = themeConfig.bgMode === "gradient" && themeConfig.bg && themeConfig.bg2
-          ? `linear-gradient(135deg, ${themeConfig.bg} 0%, ${themeConfig.bg2} 100%)`
-          : themeConfig.bg || "#ffffff";
+        const cardBg =
+          themeConfig.bgMode === "gradient" && themeConfig.bg && themeConfig.bg2
+            ? `linear-gradient(135deg, ${themeConfig.bg} 0%, ${themeConfig.bg2} 100%)`
+            : themeConfig.bg || "#ffffff";
 
         return (
           <div
@@ -103,7 +107,7 @@ export function FloatingBackground() {
               card.rotate,
               card.animation,
               card.delay,
-              card.scale
+              card.scale,
             )}
             style={{
               top: card.top,
@@ -116,13 +120,15 @@ export function FloatingBackground() {
             }}
           >
             <div className="w-full h-full flex items-center justify-center relative overflow-hidden">
-               {/* Use text instead of image for purely decorative purposes if image loading is heavy? 
-                   No, user asked for "signature cards". SVG is light enough. */}
-               <img 
-                 src={imgUrl} 
-                 alt="" 
-                 className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen opacity-80" 
-               />
+              {
+                /* Use text instead of image for purely decorative purposes if image loading is heavy?
+                   No, user asked for "signature cards". SVG is light enough. */
+              }
+              <img
+                src={imgUrl}
+                alt=""
+                className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen opacity-80"
+              />
             </div>
           </div>
         );

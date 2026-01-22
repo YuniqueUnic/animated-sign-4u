@@ -11,7 +11,9 @@ interface ThemesSectionProps {
   variant?: "accordion" | "flat" | "compact";
 }
 
-export function ThemesSection({ state, updateState, variant = "accordion" }: ThemesSectionProps) {
+export function ThemesSection(
+  { state, updateState, variant = "accordion" }: ThemesSectionProps,
+) {
   const { t } = useI18n();
 
   const themeLabelKeyMap: Record<string, string> = {
@@ -76,11 +78,13 @@ export function ThemesSection({ state, updateState, variant = "accordion" }: The
   };
 
   const gridContent = (
-    <div 
+    <div
       className={cn(
-        variant === "accordion" ? "mt-2 grid grid-cols-4 gap-1.5" : 
-        variant === "compact" ? "flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x w-fit mx-auto max-w-full" :
-        "grid grid-cols-4 gap-2"
+        variant === "accordion"
+          ? "mt-2 grid grid-cols-4 gap-1.5"
+          : variant === "compact"
+          ? "flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x w-fit mx-auto max-w-full"
+          : "grid grid-cols-4 gap-2",
       )}
     >
       {Object.keys(THEMES).map((themeKey) => {
@@ -140,13 +144,16 @@ export function ThemesSection({ state, updateState, variant = "accordion" }: The
             onClick={() => applyTheme(themeKey)}
             className={cn(
               "rounded-lg border-2 transition-all flex items-end justify-center pb-1 relative overflow-hidden group shrink-0 snap-start",
-              variant === "accordion" ? "h-14" : 
-              variant === "compact" ? "w-12 h-12 border-gray-200 hover:border-[#1a1a1a] dark:border-gray-800 dark:hover:border-white" : 
-              "aspect-square",
+              variant === "accordion"
+                ? "h-14"
+                : variant === "compact"
+                ? "w-12 h-12 border-gray-200 hover:border-[#1a1a1a] dark:border-gray-800 dark:hover:border-white"
+                : "aspect-square",
               isActive
                 ? "ring-2 ring-indigo-500 ring-offset-2 border-transparent shadow-lg scale-105 z-10"
                 : "hover:border-indigo-300 hover:shadow-md hover:scale-102",
-              (variant === "flat" || variant === "compact") && isActive && "border-[#1a1a1a] dark:border-white ring-0 shadow-sm"
+              (variant === "flat" || variant === "compact") && isActive &&
+                "border-[#1a1a1a] dark:border-white ring-0 shadow-sm",
             )}
             style={{
               background: cardBackground,
