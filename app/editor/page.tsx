@@ -93,8 +93,16 @@ export default function SignatureBuilderPage() {
     (next: SignatureState) => {
       const params = buildBuilderSearchParams(next, { shortKeys: true });
       const query = params.toString();
-      const url = query ? `${pathname}?${query}` : pathname;
-      router.replace(url, { scroll: false });
+      const currentSearch = window.location.search;
+      const currentQuery = currentSearch.startsWith("?")
+        ? currentSearch.slice(1)
+        : currentSearch;
+
+      // Only replace if query params have changed
+      if (query !== currentQuery) {
+        const url = query ? `${pathname}?${query}` : pathname;
+        router.replace(url, { scroll: false });
+      }
     },
     250,
   );
