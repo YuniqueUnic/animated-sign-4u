@@ -118,6 +118,7 @@ export const messages = {
     // Mobile/topbar labels
     mobileDownloadLabel: "Download",
     mobileCodeLabel: "Code",
+    themeToggleLabel: "Toggle theme",
     githubRepoLabel: "View project on GitHub",
     shareButtonLabel: "Share",
     shareCopiedMessage: "Share URL copied to clipboard.",
@@ -249,6 +250,7 @@ export const messages = {
     // Mobile/topbar labels
     mobileDownloadLabel: "下载",
     mobileCodeLabel: "代码",
+    themeToggleLabel: "切换主题",
     githubRepoLabel: "查看 GitHub 仓库",
     shareButtonLabel: "分享",
     shareCopiedMessage: "分享链接已复制到剪贴板。",

@@ -84,7 +84,8 @@ export async function GET(
     }
 
     const nextUrl = new URL(url.origin);
-    nextUrl.pathname = "/";
+    const ui = search.get("ui") ?? search.get("u");
+    nextUrl.pathname = ui === "editor" ? "/editor" : "/";
     nextUrl.search = search.toString();
 
     return NextResponse.redirect(nextUrl.toString(), 308);

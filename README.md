@@ -52,7 +52,9 @@ You can:
 ```text
 app/
   layout.tsx         – Root layout (theme + i18n providers)
-  page.tsx           – Main builder UI (desktop + mobile)
+  page.tsx           – Landing page (quick mode)
+  editor/page.tsx    – Advanced editor UI (desktop + mobile)
+  [text]/route.ts    – Short share URL redirect (landing/editor)
   api/sign/route.ts  – Signature generation API
 
 components/
@@ -77,7 +79,9 @@ lib/
 High-level data flow:
 
 ```text
-UI (page.tsx)  --SignatureState-->  PreviewArea
+UI (landing: app/page.tsx) --SignatureState--> buildSignApiUrl --> <img src="/api/sign?...">
+
+UI (editor: app/editor/page.tsx)  --SignatureState-->  PreviewArea
    ^                                   |
    |                                   v
    +----------- CodePanel <--- buildSignApiUrl
@@ -269,10 +273,13 @@ Notes:
   /Alice?font=great-vibes
   ```
 
-  This URL redirects to `/` and initializes the interactive builder with the
-  same configuration. Use the `/api/sign` form above when you need a pure HTTP
-  API response. Inside the app, the top-right **Share** button generates and
-  copies exactly this kind of short URL for the current configuration.
+  This URL redirects to `/` (landing / quick mode) and initializes the UI with
+  the same configuration. If the query contains `ui=editor`, it redirects to
+  `/editor` instead.
+
+  Use the `/api/sign` form above when you need a pure HTTP API response. Inside
+  the advanced editor, the top-right **Share** button generates a short URL and
+  sets `ui=editor` so the recipient opens the advanced editor directly.
 
 - **JSON (paths and viewBox)**
 

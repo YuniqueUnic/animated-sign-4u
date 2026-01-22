@@ -377,6 +377,15 @@ export const API_PARAM_DEFS: ApiParamDef[] = [
 
   // Meta / output
   {
+    name: "ui",
+    shortKey: "u",
+    description: "UI hint for short-share redirects (landing/editor)",
+    group: "meta",
+    zhName: "UI 页面",
+    zhDescription: "短分享链接重定向时选择 landing 或 editor",
+    zhGroup: API_PARAM_GROUP_LABEL_ZH["meta"],
+  },
+  {
     name: "format",
     shortKey: "fmt",
     description: "Output format (svg/png/gif/json)",

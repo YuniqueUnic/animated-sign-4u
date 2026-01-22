@@ -52,7 +52,9 @@ Next.js 应用与 HTTP API。
 ```text
 app/
   layout.tsx         – 根布局（主题 + i18n 提供器）
-  page.tsx           – 主构建器 UI（桌面 + 移动端）
+  page.tsx           – Landing（快速模式）
+  editor/page.tsx    – 高级编辑器 UI（桌面 + 移动端）
+  [text]/route.ts    – 短分享链接重定向（landing/editor）
   api/sign/route.ts  – 签名生成 API
 
 components/
@@ -77,7 +79,9 @@ lib/
 高层数据流：
 
 ```text
-UI (page.tsx)  --SignatureState-->  PreviewArea
+UI（Landing：app/page.tsx） --SignatureState--> buildSignApiUrl --> <img src="/api/sign?...">
+
+UI（Editor：app/editor/page.tsx）  --SignatureState-->  PreviewArea
    ^                                   |
    |                                   v
    +----------- CodePanel <--- buildSignApiUrl
@@ -108,6 +112,7 @@ UI 通过 `updateState(partial)` 变更此状态，并将其传递给：
 
 - `PreviewArea` 进行实时渲染
 - `CodePanel` 用于生成示例代码和 API 链接
+  - Landing（快速模式）则直接使用 `/api/sign` 生成图片 URL 进行预览与嵌入
 
 ### 3.2 预览渲染（UI）
 
@@ -144,7 +149,7 @@ switch (format) {
   case "png":
     return sharp(staticSvg).png();
   case "gif":
-    return sharp(staticSvg).gif();
+    return generateAnimatedGIF(state, paths, viewBox);
   default:
     return animatedSvg;
 }
@@ -152,10 +157,8 @@ switch (format) {
 
 - `buildStateFromQuery` 合并 `INITIAL_STATE`、可选的 `theme` 和查询参数。
 - `buildPaths` 使用 `svg-path-properties` 计算路径长度。
-- `generateSVG` 在 PNG/GIF 情况下以 `staticRender=true` 调用（单帧快照）。
-
-> **注意**：GIF 导出目前为**静态**（单帧）。动态 GIF
-> 输出需要沿动画时间轴采样多帧，尚未实现。
+- `generateSVG` 在 PNG 情况下以 `staticRender=true` 调用（单帧快照）。
+- GIF 导出使用专门的时间轴采样实现（见 `lib/gif-generator.ts`）。
 
 ---
 
@@ -170,9 +173,9 @@ HTTP API 通过单一端点对外提供服务：
 | GET  | `/api/sign` | 通过查询参数生成签名（SVG / PNG / GIF / JSON） |
 
 此外，应用还支持形如 `/{text}` 的短**分享链接**（例如
-`http://domain.com/Signature?font=sacramento`）。这些链接始终重定向到前端构建器
-页面 `/`，并使用相同的查询参数初始化 UI 状态，适合在浏览器中分享配置。但它们
-本身不再作为 HTTP API 端点使用。
+`http://domain.com/Signature?font=sacramento`）。这些链接默认重定向到前端 landing
+页面 `/`，并使用相同的查询参数初始化 UI 状态；当查询参数包含 `ui=editor` 时会改为
+重定向到 `/editor`。它们适合在浏览器中分享配置，但本身不作为 HTTP API 端点使用。
 
 ### 4.2 参数与短 key 映射
 
@@ -262,9 +265,12 @@ HTTP API 通过单一端点对外提供服务：
   /Alice?font=great-vibes
   ```
 
-  该链接会重定向到 `/`，并用相同的配置初始化交互式构建器。若只需要纯 HTTP API
-  响应，请使用上面的 `/api/sign` 形式。在应用内，右上角的 **分享** 按钮会为当前
-  配置生成并复制这类短分享链接。
+  该链接默认会重定向到 `/`（landing / 快速模式），并用相同的配置初始化 UI。
+  若查询参数包含 `ui=editor`，则会改为重定向到 `/editor`。
+
+  若只需要纯 HTTP API 响应，请使用上面的 `/api/sign` 形式。在高级编辑器内，
+  右上角的 **分享** 按钮会为当前配置生成短分享链接，并附带 `ui=editor`，确保
+  接收方直接打开高级编辑器。
 
 - **JSON（路径与 viewBox）**
 
