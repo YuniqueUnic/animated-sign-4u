@@ -31,6 +31,23 @@ describe("/[text] - Root-level share URL redirect", () => {
     expect(params.get("fontSize")).toBe("80");
   });
 
+  it("should redirect to /editor when ui=editor is present", async () => {
+    const url = "http://localhost:3000/HelloWorld?ui=editor&font=sacramento";
+    const req = new NextRequest(url);
+
+    const response = await GET(req);
+
+    expect(response.status).toBe(308);
+    const location = response.headers.get("Location");
+    expect(location).toBeTruthy();
+
+    const redirected = new URL(location!);
+    expect(redirected.pathname).toBe("/editor");
+    expect(redirected.searchParams.get("text")).toBe("HelloWorld");
+    expect(redirected.searchParams.get("ui")).toBe("editor");
+    expect(redirected.searchParams.get("font")).toBe("sacramento");
+  });
+
   it("should decode URL-encoded text in path", async () => {
     const url = "http://localhost:3000/Hello%20World";
     const req = new NextRequest(url);

@@ -187,6 +187,7 @@ export function buildSignApiUrl(
 
 export interface BuildShareUrlOptions {
   origin?: string;
+  ui?: "landing" | "editor";
 }
 
 export function buildShareUrl(
@@ -198,6 +199,10 @@ export function buildShareUrl(
     includeFormat: false,
     shortKeys: true,
   });
+  if (options.ui) {
+    const key = getOutgoingKey("ui", true);
+    params.set(key, options.ui);
+  }
 
   const origin = options.origin ??
     (typeof window !== "undefined"

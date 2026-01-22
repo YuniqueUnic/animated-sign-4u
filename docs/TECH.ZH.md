@@ -43,8 +43,9 @@ SVG**及**静态 PNG/GIF 导出**，具备以下功能：
 ```text
 app/
   layout.tsx         – 根布局（主题 + i18n 提供器）
-  page.tsx           – 主签名构建页面（桌面 + 移动端）
-  [text]/route.ts    – 根级短分享链接路由，重定向到构建器 UI
+  page.tsx           – Landing（快速模式）
+  editor/page.tsx    – 高级编辑器（桌面 + 移动端）
+  [text]/route.ts    – 根级短分享链接路由（按参数重定向到 landing/editor）
   api/sign/route.ts  – 签名生成 API（SVG / PNG / GIF / JSON）
 
 components/
@@ -82,7 +83,8 @@ tests/
 ```text
 +---------+        +-----------------+        +-----------------+
 |  用户   | -----> |   React UI      | -----> | SignatureState  |
-+---------+        |  (app/page.tsx) |        +-----------------+
++---------+        | (app/page.tsx / |        +-----------------+
+                   | app/editor/* )  |
                        |        |                     |
                        |        |                     v
                        |        |             +---------------+
@@ -103,12 +105,14 @@ HTTP 客户端：
                                        （可选的 sharp 光栅化）
 ```
 
-- **UI 层（`app/page.tsx` + `components/signature-builder/*`）**
-  - 通过 `useState(INITIAL_STATE)` 在 React state 中保存 `SignatureState`。
-  - 通过传递给侧边栏各区域和预览的 `updateState(partial)` 回调进行变更。
-  - 渲染内容：
-    - 桌面布局：左侧边栏、中央预览、底部代码面板。
-    - 移动端布局：预览 + 底部可调整抽屉 + 全屏代码覆盖层。
+- **UI 层**
+  - **Landing（`app/page.tsx`）**：快速模式——输入 → 预览 → 快捷主题 → 复制嵌入代码。
+  - **高级编辑器（`app/editor/page.tsx` + `components/signature-builder/*`）**
+    - 通过 `useState(INITIAL_STATE)` 在 React state 中保存 `SignatureState`。
+    - 通过传递给侧边栏各区域和预览的 `updateState(partial)` 回调进行变更。
+    - 渲染内容：
+      - 桌面布局：左侧边栏、中央预览、底部代码面板。
+      - 移动端布局：预览 + 底部可调整抽屉 + 全屏代码覆盖层。
 
 - **预览与渲染（`preview-area.tsx` + `lib/svg-generator.tsx`）**
   - 从字体数据和 `SignatureState` 构建字形或汉字笔画路径。
@@ -125,7 +129,8 @@ HTTP 客户端：
 
 - **短分享链接（`app/[text]/route.ts`）**
   - 处理 `/Signature` 或 `/Signature?font=...` 这类更友好的路径。
-  - 发出 308 重定向到 `/`，保留所有查询参数，并将路径段写入 `text` 查询参数。
+  - 默认发出 308 重定向到 `/`（landing），保留所有查询参数，并将路径段写入 `text` 查询参数。
+  - 当查询参数包含 `ui=editor` 时，改为重定向到 `/editor`（便于分享高级编辑器链接）。
   - 这样保持 `/api/sign` 作为唯一 HTTP API 端点，同时为 UI 提供可分享的短链接。
 
 - **API URL 辅助函数（`lib/api-url.ts`）**
@@ -603,7 +608,7 @@ switch (formatParam) {
 
 ### 6.1 顶部栏（桌面与移动端）
 
-文件：`app/page.tsx`。
+文件：`components/app-top-bar.tsx`（被 `app/page.tsx` 与 `app/editor/page.tsx` 复用）。
 
 顶部栏在桌面与移动端布局中共享，包含：
 

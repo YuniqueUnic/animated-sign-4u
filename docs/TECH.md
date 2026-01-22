@@ -44,8 +44,9 @@ based on the actual source code in this repository.
 ```text
 app/
   layout.tsx         – Root layout (theme + i18n providers)
-  page.tsx           – Main signature builder page (desktop + mobile)
-  [text]/route.ts    – Root-level short share URL redirect to builder UI
+  page.tsx           – Landing page (quick mode)
+  editor/page.tsx    – Advanced editor (desktop + mobile)
+  [text]/route.ts    – Root-level short share URL redirect (landing/editor)
   api/sign/route.ts  – Signature generation API (SVG / PNG / GIF / JSON)
 
 components/
@@ -83,7 +84,8 @@ At runtime, the app operates around a single `SignatureState` object.
 ```text
 +---------+        +-----------------+        +-----------------+
 |  User   | -----> |   React UI      | -----> | SignatureState  |
-+---------+        |  (app/page.tsx) |        +-----------------+
++---------+        | (app/page.tsx / |        +-----------------+
+                   | app/editor/* )  |
                        |        |                     |
                        |        |                     v
                        |        |             +---------------+
@@ -105,13 +107,16 @@ HTTP clients:
 ```
 
 - **UI layer (`app/page.tsx` + `components/signature-builder/*`)**
-  - Holds a `SignatureState` in React state via `useState(INITIAL_STATE)`.
-  - Mutates it through `updateState(partial)` callbacks passed into sidebar
-    sections and preview.
-  - Renders:
-    - Desktop layout: left sidebar, center preview, bottom code panel.
-    - Mobile layout: preview + bottom resizable drawer + fullscreen code
-      overlay.
+- **UI layer**
+  - **Landing (`app/page.tsx`)**: quick mode – input → preview → quick themes → copy embed codes.
+  - **Advanced editor (`app/editor/page.tsx` + `components/signature-builder/*`)**:
+    - Holds a `SignatureState` in React state via `useState(INITIAL_STATE)`.
+    - Mutates it through `updateState(partial)` callbacks passed into sidebar
+      sections and preview.
+    - Renders:
+      - Desktop layout: left sidebar, center preview, bottom code panel.
+      - Mobile layout: preview + bottom resizable drawer + fullscreen code
+        overlay.
 
 - **Preview & Rendering (`preview-area.tsx` + `lib/svg-generator.tsx`)**
   - Builds glyph or Hanzi stroke paths from font data and `SignatureState`.
@@ -128,8 +133,10 @@ HTTP clients:
 
 - **Short share URLs (`app/[text]/route.ts`)**
   - Handle human-friendly paths like `/Signature` or `/Signature?font=...`.
-  - Issue a 308 redirect to `/` while preserving all query parameters and
-    setting the `text` query value from the path segment.
+  - Issue a 308 redirect to `/` (landing) by default while preserving all query
+    parameters and setting the `text` query value from the path segment.
+  - When the `ui=editor` query parameter is present, it redirects to `/editor`
+    instead (useful when sharing an advanced-editor URL).
   - This keeps `/api/sign` as the single HTTP API endpoint while providing
     shareable URLs for the interactive builder UI.
 
@@ -617,7 +624,7 @@ Key details:
 
 ### 6.1 Top Bar (Desktop & Mobile)
 
-File: `app/page.tsx`.
+File: `components/app-top-bar.tsx` (used by `app/page.tsx` and `app/editor/page.tsx`).
 
 The top bar is shared by both desktop and mobile layouts and includes:
 
