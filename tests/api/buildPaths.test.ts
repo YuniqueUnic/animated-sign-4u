@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildPaths } from "@/app/api/sign/route";
+import { buildPaths } from "@/lib/build-paths";
 import { INITIAL_STATE } from "@/lib/constants";
 import { SignatureState } from "@/lib/types";
 

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { buildPaths, loadFont } from "@/app/api/sign/route";
+import { loadFont } from "@/app/api/sign/route";
+import { buildPaths } from "@/lib/build-paths";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import { INITIAL_STATE } from "@/lib/constants";
 

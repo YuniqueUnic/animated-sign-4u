@@ -15,12 +15,14 @@ import { buildBuilderSearchParams } from "@/lib/builder-query";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import { SignatureState } from "@/lib/types";
+import { useI18n } from "@/components/i18n-provider";
 
 const CHINESE_FONT = "ma-shan-zheng";
 
 export default function LandingPage() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useI18n();
 
   const [state, setState] = useState<SignatureState>(() => ({
     ...INITIAL_STATE,
@@ -123,14 +125,14 @@ export default function LandingPage() {
                 variant="outline"
                 className="h-10 px-6 rounded-full"
               >
-                进入高级编辑页面
+                {t("landingEnterEditorLabel")}
               </Button>
             </Link>
 
             <div className="w-full rounded-2xl border bg-card p-8 flex items-center justify-center overflow-hidden">
               <img
                 src={previewUrl}
-                alt="Signature preview"
+                alt={t("landingPreviewAlt")}
                 className="max-w-full h-auto"
               />
             </div>
@@ -140,7 +142,9 @@ export default function LandingPage() {
             <div className="rounded-2xl border bg-card p-4">
               <div className="flex items-center justify-between gap-6 pb-3 border-b">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium">中文</span>
+                  <span className="text-sm font-medium">
+                    {t("landingChineseLabel")}
+                  </span>
                   <Switch
                     checked={isChineseEnabled}
                     onCheckedChange={(checked) => {
@@ -156,7 +160,9 @@ export default function LandingPage() {
                   />
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium">中文笔画</span>
+                  <span className="text-sm font-medium">
+                    {t("landingHanziStrokeLabel")}
+                  </span>
                   <Switch
                     checked={state.useHanziData ?? false}
                     disabled={!isChineseEnabled}
@@ -177,7 +183,7 @@ export default function LandingPage() {
                   placeholder="signature"
                 />
                 <p className="mt-2 text-xs text-muted-foreground">
-                  输入文字后会实时生成可嵌入的图片 URL；支持复制 Markdown / HTML / 直链。
+                  {t("landingHint")}
                 </p>
               </div>
             </div>
@@ -195,4 +201,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
