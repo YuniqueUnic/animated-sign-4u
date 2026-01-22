@@ -403,7 +403,7 @@ export default function LandingPage() {
         }
       />
 
-      <main className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
+      <main className="flex-1 flex flex-col md:flex-row min-h-0 xl:max-w-[75%] mx-auto overflow-hidden w-full">
         {/* Main Workspace */}
         <div className="flex-1 flex flex-col gap-4 p-4 md:p-8 min-w-0 overflow-y-auto custom-scrollbar">
           
