@@ -137,6 +137,15 @@ export const messages = {
       "Type to generate an embeddable image URL, then copy Markdown / HTML / URL.",
     landingCopyLabel: "Copy",
     landingCopiedLabel: "Copied",
+    landingIssueLabel: "Issue 01",
+    landingArtQuoteLabel: "The art of digital presence starts with a stroke.",
+    landingPreviewRenderingLabel: "Preview Rendering",
+    landingDigitalSignatureLabel: "Digital Signature",
+    landingInputPlaceholder: "Type your signature here...",
+    landingCuratedControlLabel: "Curated Control",
+    landingTailoredLabel: "Tailored for developers & designers",
+    landingAssetCollectionLabel: "Asset Collection",
+    speedLabel: "Speed",
 
     // Download menu labels
     downloadPngLabel: "PNG Image",
@@ -279,6 +288,15 @@ export const messages = {
       "输入文字后会实时生成可嵌入的图片 URL；支持复制 Markdown / HTML / 直链。",
     landingCopyLabel: "复制",
     landingCopiedLabel: "已复制",
+    landingIssueLabel: "第 01 期",
+    landingArtQuoteLabel: "数字存在的艺术，始于一笔一划。",
+    landingPreviewRenderingLabel: "预览渲染",
+    landingDigitalSignatureLabel: "数字签名",
+    landingInputPlaceholder: "在此输入您的签名...",
+    landingCuratedControlLabel: "精选控制",
+    landingTailoredLabel: "专为开发者和设计师打造",
+    landingAssetCollectionLabel: "资产集合",
+    speedLabel: "速度",
 
     // Download menu labels
     downloadPngLabel: "PNG 图片",
