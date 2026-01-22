@@ -79,7 +79,7 @@ export function ThemesSection({ state, updateState, variant = "accordion" }: The
     <div 
       className={cn(
         variant === "accordion" ? "mt-2 grid grid-cols-4 gap-1.5" : 
-        variant === "compact" ? "flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x" :
+        variant === "compact" ? "flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x w-fit mx-auto max-w-full" :
         "grid grid-cols-4 gap-2"
       )}
     >
