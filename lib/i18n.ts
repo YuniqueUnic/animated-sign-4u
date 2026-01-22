@@ -143,7 +143,8 @@ export const messages = {
     landingDigitalSignatureLabel: "Digital Signature(Typing below pls)",
     landingInputPlaceholder: "Type your signature here...",
     landingCuratedControlLabel: "Curated Control",
-    landingTailoredLabel: "Not only tailored for developers & designers, but you!",
+    landingTailoredLabel:
+      "Not only tailored for developers & designers, but you!",
     landingAssetCollectionLabel: "Asset Collection",
     speedLabel: "Speed",
 
@@ -291,7 +292,7 @@ export const messages = {
     landingIssueLabel: "第 01 期",
     landingArtQuoteLabel: "数字存在的艺术，始于一笔一划。",
     landingPreviewRenderingLabel: "预览渲染",
-    landingDigitalSignatureLabel: "数字签名(请于下方输入)",
+    landingDigitalSignatureLabel: "数字签名 (请于下方输入)",
     landingInputPlaceholder: "在此输入您的签名...",
     landingCuratedControlLabel: "精选控制",
     landingTailoredLabel: "找到属于你的那份签名吧",

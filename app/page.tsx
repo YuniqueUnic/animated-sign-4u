@@ -41,13 +41,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { INITIAL_STATE } from "@/lib/constants";
-import { buildSignApiUrl, buildShareUrl } from "@/lib/api-url";
+import { buildShareUrl, buildSignApiUrl } from "@/lib/api-url";
 import { buildBuilderSearchParams } from "@/lib/builder-query";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
 import { buildStateFromQuery } from "@/lib/state-from-query";
 import { SignatureState } from "@/lib/types";
 import { useI18n } from "@/components/i18n-provider";
-import { generateJSComponent, generateReactComponent, generateVueComponent } from "@/lib/code-generators";
+import {
+  generateJSComponent,
+  generateReactComponent,
+  generateVueComponent,
+} from "@/lib/code-generators";
 import { FloatingBackground } from "@/components/landing/floating-background";
 
 const CHINESE_FONT = "ma-shan-zheng";
@@ -64,9 +68,11 @@ export default function LandingPage() {
   const [previewState, setPreviewState] = useState<SignatureState>(state);
   const [origin, setOrigin] = useState("");
   const [svgCode, setSvgCode] = useState(""); // For component generation
-  
+
   // Share/Download State
-  const [shareCopyStatus, setShareCopyStatus] = useState<"idle" | "success" | "error">("idle");
+  const [shareCopyStatus, setShareCopyStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const [isGifDialogOpen, setIsGifDialogOpen] = useState(false);
   const [isGeneratingGif, setIsGeneratingGif] = useState(false);
   const [gifError, setGifError] = useState<string | null>(null);
@@ -116,7 +122,9 @@ export default function LandingPage() {
   // Fetch SVG code for component generation when previewState changes
   useEffect(() => {
     const url = buildSignApiUrl(previewState, { format: "svg", static: false });
-    fetch(url).then(res => res.text()).then(setSvgCode).catch(() => { /* ignore */ });
+    fetch(url).then((res) => res.text()).then(setSvgCode).catch(
+      () => {/* ignore */},
+    );
   }, [previewState]);
 
   const debouncedSyncUrl = useDebouncedCallback(
@@ -156,7 +164,7 @@ export default function LandingPage() {
   }, [previewState]);
 
   const imageUrlForEmbed = useMemo(() => {
-    const stableState: SignatureState = { ...state, bgTransparent: false }; 
+    const stableState: SignatureState = { ...state, bgTransparent: false };
     return buildSignApiUrl(stableState, {
       format: "svg",
       origin: origin || "",
@@ -168,15 +176,24 @@ export default function LandingPage() {
 
   const renderDownloadIcon = (key: string) => {
     switch (key) {
-      case "react": return <Code2 className="w-3.5 h-3.5" />;
-      case "vue": return <Triangle className="w-3.5 h-3.5 rotate-180" />;
-      case "js": return <FileCode2 className="w-3.5 h-3.5" />;
-      case "svg-animated": return <Play className="w-3.5 h-3.5" />;
-      case "svg-static": return <Image className="w-3.5 h-3.5" />;
-      case "svg": return <FileCode2 className="w-3.5 h-3.5" />;
-      case "png": return <FileImage className="w-3.5 h-3.5" />;
-      case "gif": return <Film className="w-3.5 h-3.5" />;
-      default: return null;
+      case "react":
+        return <Code2 className="w-3.5 h-3.5" />;
+      case "vue":
+        return <Triangle className="w-3.5 h-3.5 rotate-180" />;
+      case "js":
+        return <FileCode2 className="w-3.5 h-3.5" />;
+      case "svg-animated":
+        return <Play className="w-3.5 h-3.5" />;
+      case "svg-static":
+        return <Image className="w-3.5 h-3.5" />;
+      case "svg":
+        return <FileCode2 className="w-3.5 h-3.5" />;
+      case "png":
+        return <FileImage className="w-3.5 h-3.5" />;
+      case "gif":
+        return <Film className="w-3.5 h-3.5" />;
+      default:
+        return null;
     }
   };
 
@@ -189,7 +206,9 @@ export default function LandingPage() {
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = blobUrl;
-        a.download = `signature_${state.text}_${animated ? "animated" : "static"}.svg`;
+        a.download = `signature_${state.text}_${
+          animated ? "animated" : "static"
+        }.svg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -263,13 +282,41 @@ export default function LandingPage() {
   };
 
   const downloadOptions = [
-    { key: "react", label: t("reactComponent"), action: () => downloadComponent("react") },
-    { key: "vue", label: t("vueComponent"), action: () => downloadComponent("vue") },
-    { key: "js", label: t("jsComponent"), action: () => downloadComponent("js") },
-    { key: "svg-animated", label: t("downloadSvgAnimatedLabel"), action: () => downloadSVG(true) },
-    { key: "svg-static", label: t("downloadSvgStaticLabel"), action: () => downloadSVG(false) },
-    { key: "png", label: t("downloadPngLabel"), action: () => downloadRaster("png") },
-    { key: "gif", label: t("downloadGifLabel"), action: () => setIsGifDialogOpen(true) },
+    {
+      key: "react",
+      label: t("reactComponent"),
+      action: () => downloadComponent("react"),
+    },
+    {
+      key: "vue",
+      label: t("vueComponent"),
+      action: () => downloadComponent("vue"),
+    },
+    {
+      key: "js",
+      label: t("jsComponent"),
+      action: () => downloadComponent("js"),
+    },
+    {
+      key: "svg-animated",
+      label: t("downloadSvgAnimatedLabel"),
+      action: () => downloadSVG(true),
+    },
+    {
+      key: "svg-static",
+      label: t("downloadSvgStaticLabel"),
+      action: () => downloadSVG(false),
+    },
+    {
+      key: "png",
+      label: t("downloadPngLabel"),
+      action: () => downloadRaster("png"),
+    },
+    {
+      key: "gif",
+      label: t("downloadGifLabel"),
+      action: () => setIsGifDialogOpen(true),
+    },
   ];
 
   const copyShareUrl = async (url: string) => {
@@ -294,18 +341,18 @@ export default function LandingPage() {
     try {
       const url = buildShareUrl(state, { ui: "editor" });
       if (typeof navigator !== "undefined" && navigator.share) {
-                try {
-                  await navigator.share({ title: t("appTitle"), url });
-                  return;
-                } catch {
-                  // ignore
-                }
-              }
-              await copyShareUrl(url);
-            } catch {
-              // ignore
-            }
-          };
+        try {
+          await navigator.share({ title: t("appTitle"), url });
+          return;
+        } catch {
+          // ignore
+        }
+      }
+      await copyShareUrl(url);
+    } catch {
+      // ignore
+    }
+  };
 
   const handleCopyShareUrl = async () => {
     try {
@@ -322,33 +369,46 @@ export default function LandingPage() {
       {/* Parallax Background */}
       <FloatingBackground />
 
-      <AppTopBar 
+      <AppTopBar
         extraActions={
           <>
             {/* Mobile Actions - Copied from Editor for parity */}
             <div className="flex items-center gap-2 md:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 text-xs px-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-xs px-3"
+                  >
                     <Download className="w-3.5 h-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   {downloadOptions.map((opt) => (
-                    <DropdownMenuItem key={opt.key} onClick={opt.action} className="text-xs flex items-center gap-2">
+                    <DropdownMenuItem
+                      key={opt.key}
+                      onClick={opt.action}
+                      className="text-xs flex items-center gap-2"
+                    >
                       {renderDownloadIcon(opt.key)}
                       <span>{opt.label}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="sm" onClick={handleCopyShareUrl} className="h-8 w-8 px-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyShareUrl}
+                className="h-8 w-8 px-0"
+              >
                 <Share2 className="w-4 h-4" />
               </Button>
             </div>
 
-             {/* Desktop Download - hover dropdown with all formats */}
-             <div className="relative group hidden md:block">
+            {/* Desktop Download - hover dropdown with all formats */}
+            <div className="relative group hidden md:block">
               <Button
                 variant="default"
                 size="sm"
@@ -395,13 +455,17 @@ export default function LandingPage() {
                     {shareCopyStatus === "success" && (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-600">{t("shareCopySuccessLabel")}</span>
+                        <span className="text-emerald-600">
+                          {t("shareCopySuccessLabel")}
+                        </span>
                       </>
                     )}
                     {shareCopyStatus === "error" && (
                       <>
                         <X className="w-3.5 h-3.5 text-red-600" />
-                        <span className="text-red-600">{t("shareCopyErrorLabel")}</span>
+                        <span className="text-red-600">
+                          {t("shareCopyErrorLabel")}
+                        </span>
                       </>
                     )}
                     {shareCopyStatus === "idle" && (
@@ -429,14 +493,17 @@ export default function LandingPage() {
       <main className="flex-1 flex flex-col md:flex-row min-h-0 xl:max-w-[75%] mx-auto overflow-hidden w-full">
         {/* Main Workspace */}
         <div className="flex-1 flex flex-col gap-4 p-4 md:p-8 min-w-0 overflow-y-auto custom-scrollbar">
-          
           {/* Section 1: Preview & Issue Header */}
           <section className="flex flex-col gap-2 shrink-0 min-h-0 flex-1 justify-center">
             <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-2 mb-2 shrink-0">
-              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingIssueLabel")}</h2>
-              <span className="font-serif italic text-sm text-muted-foreground hidden sm:inline">{t("landingArtQuoteLabel")}</span>
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
+                {t("landingIssueLabel")}
+              </h2>
+              <span className="font-serif italic text-sm text-muted-foreground hidden sm:inline">
+                {t("landingArtQuoteLabel")}
+              </span>
             </div>
-            
+
             <div className="w-full flex-1 min-h-0 flex items-center justify-center border border-gray-200 dark:border-gray-800 bg-white/30 dark:bg-black/20 backdrop-blur-sm relative group overflow-hidden rounded-sm p-4">
               <img
                 src={previewUrl}
@@ -451,8 +518,10 @@ export default function LandingPage() {
 
           {/* Section 2: Editor Input */}
           <section className="flex flex-col gap-2 shrink-0 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-             <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-2 mb-2">
-              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingDigitalSignatureLabel")}</h2>
+            <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-2 mb-2">
+              <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
+                {t("landingDigitalSignatureLabel")}
+              </h2>
             </div>
             <input
               className="w-full bg-transparent border-b-2 border-[#1a1a1a] dark:border-white py-2 text-4xl md:text-5xl font-serif placeholder:text-gray-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-opacity-50 transition-all text-center md:text-left"
@@ -469,14 +538,17 @@ export default function LandingPage() {
 
           {/* Section 3: Controls & Config */}
           <section className="flex flex-col gap-4 mt-2 shrink-0">
-            
             {/* Controls */}
             <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
-                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingCuratedControlLabel")}</h2>
-                <span className="text-[9px] uppercase tracking-widest text-muted-foreground hidden sm:inline">{t("landingTailoredLabel")}</span>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
+                  {t("landingCuratedControlLabel")}
+                </h2>
+                <span className="text-[9px] uppercase tracking-widest text-muted-foreground hidden sm:inline">
+                  {t("landingTailoredLabel")}
+                </span>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-6 py-1">
                 <div className="flex items-center gap-3">
                   <label className="text-[10px] uppercase tracking-widest font-bold">
@@ -489,7 +561,8 @@ export default function LandingPage() {
                         updateState({ font: CHINESE_FONT });
                       } else {
                         updateState({
-                          font: lastNonChineseFontRef.current || INITIAL_STATE.font,
+                          font: lastNonChineseFontRef.current ||
+                            INITIAL_STATE.font,
                           useHanziData: false,
                         });
                       }
@@ -504,8 +577,7 @@ export default function LandingPage() {
                     checked={state.useHanziData ?? false}
                     disabled={!isChineseEnabled}
                     onCheckedChange={(checked) =>
-                      updateState({ useHanziData: checked })
-                    }
+                      updateState({ useHanziData: checked })}
                   />
                 </div>
                 <div className="flex items-center gap-3 flex-1 min-w-[140px]">
@@ -527,29 +599,39 @@ export default function LandingPage() {
             {/* Themes */}
             <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
-                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("quickThemesSectionTitle")}</h2>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
+                  {t("quickThemesSectionTitle")}
+                </h2>
               </div>
               <div className="themes-grid-wrapper overflow-x-auto pb-2 scrollbar-hide">
-                <ThemesSection state={state} updateState={updateState} variant="compact" />
+                <ThemesSection
+                  state={state}
+                  updateState={updateState}
+                  variant="compact"
+                />
               </div>
             </div>
 
             {/* Exports */}
             <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
-                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingAssetCollectionLabel")}</h2>
+                <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
+                  {t("landingAssetCollectionLabel")}
+                </h2>
               </div>
               <EmbedRows imageUrl={imageUrlForEmbed} variant="editorial" />
-              
+
               <div className="mt-4 flex justify-end">
-                 <Link href={editorHref}>
-                  <Button variant="outline" className="rounded-none border-[#1a1a1a] dark:border-white uppercase tracking-widest text-xs h-10 px-8 hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                <Link href={editorHref}>
+                  <Button
+                    variant="outline"
+                    className="rounded-none border-[#1a1a1a] dark:border-white uppercase tracking-widest text-xs h-10 px-8 hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                  >
                     {t("landingEnterEditorLabel")} &rarr;
                   </Button>
                 </Link>
               </div>
             </div>
-
           </section>
         </div>
       </main>
@@ -573,8 +655,12 @@ export default function LandingPage() {
           <div className="mt-4 space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-medium">
-                <span className="text-muted-foreground">{t("gifFpsLabel")}</span>
-                <span className="text-indigo-600 font-mono">{state.gifFps ?? 30} fps</span>
+                <span className="text-muted-foreground">
+                  {t("gifFpsLabel")}
+                </span>
+                <span className="text-indigo-600 font-mono">
+                  {state.gifFps ?? 30} fps
+                </span>
               </div>
               <Slider
                 min={10}
@@ -586,8 +672,12 @@ export default function LandingPage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-medium">
-                <span className="text-muted-foreground">{t("gifQualityLabel")}</span>
-                <span className="text-indigo-600 font-mono">{state.gifQuality ?? 5}</span>
+                <span className="text-muted-foreground">
+                  {t("gifQualityLabel")}
+                </span>
+                <span className="text-indigo-600 font-mono">
+                  {state.gifQuality ?? 5}
+                </span>
               </div>
               <Slider
                 min={1}
@@ -624,7 +714,9 @@ export default function LandingPage() {
               onClick={handleGenerateGif}
               disabled={isGeneratingGif}
             >
-              {isGeneratingGif ? t("gifGeneratingLabel") : t("gifStartButtonLabel")}
+              {isGeneratingGif
+                ? t("gifGeneratingLabel")
+                : t("gifStartButtonLabel")}
             </Button>
           </DialogFooter>
         </DialogContent>

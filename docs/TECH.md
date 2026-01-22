@@ -108,8 +108,10 @@ HTTP clients:
 
 - **UI layer (`app/page.tsx` + `components/signature-builder/*`)**
 - **UI layer**
-  - **Landing (`app/page.tsx`)**: quick mode – input → preview → quick themes → copy embed codes.
-  - **Advanced editor (`app/editor/page.tsx` + `components/signature-builder/*`)**:
+  - **Landing (`app/page.tsx`)**: quick mode – input → preview → quick themes →
+    copy embed codes.
+  - **Advanced editor (`app/editor/page.tsx` +
+    `components/signature-builder/*`)**:
     - Holds a `SignatureState` in React state via `useState(INITIAL_STATE)`.
     - Mutates it through `updateState(partial)` callbacks passed into sidebar
       sections and preview.
@@ -624,7 +626,8 @@ Key details:
 
 ### 6.1 Top Bar (Desktop & Mobile)
 
-File: `components/app-top-bar.tsx` (used by `app/page.tsx` and `app/editor/page.tsx`).
+File: `components/app-top-bar.tsx` (used by `app/page.tsx` and
+`app/editor/page.tsx`).
 
 The top bar is shared by both desktop and mobile layouts and includes:
 

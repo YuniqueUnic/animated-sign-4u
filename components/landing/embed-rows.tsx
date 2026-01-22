@@ -28,12 +28,11 @@ function buildRowValue(key: RowKey, imageUrl: string): string {
 export function EmbedRows({ imageUrl, variant = "default" }: EmbedRowsProps) {
   const { t } = useI18n();
   const rows = useMemo(
-    () =>
-      ([
-        { key: "markdown", label: "Markdown" },
-        { key: "html", label: "HTML" },
-        { key: "url", label: "URL" },
-      ] as const),
+    () => ([
+      { key: "markdown", label: "Markdown" },
+      { key: "html", label: "HTML" },
+      { key: "url", label: "URL" },
+    ] as const),
     [],
   );
 
@@ -72,14 +71,13 @@ export function EmbedRows({ imageUrl, variant = "default" }: EmbedRowsProps) {
                 onClick={() => handleCopy(row.key)}
                 className={cn(
                   "px-4 py-3 border-l border-gray-200 dark:border-gray-800 hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center",
-                  copied && "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  copied &&
+                    "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
                 )}
               >
-                {copied ? (
-                  <Check className="w-[18px] h-[18px]" />
-                ) : (
-                  <Copy className="w-[18px] h-[18px]" />
-                )}
+                {copied
+                  ? <Check className="w-[18px] h-[18px]" />
+                  : <Copy className="w-[18px] h-[18px]" />}
               </button>
             </div>
           );

@@ -192,45 +192,46 @@ are not HTTP API endpoints themselves.
 
 <!-- API_PARAM_MAPPING:START -->
 
-| Name              | Short | Group      | Description                                       |
-| ----------------- | ----- | ---------- | ------------------------------------------------- |
-| `text`            | `t`   | core       | Signature text                                    |
-| `font`            | `f`   | core       | Font id from FONTS                                |
-| `theme`           | `-`   | core       | Optional theme key from THEMES                    |
-| `repeat`          | `r`   | core       | Whether the animation should loop                 |
-| `eraseOnComplete` | `eo`  | core       | Erase the signature after drawing (carousel mode) |
-| `fontSize`        | `fs`  | layout     | Font size (px)                                    |
-| `speed`           | `sp`  | layout     | Animation speed factor (larger = faster)          |
-| `charSpacing`     | `cs`  | layout     | Base character spacing                            |
-| `borderRadius`    | `br`  | layout     | Card border radius                                |
-| `cardPadding`     | `cp`  | layout     | Inner padding used by texture overlay             |
-| `bgSizeMode`      | `bgs` | layout     | Background sizing mode (auto/custom)              |
-| `bgWidth`         | `bw`  | layout     | Custom background/card width                      |
-| `bgHeight`        | `bh`  | layout     | Custom background/card height                     |
-| `bg`              | `-`   | background | Background color or 'transparent'                 |
-| `bgMode`          | `bm`  | background | Background mode (solid/gradient)                  |
-| `bg2`             | `-`   | background | Secondary background color for gradients          |
-| `fill`            | `fm`  | fill       | Fill mode (single/gradient/multi)                 |
-| `fill1`           | `f1`  | fill       | Primary fill color                                |
-| `fill2`           | `f2`  | fill       | Secondary fill color                              |
-| `colors`          | `cl`  | fill       | Per-character fill colors (enables multi mode)    |
-| `stroke`          | `st`  | stroke     | Primary stroke color                              |
-| `stroke2`         | `st2` | stroke     | Secondary stroke color                            |
-| `strokeMode`      | `sm`  | stroke     | Stroke mode (single/gradient/multi)               |
-| `strokeEnabled`   | `se`  | stroke     | Toggle stroke on/off                              |
-| `linkFillStroke`  | `lfs` | stroke     | Link stroke behavior to fill mode/colors          |
-| `texture`         | `tx`  | texture    | Texture overlay type                              |
-| `texColor`        | `txc` | texture    | Texture color                                     |
-| `texSize`         | `txs` | texture    | Texture scale                                     |
-| `texThickness`    | `txt` | texture    | Texture line thickness                            |
-| `texOpacity`      | `txo` | texture    | Texture opacity (0..1)                            |
-| `useGlow`         | `gl`  | effects    | Enable glow effect                                |
-| `useShadow`       | `sh`  | effects    | Enable shadow effect                              |
-| `useHanziData`    | `hz`  | hanzi      | Use Hanzi stroke data for Chinese characters      |
-| `gifFps`          | `gf`  | gif        | GIF frame rate (fps)                              |
-| `gifQuality`      | `gq`  | gif        | GIF quality (1-20, higher is better)              |
-| `format`          | `fmt` | meta       | Output format (svg/png/gif/json)                  |
-| `static`          | `sta` | meta       | Request a static snapshot when using SVG output   |
+| Name              | Short | Group      | Description                                        |
+| ----------------- | ----- | ---------- | -------------------------------------------------- |
+| `text`            | `t`   | core       | Signature text                                     |
+| `font`            | `f`   | core       | Font id from FONTS                                 |
+| `theme`           | `-`   | core       | Optional theme key from THEMES                     |
+| `repeat`          | `r`   | core       | Whether the animation should loop                  |
+| `eraseOnComplete` | `eo`  | core       | Erase the signature after drawing (carousel mode)  |
+| `fontSize`        | `fs`  | layout     | Font size (px)                                     |
+| `speed`           | `sp`  | layout     | Animation speed factor (larger = faster)           |
+| `charSpacing`     | `cs`  | layout     | Base character spacing                             |
+| `borderRadius`    | `br`  | layout     | Card border radius                                 |
+| `cardPadding`     | `cp`  | layout     | Inner padding used by texture overlay              |
+| `bgSizeMode`      | `bgs` | layout     | Background sizing mode (auto/custom)               |
+| `bgWidth`         | `bw`  | layout     | Custom background/card width                       |
+| `bgHeight`        | `bh`  | layout     | Custom background/card height                      |
+| `bg`              | `-`   | background | Background color or 'transparent'                  |
+| `bgMode`          | `bm`  | background | Background mode (solid/gradient)                   |
+| `bg2`             | `-`   | background | Secondary background color for gradients           |
+| `fill`            | `fm`  | fill       | Fill mode (single/gradient/multi)                  |
+| `fill1`           | `f1`  | fill       | Primary fill color                                 |
+| `fill2`           | `f2`  | fill       | Secondary fill color                               |
+| `colors`          | `cl`  | fill       | Per-character fill colors (enables multi mode)     |
+| `stroke`          | `st`  | stroke     | Primary stroke color                               |
+| `stroke2`         | `st2` | stroke     | Secondary stroke color                             |
+| `strokeMode`      | `sm`  | stroke     | Stroke mode (single/gradient/multi)                |
+| `strokeEnabled`   | `se`  | stroke     | Toggle stroke on/off                               |
+| `linkFillStroke`  | `lfs` | stroke     | Link stroke behavior to fill mode/colors           |
+| `texture`         | `tx`  | texture    | Texture overlay type                               |
+| `texColor`        | `txc` | texture    | Texture color                                      |
+| `texSize`         | `txs` | texture    | Texture scale                                      |
+| `texThickness`    | `txt` | texture    | Texture line thickness                             |
+| `texOpacity`      | `txo` | texture    | Texture opacity (0..1)                             |
+| `useGlow`         | `gl`  | effects    | Enable glow effect                                 |
+| `useShadow`       | `sh`  | effects    | Enable shadow effect                               |
+| `useHanziData`    | `hz`  | hanzi      | Use Hanzi stroke data for Chinese characters       |
+| `gifFps`          | `gf`  | gif        | GIF frame rate (fps)                               |
+| `gifQuality`      | `gq`  | gif        | GIF quality (1-20, higher is better)               |
+| `ui`              | `u`   | meta       | UI hint for short-share redirects (landing/editor) |
+| `format`          | `fmt` | meta       | Output format (svg/png/gif/json)                   |
+| `static`          | `sta` | meta       | Request a static snapshot when using SVG output    |
 
 <!-- API_PARAM_MAPPING:END -->
 

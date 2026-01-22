@@ -74,8 +74,9 @@ export function buildBuilderSearchParams(
   setIfDifferent("fill2", state.fill2, base.fill2, normalizeHexNoHash);
 
   if (state.fillMode === "multi" && state.text) {
-    const baseColors =
-      base.fillMode === "multi" ? base.charColors : ([] as string[]);
+    const baseColors = base.fillMode === "multi"
+      ? base.charColors
+      : ([] as string[]);
     const colors = state.text.split("").map((_, idx) =>
       normalizeHexNoHash((state.charColors[idx] || state.fill1) ?? state.fill1)
     );
@@ -85,8 +86,11 @@ export function buildBuilderSearchParams(
   }
 
   // Stroke
-  setIfDifferent("strokeEnabled", state.strokeEnabled, base.strokeEnabled, (v) =>
-    v ? "1" : "0"
+  setIfDifferent(
+    "strokeEnabled",
+    state.strokeEnabled,
+    base.strokeEnabled,
+    (v) => v ? "1" : "0",
   );
   setIfDifferent("strokeMode", state.strokeMode, base.strokeMode);
   setIfDifferent("stroke", state.stroke, base.stroke, normalizeHexNoHash);
@@ -98,7 +102,12 @@ export function buildBuilderSearchParams(
   setIfDifferent("texSize", state.texSize, base.texSize);
   setIfDifferent("texThickness", state.texThickness, base.texThickness);
   setIfDifferent("texOpacity", state.texOpacity, base.texOpacity);
-  setIfDifferent("useGlow", state.useGlow, base.useGlow, (v) => (v ? "1" : "0"));
+  setIfDifferent(
+    "useGlow",
+    state.useGlow,
+    base.useGlow,
+    (v) => (v ? "1" : "0"),
+  );
   setIfDifferent(
     "useShadow",
     state.useShadow,
@@ -113,8 +122,11 @@ export function buildBuilderSearchParams(
   );
 
   // Hanzi
-  setIfDifferent("useHanziData", state.useHanziData, base.useHanziData, (v) =>
-    v ? "1" : "0"
+  setIfDifferent(
+    "useHanziData",
+    state.useHanziData,
+    base.useHanziData,
+    (v) => v ? "1" : "0",
   );
 
   // GIF export settings (include only when non-default)

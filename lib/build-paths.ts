@@ -52,7 +52,11 @@ export async function buildPaths(
           maxX = Math.max(maxX, x2);
           maxY = Math.max(maxY, y2);
 
-          for (let strokeIdx = 0; strokeIdx < hanziData.strokes.length; strokeIdx++) {
+          for (
+            let strokeIdx = 0;
+            strokeIdx < hanziData.strokes.length;
+            strokeIdx++
+          ) {
             const strokePath = hanziData.strokes[strokeIdx];
             const properties = new svgPathProperties(strokePath);
             const scale = state.fontSize / 1024;
@@ -105,7 +109,8 @@ export async function buildPaths(
       }
     }
 
-    cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm) + spacing;
+    cursorX += glyph.advanceWidth * (state.fontSize / font.unitsPerEm) +
+      spacing;
   }
 
   if (paths.length === 0) {
@@ -138,4 +143,3 @@ export async function buildPaths(
 
   return { paths, viewBox };
 }
-

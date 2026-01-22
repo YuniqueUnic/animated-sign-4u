@@ -79,9 +79,9 @@ lib/
 高层数据流：
 
 ```text
-UI（Landing：app/page.tsx） --SignatureState--> buildSignApiUrl --> <img src="/api/sign?...">
+UI (Landing: app/page.tsx) --SignatureState--> buildSignApiUrl --> <img src="/api/sign?...">
 
-UI（Editor：app/editor/page.tsx）  --SignatureState-->  PreviewArea
+UI (Editor: app/editor/page.tsx)  --SignatureState-->  PreviewArea
    ^                                   |
    |                                   v
    +----------- CodePanel <--- buildSignApiUrl
@@ -173,9 +173,10 @@ HTTP API 通过单一端点对外提供服务：
 | GET  | `/api/sign` | 通过查询参数生成签名（SVG / PNG / GIF / JSON） |
 
 此外，应用还支持形如 `/{text}` 的短**分享链接**（例如
-`http://domain.com/Signature?font=sacramento`）。这些链接默认重定向到前端 landing
-页面 `/`，并使用相同的查询参数初始化 UI 状态；当查询参数包含 `ui=editor` 时会改为
-重定向到 `/editor`。它们适合在浏览器中分享配置，但本身不作为 HTTP API 端点使用。
+`http://domain.com/Signature?font=sacramento`）。这些链接默认重定向到前端
+landing 页面 `/`，并使用相同的查询参数初始化 UI 状态；当查询参数包含 `ui=editor`
+时会改为 重定向到 `/editor`。它们适合在浏览器中分享配置，但本身不作为 HTTP API
+端点使用。
 
 ### 4.2 参数与短 key 映射
 
@@ -221,6 +222,7 @@ HTTP API 通过单一端点对外提供服务：
 | `使用汉字笔画数据` | `hz`   | 汉字   | 中文文本是否使用汉字笔画数据进行逐笔绘制     |
 | `GIF 帧率`         | `gf`   | GIF    | GIF 帧率（fps）                              |
 | `GIF 画质`         | `gq`   | GIF    | GIF 画质（1–20，数值越小画质越好、体积越大） |
+| `UI 页面`          | `u`    | 元信息 | 短分享链接重定向时选择 landing 或 editor     |
 | `输出格式`         | `fmt`  | 元信息 | 输出格式（svg/png/gif/json）                 |
 | `静态 SVG 快照`    | `sta`  | 元信息 | 在使用 SVG 输出时请求静态快照（无动画）      |
 
