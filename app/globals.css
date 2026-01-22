@@ -36,6 +36,18 @@
 
   --font-sans: 'Geist', 'Geist Fallback', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback', 'Courier New', monospace;
+
+  /* Custom Animations */
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(var(--tw-rotate)); }
+    50% { transform: translateY(-20px) rotate(calc(var(--tw-rotate) + 2deg)); }
+    100% { transform: translateY(0px) rotate(var(--tw-rotate)); }
+  }
+  @keyframes float-reverse {
+    0% { transform: translateY(0px) rotate(var(--tw-rotate)); }
+    50% { transform: translateY(15px) rotate(calc(var(--tw-rotate) - 2deg)); }
+    100% { transform: translateY(0px) rotate(var(--tw-rotate)); }
+  }
 }
 
 @layer base {
@@ -132,4 +144,15 @@
   background: linear-gradient(white, white) padding-box,
               linear-gradient(135deg, hsl(239 84% 67%), hsl(280 65% 60%)) border-box;
   border: 2px solid transparent;
+}
+
+/* Float Animations Utility Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-reverse {
+  animation: float-reverse 7s ease-in-out infinite;
+}
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
 }
