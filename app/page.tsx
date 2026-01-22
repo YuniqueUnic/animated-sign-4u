@@ -9,6 +9,12 @@ import { EmbedRows } from "@/components/landing/embed-rows";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Check,
@@ -42,6 +48,7 @@ import { buildStateFromQuery } from "@/lib/state-from-query";
 import { SignatureState } from "@/lib/types";
 import { useI18n } from "@/components/i18n-provider";
 import { generateJSComponent, generateReactComponent, generateVueComponent } from "@/lib/code-generators";
+import { FloatingBackground } from "@/components/landing/floating-background";
 
 const CHINESE_FONT = "ma-shan-zheng";
 
@@ -311,19 +318,35 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#fdfdfb] dark:bg-[#121212] text-[#1a1a1a] dark:text-gray-100 transition-colors duration-300 font-sans overflow-hidden relative">
+    <div className="h-screen flex flex-col text-[#1a1a1a] dark:text-gray-100 font-sans overflow-hidden relative">
       {/* Parallax Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[300px] bg-red-400/20 blur-[80px] -rotate-15 animate-pulse" />
-        <div className="absolute top-[20%] left-[20%] w-[400px] h-[600px] bg-blue-400/20 blur-[100px] rotate-10 animate-pulse delay-700" />
-        <div className="absolute top-[-5%] right-[20%] w-[600px] h-[400px] bg-yellow-400/20 blur-[90px] -rotate-6 animate-pulse delay-500" />
-        <div className="absolute bottom-0 right-0 w-[300px] h-[500px] bg-green-400/20 blur-[70px] rotate-20" />
-        <div className="absolute bottom-[20%] left-[30%] w-[400px] h-[300px] bg-purple-400/20 blur-[80px] -rotate-12" />
-      </div>
+      <FloatingBackground />
 
       <AppTopBar 
         extraActions={
           <>
+            {/* Mobile Actions - Copied from Editor for parity */}
+            <div className="flex items-center gap-2 md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-xs px-3">
+                    <Download className="w-3.5 h-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {downloadOptions.map((opt) => (
+                    <DropdownMenuItem key={opt.key} onClick={opt.action} className="text-xs flex items-center gap-2">
+                      {renderDownloadIcon(opt.key)}
+                      <span>{opt.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button variant="ghost" size="sm" onClick={handleCopyShareUrl} className="h-8 w-8 px-0">
+                <Share2 className="w-4 h-4" />
+              </Button>
+            </div>
+
              {/* Desktop Download - hover dropdown with all formats */}
              <div className="relative group hidden md:block">
               <Button
@@ -427,7 +450,7 @@ export default function LandingPage() {
           </section>
 
           {/* Section 2: Editor Input */}
-          <section className="flex flex-col gap-2 shrink-0">
+          <section className="flex flex-col gap-2 shrink-0 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
              <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-2 mb-2">
               <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingDigitalSignatureLabel")}</h2>
             </div>
@@ -448,7 +471,7 @@ export default function LandingPage() {
           <section className="flex flex-col gap-4 mt-2 shrink-0">
             
             {/* Controls */}
-            <div className="space-y-2">
+            <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
                 <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingCuratedControlLabel")}</h2>
                 <span className="text-[9px] uppercase tracking-widest text-muted-foreground hidden sm:inline">{t("landingTailoredLabel")}</span>
@@ -502,7 +525,7 @@ export default function LandingPage() {
             </div>
 
             {/* Themes */}
-            <div className="space-y-2">
+            <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
                 <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("quickThemesSectionTitle")}</h2>
               </div>
@@ -512,7 +535,7 @@ export default function LandingPage() {
             </div>
 
             {/* Exports */}
-            <div className="space-y-2">
+            <div className="space-y-2 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-1">
                 <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">{t("landingAssetCollectionLabel")}</h2>
               </div>
