@@ -40,7 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { INITIAL_STATE } from "@/lib/constants";
+import { FONTS, INITIAL_STATE } from "@/lib/constants";
 import { buildShareUrl, buildSignApiUrl } from "@/lib/api-url";
 import { buildBuilderSearchParams } from "@/lib/builder-query";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-state";
@@ -53,6 +53,13 @@ import {
   generateVueComponent,
 } from "@/lib/code-generators";
 import { FloatingBackground } from "@/components/landing/floating-background";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const CHINESE_FONT = "ma-shan-zheng";
 
@@ -148,6 +155,13 @@ export default function LandingPage() {
   }, [state, debouncedSyncUrl]);
 
   const isChineseEnabled = state.font === CHINESE_FONT;
+  const handleFontChange = (font: string) => {
+    if (font === CHINESE_FONT) {
+      updateState({ font });
+      return;
+    }
+    updateState({ font, useHanziData: false });
+  };
 
   const editorHref = useMemo(() => {
     const params = buildBuilderSearchParams(state, { shortKeys: true });
@@ -504,7 +518,7 @@ export default function LandingPage() {
               </span>
             </div>
 
-            <div className="w-full flex-1 min-h-0 flex items-center justify-center border border-gray-200 dark:border-gray-800 bg-white/30 dark:bg-black/20 backdrop-blur-sm relative group overflow-hidden rounded-sm p-4">
+            <div className="w-full flex-1 min-h-[30vh] flex items-center justify-center border border-gray-200 dark:border-gray-800 bg-white/30 dark:bg-black/20 backdrop-blur-sm relative group overflow-hidden rounded-sm p-6">
               <img
                 src={previewUrl}
                 alt="Signature Preview"
@@ -517,14 +531,14 @@ export default function LandingPage() {
           </section>
 
           {/* Section 2: Editor Input */}
-          <section className="flex flex-col gap-2 shrink-0 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+          <section className="flex flex-col gap-2 shrink-0 backdrop-blur-sm bg-white/30 dark:bg-black/20 rounded-xl border border-gray-200 dark:border-gray-800 p-3">
             <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-800 pb-2 mb-2">
               <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">
                 {t("landingDigitalSignatureLabel")}
               </h2>
             </div>
             <input
-              className="w-full bg-transparent border-b-2 border-[#1a1a1a] dark:border-white py-2 text-4xl md:text-5xl font-serif placeholder:text-gray-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-opacity-50 transition-all text-center md:text-left"
+              className="w-full bg-transparent border-b-2 border-[#1a1a1a] dark:border-white py-1.5 text-3xl md:text-4xl font-serif placeholder:text-gray-300 dark:placeholder:text-gray-700 focus:outline-none focus:border-opacity-50 transition-all text-center md:text-left"
               placeholder={t("landingInputPlaceholder")}
               type="text"
               value={state.text}
@@ -550,6 +564,27 @@ export default function LandingPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-6 py-1">
+                <div className="flex items-center gap-3 flex-1 min-w-[220px]">
+                  <label className="text-[10px] uppercase tracking-widest font-bold whitespace-nowrap">
+                    {t("fontFamilyLabel")}
+                  </label>
+                  <Select value={state.font} onValueChange={handleFontChange}>
+                    <SelectTrigger className="h-8 bg-background/60">
+                      <SelectValue placeholder={t("fontFamilyLabel")} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-2 border-border shadow-xl max-h-[300px] overflow-y-auto">
+                      {FONTS.map((font) => (
+                        <SelectItem
+                          key={font.value}
+                          value={font.value}
+                          className="bg-popover hover:bg-accent"
+                        >
+                          {font.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex items-center gap-3">
                   <label className="text-[10px] uppercase tracking-widest font-bold">
                     {t("landingChineseLabel")}
