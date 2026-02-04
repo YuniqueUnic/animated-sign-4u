@@ -51,24 +51,21 @@ export function EmbedRows({ imageUrl, variant = "default" }: EmbedRowsProps) {
 
   if (variant === "editorial") {
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
         {rows.map((row) => {
-          const value = buildRowValue(row.key, imageUrl);
           const copied = copiedKey === row.key;
           return (
             <div
               key={row.key}
-              className="group border border-gray-200 dark:border-gray-800 flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+              className="group border border-gray-200 dark:border-gray-800 flex items-center hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors overflow-hidden"
             >
-              <div className="w-24 px-4 py-3 text-[10px] uppercase font-bold border-r border-gray-200 dark:border-gray-800 text-[#1a1a1a] dark:text-white">
+              <div className="flex-1 px-4 py-3 text-[10px] uppercase font-bold text-[#1a1a1a] dark:text-white">
                 {row.label}
-              </div>
-              <div className="flex-1 px-4 py-3 font-mono text-xs text-gray-500 truncate italic">
-                {value}
               </div>
               <button
                 type="button"
                 onClick={() => handleCopy(row.key)}
+                aria-label={`Copy ${row.label}`}
                 className={cn(
                   "px-4 py-3 border-l border-gray-200 dark:border-gray-800 hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center",
                   copied &&
